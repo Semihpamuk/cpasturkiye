@@ -32,11 +32,19 @@ export interface Order {
   installment: "single" | "3" | "6" | "9";
   discountCode: string | null;
   subscriptionNet: number;
-  setupNet: number;
+  setupNet: number; // ayrıca tahsil edilecek kurulum bedeli (toplama dahil değil)
   discountAmount: number;
   vatAmount: number;
-  total: number;
+  total: number; // yalnızca abonelik + KDV
   status: "new" | "contacted" | "paid" | "cancelled";
+  // Fatura bilgileri
+  invoiceType: "individual" | "company";
+  identityNo: string; // TC kimlik no (bireysel)
+  companyName: string;
+  taxOffice: string;
+  taxNumber: string;
+  address: string;
+  city: string;
 }
 
 export interface Lead {

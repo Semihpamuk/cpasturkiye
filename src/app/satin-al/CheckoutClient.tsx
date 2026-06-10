@@ -8,6 +8,8 @@ import {
   PRICING,
 } from "@/lib/site";
 
+type InvoiceType = "individual" | "company";
+
 type Billing = "monthly" | "yearly";
 type Installment = "single" | "3" | "6" | "9";
 type Step = "configure" | "details" | "done";
@@ -37,6 +39,15 @@ export default function CheckoutClient() {
   const [discount, setDiscount] = useState<AppliedDiscount | null>(null);
 
   const [form, setForm] = useState({ name: "", phone: "", email: "", storeUrl: "" });
+  const [invoiceType, setInvoiceType] = useState<InvoiceType>("individual");
+  const [invoice, setInvoice] = useState({
+    identityNo: "",
+    companyName: "",
+    taxOffice: "",
+    taxNumber: "",
+    address: "",
+    city: "",
+  });
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const [orderId, setOrderId] = useState("");
@@ -47,6 +58,7 @@ export default function CheckoutClient() {
         isAgency,
         storeCount,
         billing,
+        includeSetup: false,
         discount: discount ? { type: discount.type, value: discount.value } : null,
       }),
     [isAgency, storeCount, billing, discount]
@@ -92,6 +104,8 @@ export default function CheckoutClient() {
           billing,
           installment,
           discountCode: discount?.code || "",
+          invoiceType,
+          ...invoice,
         }),
       });
       const data = await res.json();
@@ -367,58 +381,162 @@ export default function CheckoutClient() {
               )}
             </div>
 
-            {/* İletişim bilgileri */}
+            {/* İletişim + Fatura bilgileri */}
             {step === "details" && (
               <form
                 onSubmit={submitOrder}
-                className="rounded-2xl border-2 border-brand-300 bg-white p-6 shadow-md"
+                className="space-y-6 rounded-2xl border-2 border-brand-300 bg-white p-6 shadow-md"
               >
-                <h2 className="font-display text-base font-bold text-ink-900">
-                  5. İletişim bilgilerin
-                </h2>
-                <p className="mt-1 text-xs text-ink-500">
-                  Ödemeni güvenle tamamlamak için ekibimiz seni arayacak.
-                </p>
-                <div className="mt-4 grid gap-4 sm:grid-cols-2">
-                  <input
-                    required
-                    type="text"
-                    placeholder="Ad Soyad *"
-                    value={form.name}
-                    onChange={(e) => setForm({ ...form, name: e.target.value })}
-                    className="rounded-lg border border-ink-300 px-4 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
-                  />
-                  <input
-                    required
-                    type="tel"
-                    placeholder="Telefon *"
-                    value={form.phone}
-                    onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                    className="rounded-lg border border-ink-300 px-4 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
-                  />
-                  <input
-                    required
-                    type="email"
-                    placeholder="E-posta *"
-                    value={form.email}
-                    onChange={(e) => setForm({ ...form, email: e.target.value })}
-                    className="rounded-lg border border-ink-300 px-4 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
-                  />
-                  <input
-                    type="url"
-                    placeholder="Trendyol mağaza linki"
-                    value={form.storeUrl}
-                    onChange={(e) => setForm({ ...form, storeUrl: e.target.value })}
-                    className="rounded-lg border border-ink-300 px-4 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
-                  />
+                <div>
+                  <h2 className="font-display text-base font-bold text-ink-900">
+                    5. İletişim bilgilerin
+                  </h2>
+                  <p className="mt-1 text-xs text-ink-500">
+                    Ödemeni güvenle tamamlamak için ekibimiz seni arayacak.
+                  </p>
+                  <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                    <input
+                      required
+                      type="text"
+                      placeholder="Ad Soyad *"
+                      value={form.name}
+                      onChange={(e) => setForm({ ...form, name: e.target.value })}
+                      className="rounded-lg border border-ink-300 px-4 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
+                    />
+                    <input
+                      required
+                      type="tel"
+                      placeholder="Telefon *"
+                      value={form.phone}
+                      onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                      className="rounded-lg border border-ink-300 px-4 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
+                    />
+                    <input
+                      required
+                      type="email"
+                      placeholder="E-posta *"
+                      value={form.email}
+                      onChange={(e) => setForm({ ...form, email: e.target.value })}
+                      className="rounded-lg border border-ink-300 px-4 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
+                    />
+                    <input
+                      type="url"
+                      placeholder="Trendyol mağaza linki"
+                      value={form.storeUrl}
+                      onChange={(e) => setForm({ ...form, storeUrl: e.target.value })}
+                      className="rounded-lg border border-ink-300 px-4 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
+                    />
+                  </div>
                 </div>
+
+                <div className="border-t border-ink-100 pt-6">
+                  <h2 className="font-display text-base font-bold text-ink-900">
+                    6. Fatura bilgileri
+                  </h2>
+                  <p className="mt-1 text-xs text-ink-500">
+                    Faturanı doğru kesebilmemiz için gereklidir.
+                  </p>
+
+                  <div className="mt-4 flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setInvoiceType("individual")}
+                      className={`flex-1 rounded-lg border-2 px-4 py-2.5 text-sm font-semibold transition-colors ${
+                        invoiceType === "individual"
+                          ? "border-brand-500 bg-brand-50 text-brand-700"
+                          : "border-ink-200 text-ink-600 hover:border-ink-300"
+                      }`}
+                    >
+                      Bireysel
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setInvoiceType("company")}
+                      className={`flex-1 rounded-lg border-2 px-4 py-2.5 text-sm font-semibold transition-colors ${
+                        invoiceType === "company"
+                          ? "border-brand-500 bg-brand-50 text-brand-700"
+                          : "border-ink-200 text-ink-600 hover:border-ink-300"
+                      }`}
+                    >
+                      Kurumsal (Şirket)
+                    </button>
+                  </div>
+
+                  <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                    {invoiceType === "individual" ? (
+                      <input
+                        type="text"
+                        inputMode="numeric"
+                        placeholder="TC Kimlik No"
+                        value={invoice.identityNo}
+                        onChange={(e) =>
+                          setInvoice({ ...invoice, identityNo: e.target.value })
+                        }
+                        className="rounded-lg border border-ink-300 px-4 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100 sm:col-span-2"
+                      />
+                    ) : (
+                      <>
+                        <input
+                          required
+                          type="text"
+                          placeholder="Şirket / Ticari Unvan *"
+                          value={invoice.companyName}
+                          onChange={(e) =>
+                            setInvoice({ ...invoice, companyName: e.target.value })
+                          }
+                          className="rounded-lg border border-ink-300 px-4 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100 sm:col-span-2"
+                        />
+                        <input
+                          required
+                          type="text"
+                          placeholder="Vergi Dairesi *"
+                          value={invoice.taxOffice}
+                          onChange={(e) =>
+                            setInvoice({ ...invoice, taxOffice: e.target.value })
+                          }
+                          className="rounded-lg border border-ink-300 px-4 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
+                        />
+                        <input
+                          required
+                          type="text"
+                          inputMode="numeric"
+                          placeholder="Vergi No *"
+                          value={invoice.taxNumber}
+                          onChange={(e) =>
+                            setInvoice({ ...invoice, taxNumber: e.target.value })
+                          }
+                          className="rounded-lg border border-ink-300 px-4 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
+                        />
+                      </>
+                    )}
+                    <input
+                      required
+                      type="text"
+                      placeholder="Şehir *"
+                      value={invoice.city}
+                      onChange={(e) => setInvoice({ ...invoice, city: e.target.value })}
+                      className="rounded-lg border border-ink-300 px-4 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
+                    />
+                    <textarea
+                      required
+                      rows={2}
+                      placeholder="Fatura Adresi *"
+                      value={invoice.address}
+                      onChange={(e) =>
+                        setInvoice({ ...invoice, address: e.target.value })
+                      }
+                      className="rounded-lg border border-ink-300 px-4 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100 sm:col-span-2"
+                    />
+                  </div>
+                </div>
+
                 {submitError && (
-                  <p className="mt-3 text-sm font-medium text-red-600">{submitError}</p>
+                  <p className="text-sm font-medium text-red-600">{submitError}</p>
                 )}
                 <button
                   type="submit"
                   disabled={submitting || quote.requiresContact}
-                  className="mt-5 w-full rounded-xl bg-brand-600 px-6 py-3.5 text-sm font-bold text-white shadow-md transition-all hover:bg-brand-700 disabled:opacity-60"
+                  className="w-full rounded-xl bg-brand-600 px-6 py-3.5 text-sm font-bold text-white shadow-md transition-all hover:bg-brand-700 disabled:opacity-60"
                 >
                   {submitting ? "Gönderiliyor..." : "Siparişi Tamamla"}
                 </button>
@@ -443,12 +561,6 @@ export default function CheckoutClient() {
                     {formatTRY(quote.subscriptionNet)}
                   </dd>
                 </div>
-                <div className="flex justify-between">
-                  <dt className="text-ink-600">Kurulum (tek seferlik)</dt>
-                  <dd className="font-semibold text-ink-900">
-                    {formatTRY(quote.setupNet)}
-                  </dd>
-                </div>
                 {quote.discountAmount > 0 && (
                   <div className="flex justify-between text-green-700">
                     <dt>İndirim ({discount?.code})</dt>
@@ -471,7 +583,7 @@ export default function CheckoutClient() {
                 </div>
                 <div className="flex items-baseline justify-between border-t-2 border-ink-900 pt-4">
                   <dt className="font-display text-base font-bold text-ink-900">
-                    Toplam
+                    Bugün ödenecek
                   </dt>
                   <dd className="font-display text-2xl font-extrabold text-ink-900">
                     {formatTRY(quote.total)}
@@ -493,6 +605,29 @@ export default function CheckoutClient() {
                   </div>
                 )}
               </dl>
+
+              {/* Kurulum uyarısı — toplama dahil DEĞİL */}
+              <div className="mt-5 rounded-xl border border-amber-300 bg-amber-50 p-4">
+                <div className="flex items-start gap-2.5">
+                  <svg className="mt-0.5 h-5 w-5 shrink-0 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                  </svg>
+                  <div>
+                    <p className="text-xs font-bold text-amber-900">
+                      Kurulum bedeli bu tutara dahil değildir
+                    </p>
+                    <p className="mt-1 text-xs leading-relaxed text-amber-800">
+                      Tek seferlik kurulum hizmeti{" "}
+                      <strong>{formatTRY(quote.setupNet)} + KDV</strong> olup ayrıca tahsil
+                      edilir. Ekibimiz sipariş sonrası kurulum planını ve ödemesini seninle
+                      netleştirir.{" "}
+                      <Link href="/kurulum" className="font-semibold underline">
+                        Kuruluma neler dahil?
+                      </Link>
+                    </p>
+                  </div>
+                </div>
+              </div>
 
               {step === "configure" && (
                 <button

@@ -29,8 +29,16 @@ interface Order {
   installment: string;
   discountCode: string | null;
   discountAmount: number;
+  setupNet: number;
   total: number;
   status: "new" | "contacted" | "paid" | "cancelled";
+  invoiceType: "individual" | "company";
+  identityNo: string;
+  companyName: string;
+  taxOffice: string;
+  taxNumber: string;
+  address: string;
+  city: string;
 }
 
 interface Lead {
@@ -183,7 +191,7 @@ export default function AdminClient() {
 
   if (authed === null) {
     return (
-      <div className="flex min-h-[60vh] items-center justify-center text-ink-400">
+      <div className="flex min-h-screen items-center justify-center bg-ink-50 text-ink-400">
         Yükleniyor...
       </div>
     );
@@ -191,26 +199,34 @@ export default function AdminClient() {
 
   if (!authed) {
     return (
-      <section className="flex min-h-[70vh] items-center justify-center px-4">
+      <section className="flex min-h-screen items-center justify-center bg-gradient-to-br from-ink-900 via-ink-800 to-ink-900 px-4">
         <form
           onSubmit={handleLogin}
-          className="w-full max-w-sm rounded-2xl border border-ink-200 bg-white p-8 shadow-lg"
+          className="w-full max-w-sm rounded-2xl border border-ink-700 bg-ink-800/80 p-8 shadow-2xl backdrop-blur"
         >
-          <h1 className="font-display text-xl font-bold text-ink-900">Yönetim Paneli</h1>
-          <p className="mt-1 text-sm text-ink-500">Devam etmek için şifreni gir.</p>
+          <div className="flex items-center gap-2.5">
+            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-brand-500 to-brand-700 font-display text-lg font-bold text-white">
+              J
+            </span>
+            <span className="font-display text-lg font-bold text-white">
+              Jale Yönetim
+            </span>
+          </div>
+          <p className="mt-5 text-sm text-ink-300">Devam etmek için şifreni gir.</p>
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Admin şifresi"
-            className="mt-5 w-full rounded-lg border border-ink-300 px-4 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
+            autoFocus
+            className="mt-3 w-full rounded-lg border border-ink-600 bg-ink-900 px-4 py-2.5 text-sm text-white placeholder:text-ink-500 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/30"
           />
           {loginError && (
-            <p className="mt-2 text-sm font-medium text-red-600">{loginError}</p>
+            <p className="mt-2 text-sm font-medium text-red-400">{loginError}</p>
           )}
           <button
             type="submit"
-            className="mt-4 w-full rounded-xl bg-brand-600 px-6 py-3 text-sm font-semibold text-white hover:bg-brand-700"
+            className="mt-4 w-full rounded-xl bg-brand-600 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-brand-500"
           >
             Giriş Yap
           </button>
@@ -219,47 +235,65 @@ export default function AdminClient() {
     );
   }
 
-  return (
-    <section className="px-4 py-10 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-6xl">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <h1 className="font-display text-2xl font-bold text-ink-900">
-            Yönetim Paneli
-          </h1>
-          <button
-            onClick={handleLogout}
-            className="rounded-lg border border-ink-300 px-4 py-2 text-sm font-semibold text-ink-700 hover:border-red-300 hover:text-red-600"
-          >
-            Çıkış
-          </button>
-        </div>
+  const newOrders = orders.filter((o) => o.status === "new").length;
+  const STAT_CARDS = [
+    { label: "Toplam Sipariş", value: orders.length, accent: "text-ink-900" },
+    { label: "Yeni Sipariş", value: newOrders, accent: "text-brand-600" },
+    { label: "Form Başvurusu", value: leads.length, accent: "text-ink-900" },
+    { label: "Aktif Kod", value: codes.filter((c) => c.active).length, accent: "text-ink-900" },
+  ];
 
+  return (
+    <div className="min-h-screen bg-ink-50">
+      {/* Üst çubuk */}
+      <header className="sticky top-0 z-10 border-b border-ink-200 bg-white">
+        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center gap-2.5">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-brand-500 to-brand-700 font-display text-base font-bold text-white">
+              J
+            </span>
+            <div>
+              <p className="font-display text-sm font-bold leading-none text-ink-900">
+                Jale Yönetim
+              </p>
+              <p className="mt-0.5 text-[11px] text-ink-400">cpasturkiye.com</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={loadAll}
+              className="rounded-lg border border-ink-200 px-3 py-2 text-sm font-semibold text-ink-600 transition-colors hover:border-brand-300 hover:text-brand-700"
+            >
+              ↻ Yenile
+            </button>
+            <button
+              onClick={handleLogout}
+              className="rounded-lg border border-ink-200 px-4 py-2 text-sm font-semibold text-ink-700 transition-colors hover:border-red-300 hover:text-red-600"
+            >
+              Çıkış
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <section className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
         {/* Özet kartları */}
-        <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
-          <div className="rounded-xl border border-ink-200 bg-white p-4">
-            <p className="text-xs text-ink-500">Toplam Sipariş</p>
-            <p className="font-display text-2xl font-bold text-ink-900">{orders.length}</p>
-          </div>
-          <div className="rounded-xl border border-ink-200 bg-white p-4">
-            <p className="text-xs text-ink-500">Yeni Sipariş</p>
-            <p className="font-display text-2xl font-bold text-brand-600">
-              {orders.filter((o) => o.status === "new").length}
-            </p>
-          </div>
-          <div className="rounded-xl border border-ink-200 bg-white p-4">
-            <p className="text-xs text-ink-500">Form Başvurusu</p>
-            <p className="font-display text-2xl font-bold text-ink-900">{leads.length}</p>
-          </div>
-          <div className="rounded-xl border border-ink-200 bg-white p-4">
-            <p className="text-xs text-ink-500">Aktif Kod</p>
-            <p className="font-display text-2xl font-bold text-ink-900">
-              {codes.filter((c) => c.active).length}
-            </p>
-          </div>
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+          {STAT_CARDS.map((card) => (
+            <div
+              key={card.label}
+              className="rounded-2xl border border-ink-200 bg-white p-5 shadow-sm"
+            >
+              <p className="text-xs font-medium text-ink-500">{card.label}</p>
+              <p className={`mt-1 font-display text-3xl font-extrabold ${card.accent}`}>
+                {card.value}
+              </p>
+            </div>
+          ))}
         </div>
 
         {/* Sekmeler */}
-        <div className="mt-8 flex gap-2 border-b border-ink-200">
+        <div className="mt-8 flex gap-1 rounded-xl border border-ink-200 bg-white p-1 shadow-sm sm:inline-flex">
           {(
             [
               ["orders", `Siparişler (${orders.length})`],
@@ -270,10 +304,10 @@ export default function AdminClient() {
             <button
               key={id}
               onClick={() => setTab(id)}
-              className={`-mb-px border-b-2 px-4 py-2.5 text-sm font-semibold transition-colors ${
+              className={`flex-1 whitespace-nowrap rounded-lg px-4 py-2 text-sm font-semibold transition-colors sm:flex-none ${
                 tab === id
-                  ? "border-brand-600 text-brand-700"
-                  : "border-transparent text-ink-500 hover:text-ink-800"
+                  ? "bg-brand-600 text-white shadow-sm"
+                  : "text-ink-500 hover:bg-ink-50 hover:text-ink-800"
               }`}
             >
               {label}
@@ -328,8 +362,33 @@ export default function AdminClient() {
                         : `${order.installment} taksit`}{" "}
                       · {order.billing === "yearly" ? "Yıllık" : "Aylık"}
                     </p>
+                    {order.setupNet > 0 && (
+                      <p className="text-[11px] text-amber-600">
+                        + Kurulum {formatTRY(order.setupNet)} (ayrı)
+                      </p>
+                    )}
                   </div>
                 </div>
+
+                {/* Fatura bilgileri */}
+                <div className="mt-3 rounded-xl bg-ink-50 p-3 text-xs text-ink-600">
+                  <span className="font-semibold text-ink-800">
+                    {order.invoiceType === "company" ? "🏢 Kurumsal" : "👤 Bireysel"} fatura:
+                  </span>{" "}
+                  {order.invoiceType === "company"
+                    ? `${order.companyName} · VD: ${order.taxOffice} · VKN: ${order.taxNumber}`
+                    : order.identityNo
+                      ? `TCKN: ${order.identityNo}`
+                      : "TCKN belirtilmedi"}
+                  {(order.address || order.city) && (
+                    <span>
+                      {" "}
+                      · {order.address}
+                      {order.city ? `, ${order.city}` : ""}
+                    </span>
+                  )}
+                </div>
+
                 <div className="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-ink-100 pt-3">
                   <p className="text-xs text-ink-500">
                     {formatDateTime(order.createdAt)} · {order.storeCount} mağaza
@@ -570,7 +629,7 @@ export default function AdminClient() {
             ))}
           </div>
         )}
-      </div>
-    </section>
+      </section>
+    </div>
   );
 }

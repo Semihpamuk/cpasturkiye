@@ -36,12 +36,13 @@ export interface OrderInput {
   storeCount: number;
   billing: "monthly" | "yearly";
   discount?: { type: "percent" | "fixed"; value: number } | null;
+  includeSetup?: boolean; // Online ödemede kurulum dahil EDİLMEZ (varsayılan false)
 }
 
 export interface OrderQuote {
   monthlySubscription: number;
   subscriptionNet: number; // ilk ödeme dönemi (aylıkta 1 ay, yıllıkta 12 ay indirimli)
-  setupNet: number;
+  setupNet: number; // ayrıca tahsil edilen kurulum bedeli (toplama dahil değil)
   discountAmount: number;
   netAfterDiscount: number;
   vatAmount: number;
@@ -69,8 +70,10 @@ export function computeOrderQuote(input: OrderInput): OrderQuote {
       ? Math.round(monthlySubscription * 12 * (1 - PRICING.yearlyDiscount))
       : monthlySubscription;
 
+  // Kurulum bedeli bilgi amaçlı döndürülür; online ödeme toplamına dahil edilmez.
   const setupNet = PRICING.setupFee;
-  const subtotal = subscriptionNet + setupNet;
+  const includeSetup = input.includeSetup ?? false;
+  const subtotal = subscriptionNet + (includeSetup ? setupNet : 0);
 
   let discountAmount = 0;
   if (input.discount) {

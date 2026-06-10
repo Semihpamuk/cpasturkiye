@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Plus_Jakarta_Sans } from "next/font/google";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import SiteChrome from "@/components/SiteChrome";
 import { SITE } from "@/lib/site";
 import "./globals.css";
 
@@ -48,9 +47,7 @@ export default function RootLayout({
   return (
     <html lang="tr">
       <body className={`${inter.variable} ${jakarta.variable} font-sans`}>
-        <Navbar />
-        <main>{children}</main>
-        <Footer />
+        <SiteChrome>{children}</SiteChrome>
       </body>
     </html>
   );

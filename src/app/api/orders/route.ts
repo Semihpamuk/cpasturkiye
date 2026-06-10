@@ -27,6 +27,15 @@ export async function POST(req: Request) {
     const discountCodeInput =
       typeof body.discountCode === "string" ? body.discountCode.trim() : "";
 
+    // Fatura bilgileri
+    const invoiceType = body.invoiceType === "company" ? "company" : "individual";
+    const identityNo = String(body.identityNo || "").trim();
+    const companyName = String(body.companyName || "").trim();
+    const taxOffice = String(body.taxOffice || "").trim();
+    const taxNumber = String(body.taxNumber || "").trim();
+    const address = String(body.address || "").trim();
+    const city = String(body.city || "").trim();
+
     if (!name || !phone || !email) {
       return NextResponse.json(
         { error: "Ad, telefon ve e-posta zorunludur" },
@@ -34,6 +43,30 @@ export async function POST(req: Request) {
       );
     }
     if (name.length > 200 || phone.length > 50 || email.length > 200 || storeUrl.length > 500) {
+      return NextResponse.json({ error: "Geçersiz alan uzunluğu" }, { status: 400 });
+    }
+    if (!address || !city) {
+      return NextResponse.json(
+        { error: "Fatura adresi ve şehir zorunludur" },
+        { status: 400 }
+      );
+    }
+    if (invoiceType === "company") {
+      if (!companyName || !taxOffice || !taxNumber) {
+        return NextResponse.json(
+          { error: "Şirket faturası için unvan, vergi dairesi ve vergi no zorunludur" },
+          { status: 400 }
+        );
+      }
+    }
+    if (
+      companyName.length > 300 ||
+      taxOffice.length > 100 ||
+      taxNumber.length > 20 ||
+      identityNo.length > 20 ||
+      address.length > 500 ||
+      city.length > 100
+    ) {
       return NextResponse.json({ error: "Geçersiz alan uzunluğu" }, { status: 400 });
     }
     if (isAgency && storeCount >= PRICING.agencyContactThreshold) {
@@ -46,10 +79,12 @@ export async function POST(req: Request) {
     // İndirim kodunu sunucu tarafında yeniden doğrula — istemciden gelen tutara güvenme
     const validCode = discountCodeInput ? await findValidCode(discountCodeInput) : null;
 
+    // Online ödeme: kurulum bedeli toplama dahil edilmez (ayrıca tahsil edilir)
     const quote = computeOrderQuote({
       isAgency,
       storeCount,
       billing,
+      includeSetup: false,
       discount: validCode ? { type: validCode.type, value: validCode.value } : null,
     });
 
@@ -71,6 +106,13 @@ export async function POST(req: Request) {
       vatAmount: quote.vatAmount,
       total: quote.total,
       status: "new",
+      invoiceType,
+      identityNo,
+      companyName,
+      taxOffice,
+      taxNumber,
+      address,
+      city,
     };
 
     await addOrder(order);
