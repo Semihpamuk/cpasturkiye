@@ -13,16 +13,16 @@ export default function CtaSection() {
         </p>
         <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
           <Link
-            href="/iletisim"
+            href="/satin-al"
             className="w-full rounded-xl bg-white px-8 py-3.5 text-sm font-bold text-brand-700 shadow-lg transition-transform hover:scale-[1.02] sm:w-auto"
           >
-            Hemen Başla
+            Hemen Satın Al
           </Link>
           <Link
-            href="/kurulum"
+            href="/iletisim"
             className="w-full rounded-xl border border-white/40 px-8 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-white/10 sm:w-auto"
           >
-            Kurulum Sürecini İncele
+            Önce Sizi Arayalım
           </Link>
         </div>
       </div>

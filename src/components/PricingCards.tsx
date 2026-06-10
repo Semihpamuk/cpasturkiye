@@ -124,6 +124,11 @@ export default function PricingCards() {
         </span>
       </div>
 
+      <p className="mt-4 text-center text-sm font-medium text-ink-500">
+        💳 Peşin fiyatına <strong className="text-ink-800">3 taksit</strong> — 6 ve 9
+        taksit seçenekleri de mevcut
+      </p>
+
       {/* Plan kartları */}
       <div className="mt-12 grid gap-8 lg:grid-cols-3">
         {PLANS.map((plan) => (
@@ -191,7 +196,7 @@ export default function PricingCards() {
             </ul>
 
             <Link
-              href="/iletisim"
+              href="/satin-al"
               className={`mt-8 rounded-xl px-6 py-3 text-center text-sm font-semibold transition-all ${
                 plan.highlighted
                   ? "bg-brand-600 text-white shadow-md hover:bg-brand-700 hover:shadow-lg"

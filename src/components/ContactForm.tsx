@@ -2,16 +2,32 @@
 
 import { useState } from "react";
 
-type FormStatus = "idle" | "submitting" | "success";
+type FormStatus = "idle" | "submitting" | "success" | "error";
 
 export default function ContactForm() {
   const [status, setStatus] = useState<FormStatus>("idle");
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setStatus("submitting");
-    // Backend hazır olduğunda burası /api/contact endpoint'ine POST edecek.
-    setTimeout(() => setStatus("success"), 800);
+    const formData = new FormData(event.currentTarget);
+    try {
+      const res = await fetch("/api/leads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: formData.get("name"),
+          phone: formData.get("phone"),
+          email: formData.get("email"),
+          storeUrl: formData.get("storeUrl"),
+          monthlyOrders: formData.get("monthlyOrders"),
+          message: formData.get("message"),
+        }),
+      });
+      setStatus(res.ok ? "success" : "error");
+    } catch {
+      setStatus("error");
+    }
   }
 
   if (status === "success") {
@@ -26,7 +42,7 @@ export default function ContactForm() {
           Talebiniz alındı!
         </h3>
         <p className="mt-2 text-sm text-ink-600">
-          Ekibimiz en geç 1 iş günü içinde sizinle iletişime geçecek.
+          Ekibimiz en geç 1 iş günü içinde sizi arayacak.
         </p>
       </div>
     );
@@ -124,12 +140,17 @@ export default function ContactForm() {
         />
       </div>
 
+      {status === "error" && (
+        <p className="text-center text-sm font-medium text-red-600">
+          Gönderilemedi — lütfen tekrar deneyin.
+        </p>
+      )}
       <button
         type="submit"
         disabled={status === "submitting"}
         className="w-full rounded-xl bg-brand-600 px-6 py-3.5 text-sm font-semibold text-white shadow-md transition-all hover:bg-brand-700 hover:shadow-lg disabled:opacity-60"
       >
-        {status === "submitting" ? "Gönderiliyor..." : "Demo Talep Et"}
+        {status === "submitting" ? "Gönderiliyor..." : "Beni Arayın"}
       </button>
 
       <p className="text-center text-xs text-ink-400">

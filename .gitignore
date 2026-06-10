@@ -17,6 +17,10 @@ npm-debug.log*
 
 # env files
 .env*
+!.env.example
+
+# uygulama verisi (siparişler, kodlar, başvurular)
+/data/
 
 # typescript
 *.tsbuildinfo

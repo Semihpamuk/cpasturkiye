@@ -46,3 +46,92 @@ h1, h2, h3, h4 {
 ::selection {
   @apply bg-brand-600 text-white;
 }
+
+/* ===== Scroll-reveal animasyonları ===== */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+  will-change: opacity, transform;
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+  will-change: auto;
+}
+
+/* ===== Keyframes ===== */
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+
+@keyframes float-slower {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 0.6; }
+}
+
+@keyframes flow-dash {
+  to { stroke-dashoffset: -24; }
+}
+
+@keyframes flow-pulse {
+  0% { transform: scale(0.92); opacity: 0.7; }
+  50% { transform: scale(1.05); opacity: 1; }
+  100% { transform: scale(0.92); opacity: 0.7; }
+}
+
+@keyframes ticker {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@keyframes shine {
+  from { transform: translateX(-100%) skewX(-15deg); }
+  to { transform: translateX(250%) skewX(-15deg); }
+}
+
+.animate-float-slow { animation: float-slow 5s ease-in-out infinite; }
+.animate-float-slower { animation: float-slower 7s ease-in-out infinite; }
+.animate-pulse-glow { animation: pulse-glow 6s ease-in-out infinite; }
+.animate-ticker { animation: ticker 30s linear infinite; }
+
+.flow-line {
+  stroke-dasharray: 8 8;
+  animation: flow-dash 1.2s linear infinite;
+}
+
+.flow-node {
+  animation: flow-pulse 2.4s ease-in-out infinite;
+  transform-origin: center;
+  transform-box: fill-box;
+}
+
+/* ===== Hareket azaltma tercihi ===== */
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .animate-float-slow,
+  .animate-float-slower,
+  .animate-pulse-glow,
+  .animate-ticker,
+  .flow-line,
+  .flow-node {
+    animation: none;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+}

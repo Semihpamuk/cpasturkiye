@@ -47,13 +47,13 @@ export default function Navbar() {
             href="/iletisim"
             className="rounded-lg px-4 py-2 text-sm font-semibold text-ink-700 transition-colors hover:text-brand-600"
           >
-            Demo Talep Et
+            Sizi Arayalım
           </Link>
           <Link
-            href="/iletisim"
+            href="/satin-al"
             className="rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all hover:bg-brand-700 hover:shadow-md"
           >
-            Hemen Başla
+            Satın Al
           </Link>
         </div>
 
@@ -94,11 +94,11 @@ export default function Navbar() {
               </Link>
             ))}
             <Link
-              href="/iletisim"
+              href="/satin-al"
               className="mt-2 rounded-lg bg-brand-600 px-4 py-2.5 text-center text-sm font-semibold text-white"
               onClick={() => setIsOpen(false)}
             >
-              Hemen Başla
+              Satın Al
             </Link>
           </div>
         </div>

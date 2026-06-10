@@ -2,6 +2,7 @@ import Link from "next/link";
 import { SITE } from "@/lib/site";
 
 const PRODUCT_LINKS = [
+  { href: "/satin-al", label: "Satın Al" },
   { href: "/ozellikler", label: "Özellikler" },
   { href: "/fiyatlandirma", label: "Fiyatlandırma" },
   { href: "/kurulum", label: "Kurulum Hizmeti" },

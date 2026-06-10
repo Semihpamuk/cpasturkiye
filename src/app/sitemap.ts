@@ -7,6 +7,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "",
     "/ozellikler",
     "/fiyatlandirma",
+    "/satin-al",
     "/kurulum",
     "/sss",
     "/iletisim",
