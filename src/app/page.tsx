@@ -250,51 +250,6 @@ export default function HomePage() {
       {/* ====== REFERANS BARI ====== */}
       <ReferencesBar />
 
-      {/* ====== İSTATİSTİK BANDI ====== */}
-      <section className="relative overflow-hidden bg-ink-900 px-4 py-16 sm:px-6 lg:px-8">
-        <div className="absolute -left-32 top-0 h-64 w-64 rounded-full bg-brand-600/20 blur-3xl" />
-        <div className="absolute -right-32 bottom-0 h-64 w-64 rounded-full bg-brand-600/20 blur-3xl" />
-        <div className="relative mx-auto grid max-w-6xl grid-cols-2 gap-10 text-center lg:grid-cols-4">
-          <Reveal>
-            <p className="font-display text-4xl font-extrabold text-white sm:text-5xl">
-              <CountUp end={95} suffix="%" />
-            </p>
-            <p className="mt-2 text-sm leading-snug text-ink-300">
-              kampanyamız Trendyol iç reklamlarından{" "}
-              <span className="font-semibold text-white">daha iyi</span> sonuç aldı
-            </p>
-          </Reveal>
-          <Reveal delay={100}>
-            <p className="font-display text-4xl font-extrabold text-white sm:text-5xl">
-              <CountUp end={1.5} decimals={1} suffix="x" />
-            </p>
-            <p className="mt-2 text-sm leading-snug text-ink-300">
-              <span className="font-semibold text-white">minimum</span> performans farkı —
-              en kötü senaryoda bile
-            </p>
-          </Reveal>
-          <Reveal delay={200}>
-            <p className="font-display text-4xl font-extrabold text-white sm:text-5xl">
-              <CountUp end={7} suffix=" gün" />
-            </p>
-            <p className="mt-2 text-sm leading-snug text-ink-300">
-              içinde kurulum tamamlanır, reklamların{" "}
-              <span className="font-semibold text-white">yayında olur</span>
-            </p>
-          </Reveal>
-          <Reveal delay={300}>
-            <p className="font-display text-4xl font-extrabold text-white sm:text-5xl">
-              <CountUp end={1} suffix=". ekip" />
-            </p>
-            <p className="mt-2 text-sm leading-snug text-ink-300">
-              Türkiye&apos;de bu hizmeti{" "}
-              <span className="font-semibold text-white">uçtan uca verebilen</span> sayılı
-              ekipten biriyiz
-            </p>
-          </Reveal>
-        </div>
-      </section>
-
       {/* ====== NEDEN NEREDEYSE KİMSE YAPAMIYOR ====== */}
       <section className="px-4 py-20 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-6xl">
@@ -358,6 +313,51 @@ export default function HomePage() {
               </div>
             </Reveal>
           </div>
+        </div>
+      </section>
+
+      {/* ====== İSTATİSTİK BANDI ====== */}
+      <section className="relative overflow-hidden bg-ink-900 px-4 py-16 sm:px-6 lg:px-8">
+        <div className="absolute -left-32 top-0 h-64 w-64 rounded-full bg-brand-600/20 blur-3xl" />
+        <div className="absolute -right-32 bottom-0 h-64 w-64 rounded-full bg-brand-600/20 blur-3xl" />
+        <div className="relative mx-auto grid max-w-6xl grid-cols-2 gap-10 text-center lg:grid-cols-4">
+          <Reveal>
+            <p className="font-display text-4xl font-extrabold text-white sm:text-5xl">
+              <CountUp end={95} suffix="%" />
+            </p>
+            <p className="mt-2 text-sm leading-snug text-ink-300">
+              kampanyamız Trendyol iç reklamlarından{" "}
+              <span className="font-semibold text-white">daha iyi</span> sonuç aldı
+            </p>
+          </Reveal>
+          <Reveal delay={100}>
+            <p className="font-display text-4xl font-extrabold text-white sm:text-5xl">
+              <CountUp end={1.5} decimals={1} suffix="x" />
+            </p>
+            <p className="mt-2 text-sm leading-snug text-ink-300">
+              <span className="font-semibold text-white">minimum</span> performans farkı —
+              en kötü senaryoda bile
+            </p>
+          </Reveal>
+          <Reveal delay={200}>
+            <p className="font-display text-4xl font-extrabold text-white sm:text-5xl">
+              <CountUp end={7} suffix=" gün" />
+            </p>
+            <p className="mt-2 text-sm leading-snug text-ink-300">
+              içinde kurulum tamamlanır, reklamların{" "}
+              <span className="font-semibold text-white">yayında olur</span>
+            </p>
+          </Reveal>
+          <Reveal delay={300}>
+            <p className="font-display text-4xl font-extrabold text-white sm:text-5xl">
+              <CountUp end={1} suffix=". ekip" />
+            </p>
+            <p className="mt-2 text-sm leading-snug text-ink-300">
+              Türkiye&apos;de bu hizmeti{" "}
+              <span className="font-semibold text-white">uçtan uca verebilen</span> sayılı
+              ekipten biriyiz
+            </p>
+          </Reveal>
         </div>
       </section>
 

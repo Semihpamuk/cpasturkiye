@@ -3,9 +3,14 @@
 import { useEffect, useState } from "react";
 import { PRICING, type PricingValues } from "@/lib/site";
 
+export interface ReferenceItem {
+  name: string;
+  url: string;
+}
+
 export interface PublicSettings {
   pricing: PricingValues;
-  references: string[];
+  references: ReferenceItem[];
 }
 
 const FALLBACK: PublicSettings = {
@@ -24,16 +29,17 @@ export function useSettings(): PublicSettings {
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
         if (!cancelled && data?.pricing) {
-          setSettings({
-            pricing: { ...PRICING, ...data.pricing },
-            references: Array.isArray(data.references) ? data.references : [],
-          });
+          const rawRefs: unknown[] = Array.isArray(data.references) ? data.references : [];
+          const references: ReferenceItem[] = rawRefs.map((r) =>
+            typeof r === "string"
+              ? { name: r, url: "" }
+              : { name: String((r as ReferenceItem).name ?? ""), url: String((r as ReferenceItem).url ?? "") }
+          );
+          setSettings({ pricing: { ...PRICING, ...data.pricing }, references });
         }
       })
       .catch(() => {});
-    return () => {
-      cancelled = true;
-    };
+    return () => { cancelled = true; };
   }, []);
 
   return settings;

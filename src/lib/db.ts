@@ -69,9 +69,14 @@ export interface PricingSettings {
   yearlyDiscount: number; // 0–1 arası (0.2 = %20)
 }
 
+export interface ReferenceItem {
+  name: string;
+  url: string;
+}
+
 export interface SiteSettings {
   pricing: PricingSettings;
-  references: string[];
+  references: ReferenceItem[];
 }
 
 export const DEFAULT_SETTINGS: SiteSettings = {
@@ -84,14 +89,14 @@ export const DEFAULT_SETTINGS: SiteSettings = {
     yearlyDiscount: 0.2,
   },
   references: [
-    "Modavera",
-    "LunaHome Tekstil",
-    "Trendline Ayakkabı",
-    "Bella Cosmetics",
-    "KidsJoy Oyuncak",
-    "UrbanFit Spor",
-    "Nordica Living",
-    "Pearl Aksesuar",
+    { name: "Modavera", url: "" },
+    { name: "LunaHome Tekstil", url: "" },
+    { name: "Trendline Ayakkabı", url: "" },
+    { name: "Bella Cosmetics", url: "" },
+    { name: "KidsJoy Oyuncak", url: "" },
+    { name: "UrbanFit Spor", url: "" },
+    { name: "Nordica Living", url: "" },
+    { name: "Pearl Aksesuar", url: "" },
   ],
 };
 
@@ -119,11 +124,17 @@ export async function getSettings(): Promise<SiteSettings> {
   try {
     const raw = await fs.readFile(path.join(DATA_DIR, "settings.json"), "utf-8");
     const parsed = JSON.parse(raw) as Partial<SiteSettings>;
+    const rawRefs = parsed.references;
+    const references: ReferenceItem[] = Array.isArray(rawRefs)
+      ? rawRefs.map((r) =>
+          typeof r === "string"
+            ? { name: r, url: "" }
+            : { name: String((r as ReferenceItem).name ?? ""), url: String((r as ReferenceItem).url ?? "") }
+        )
+      : DEFAULT_SETTINGS.references;
     return {
       pricing: { ...DEFAULT_SETTINGS.pricing, ...(parsed.pricing || {}) },
-      references: Array.isArray(parsed.references)
-        ? parsed.references
-        : DEFAULT_SETTINGS.references,
+      references,
     };
   } catch {
     return DEFAULT_SETTINGS;

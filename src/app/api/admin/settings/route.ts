@@ -44,8 +44,11 @@ export async function PUT(req: Request) {
       },
       references: Array.isArray(body?.references)
         ? body.references
-            .map((r: unknown) => String(r).trim())
-            .filter((r: string) => r.length > 0 && r.length <= 60)
+            .map((r: unknown) => ({
+              name: String((r as { name?: unknown }).name ?? "").trim().slice(0, 80),
+              url: String((r as { url?: unknown }).url ?? "").trim().slice(0, 300),
+            }))
+            .filter((r: { name: string; url: string }) => r.name.length > 0)
             .slice(0, 50)
         : current.references,
     };

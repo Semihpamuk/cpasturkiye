@@ -63,7 +63,11 @@ interface SettingsForm {
   agencyContactThreshold: string;
   setupFee: string;
   yearlyDiscountPercent: string;
-  referencesText: string;
+}
+
+interface RefRow {
+  name: string;
+  url: string;
 }
 
 const ORDER_STATUS_LABELS: Record<Order["status"], { label: string; cls: string }> = {
@@ -115,8 +119,8 @@ export default function AdminClient() {
     agencyContactThreshold: "",
     setupFee: "",
     yearlyDiscountPercent: "",
-    referencesText: "",
   });
+  const [referenceItems, setReferenceItems] = useState<RefRow[]>([]);
   const [settingsStatus, setSettingsStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
 
   const loadAll = useCallback(async () => {
@@ -142,8 +146,15 @@ export default function AdminClient() {
         agencyContactThreshold: String(settings.pricing.agencyContactThreshold),
         setupFee: String(settings.pricing.setupFee),
         yearlyDiscountPercent: String(Math.round(settings.pricing.yearlyDiscount * 100)),
-        referencesText: (settings.references || []).join("\n"),
       });
+      const rawRefs = settings.references || [];
+      setReferenceItems(
+        rawRefs.map((r: { name?: string; url?: string } | string) =>
+          typeof r === "string"
+            ? { name: r, url: "" }
+            : { name: String(r.name ?? ""), url: String(r.url ?? "") }
+        )
+      );
     }
     setAuthed(true);
   }, []);
@@ -231,10 +242,9 @@ export default function AdminClient() {
             setupFee: Number(settingsForm.setupFee),
             yearlyDiscount: Number(settingsForm.yearlyDiscountPercent) / 100,
           },
-          references: settingsForm.referencesText
-            .split("\n")
-            .map((line) => line.trim())
-            .filter(Boolean),
+          references: referenceItems
+            .map((r) => ({ name: r.name.trim(), url: r.url.trim() }))
+            .filter((r) => r.name.length > 0),
         }),
       });
       setSettingsStatus(res.ok ? "saved" : "error");
@@ -747,18 +757,63 @@ export default function AdminClient() {
                 🏪 Referans Mağazalar
               </h2>
               <p className="mt-1 text-xs text-ink-500">
-                Anasayfadaki kayan referans barında gösterilir. Her satıra bir mağaza adı
-                yaz.
+                Anasayfadaki kayan referans barında gösterilir. Link eklersen mağaza adına
+                tıklayanlar Trendyol sayfasına yönlendirilir (isteğe bağlı).
               </p>
-              <textarea
-                rows={8}
-                value={settingsForm.referencesText}
-                onChange={(e) =>
-                  setSettingsForm({ ...settingsForm, referencesText: e.target.value })
-                }
-                placeholder={"Modavera\nLunaHome Tekstil\n..."}
-                className="mt-4 w-full rounded-lg border border-ink-300 px-3 py-2 font-mono text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
-              />
+
+              <div className="mt-4 space-y-2">
+                {/* başlık satırı */}
+                <div className="grid grid-cols-[1fr_1.4fr_auto] gap-2 px-1">
+                  <span className="text-xs font-semibold text-ink-500">Mağaza adı</span>
+                  <span className="text-xs font-semibold text-ink-500">Trendyol linki (isteğe bağlı)</span>
+                  <span />
+                </div>
+
+                {referenceItems.map((row, i) => (
+                  <div key={i} className="grid grid-cols-[1fr_1.4fr_auto] items-center gap-2">
+                    <input
+                      type="text"
+                      placeholder="Mağaza adı"
+                      value={row.name}
+                      onChange={(e) => {
+                        const updated = referenceItems.map((r, idx) =>
+                          idx === i ? { ...r, name: e.target.value } : r
+                        );
+                        setReferenceItems(updated);
+                      }}
+                      className="rounded-lg border border-ink-300 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
+                    />
+                    <input
+                      type="url"
+                      placeholder="https://www.trendyol.com/..."
+                      value={row.url}
+                      onChange={(e) => {
+                        const updated = referenceItems.map((r, idx) =>
+                          idx === i ? { ...r, url: e.target.value } : r
+                        );
+                        setReferenceItems(updated);
+                      }}
+                      className="rounded-lg border border-ink-300 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setReferenceItems(referenceItems.filter((_, idx) => idx !== i))}
+                      className="flex h-9 w-9 items-center justify-center rounded-lg border border-ink-200 text-ink-400 transition-colors hover:border-red-300 hover:bg-red-50 hover:text-red-500"
+                      title="Kaldır"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+
+                <button
+                  type="button"
+                  onClick={() => setReferenceItems([...referenceItems, { name: "", url: "" }])}
+                  className="mt-2 flex items-center gap-1.5 rounded-lg border border-dashed border-brand-300 px-4 py-2 text-xs font-semibold text-brand-600 transition-colors hover:border-brand-500 hover:bg-brand-50"
+                >
+                  + Referans Ekle
+                </button>
+              </div>
             </div>
 
             <div className="flex items-center gap-4">
