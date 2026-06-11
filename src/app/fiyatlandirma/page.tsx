@@ -3,7 +3,11 @@ import Link from "next/link";
 import PricingCards from "@/components/PricingCards";
 import FaqAccordion from "@/components/FaqAccordion";
 import CtaSection from "@/components/CtaSection";
-import { PRICING, formatTRY } from "@/lib/site";
+import { PRICING as DEFAULTS, formatTRY } from "@/lib/site";
+import { getSettings } from "@/lib/db";
+
+// Fiyatlar admin panelinden güncellenebildiği için sayfa istek anında render edilir
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Fiyatlandırma",
@@ -11,10 +15,10 @@ export const metadata: Metadata = {
     "Jale CPAS platformu fiyatları: tek mağaza, çoklu mağaza ve ajans planları. Yıllık ödemede %20 indirim. Şeffaf fiyatlandırma, gizli ücret yok.",
 };
 
-const PRICING_FAQ = [
+const buildFaq = (setupFee: number) => [
   {
     question: "Kurulum ücreti neden ayrı?",
-    answer: `Trendyol'dan reklam yetkisi alınması, Meta Business Manager kurulumu, CPAS katalog bağlantısı ve sistemin teste hazır hale getirilmesi uzman ekibimiz tarafından yapılan, ortalama ${PRICING.setupDays} iş günü süren teknik bir süreçtir. Bu tek seferlik hizmetin bedeli ${formatTRY(PRICING.setupFee)} + KDV'dir ve tüm planlar için geçerlidir.`,
+    answer: `Trendyol'dan reklam yetkisi alınması, Meta Business Manager kurulumu, CPAS katalog bağlantısı ve sistemin teste hazır hale getirilmesi uzman ekibimiz tarafından yapılan, ortalama ${DEFAULTS.setupDays} iş günü süren teknik bir süreçtir. Bu tek seferlik hizmetin bedeli ${formatTRY(setupFee)} + KDV'dir. Dilersen satın alma sırasında siparişe ekleyebilir, dilersen daha sonra ayrıca ödeyebilirsin.`,
   },
   {
     question: "Mağaza sayımı sonradan artırabilir miyim?",
@@ -43,7 +47,9 @@ const PRICING_FAQ = [
   },
 ];
 
-export default function PricingPage() {
+export default async function PricingPage() {
+  const { pricing } = await getSettings();
+  const PRICING_FAQ = buildFaq(pricing.setupFee);
   return (
     <>
       <section className="bg-gradient-to-b from-brand-50/60 to-white px-4 pb-12 pt-16 sm:px-6 lg:px-8">

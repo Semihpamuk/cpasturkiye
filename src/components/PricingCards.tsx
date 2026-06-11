@@ -2,11 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { PRICING, formatTRY } from "@/lib/site";
-
-function discounted(amount: number, isYearly: boolean): number {
-  return isYearly ? Math.round(amount * (1 - PRICING.yearlyDiscount)) : amount;
-}
+import { formatTRY, type PricingValues } from "@/lib/site";
+import { useSettings } from "@/lib/useSettings";
 
 interface PlanFeature {
   text: string;
@@ -23,7 +20,7 @@ interface Plan {
   features: PlanFeature[];
 }
 
-const PLANS: Plan[] = [
+const getPlans = (PRICING: PricingValues): Plan[] => [
   {
     name: "Starter",
     tagline: "Tek mağazasını büyütmek isteyen satıcılar için",
@@ -88,6 +85,12 @@ const PLANS: Plan[] = [
 
 export default function PricingCards() {
   const [isYearly, setIsYearly] = useState(false);
+  const { pricing } = useSettings();
+  const plans = getPlans(pricing);
+
+  function discounted(amount: number): number {
+    return isYearly ? Math.round(amount * (1 - pricing.yearlyDiscount)) : amount;
+  }
 
   return (
     <div>
@@ -131,7 +134,7 @@ export default function PricingCards() {
 
       {/* Plan kartları */}
       <div className="mt-12 grid gap-8 lg:grid-cols-3">
-        {PLANS.map((plan) => (
+        {plans.map((plan) => (
           <div
             key={plan.name}
             className={`relative flex flex-col rounded-2xl border p-8 ${
@@ -152,7 +155,7 @@ export default function PricingCards() {
             <div className="mt-6">
               <div className="flex items-baseline gap-1.5">
                 <span className="font-display text-4xl font-bold text-ink-900">
-                  {formatTRY(discounted(plan.monthlyPrice ?? 0, isYearly))}
+                  {formatTRY(discounted(plan.monthlyPrice ?? 0))}
                 </span>
                 <span className="text-sm text-ink-500">/ay</span>
               </div>
@@ -214,7 +217,7 @@ export default function PricingCards() {
         <p className="text-sm text-ink-700">
           <strong className="text-ink-900">Tüm planlara ek olarak tek seferlik kurulum hizmeti gereklidir:</strong>{" "}
           Trendyol yetkilendirme, Meta Business bağlantısı ve CPAS kurulumu —{" "}
-          {formatTRY(PRICING.setupFee)} + KDV, yaklaşık {PRICING.setupDays} iş günü.{" "}
+          {formatTRY(pricing.setupFee)} + KDV, yaklaşık 7 iş günü.{" "}
           <Link href="/kurulum" className="font-semibold text-brand-700 underline underline-offset-2 hover:text-brand-800">
             Kurulum sürecini incele →
           </Link>

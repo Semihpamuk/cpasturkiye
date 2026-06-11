@@ -1,11 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import CtaSection from "@/components/CtaSection";
-import { PRICING, formatTRY } from "@/lib/site";
+import { PRICING as DEFAULTS, formatTRY } from "@/lib/site";
+import { getSettings } from "@/lib/db";
+
+// Fiyatlar admin panelinden güncellenebildiği için sayfa istek anında render edilir
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Kurulum Hizmeti",
-  description: `Trendyol–Meta CPAS kurulumunu uzman ekibimiz yapar: Trendyol yetkilendirme, Meta Business kurulumu, katalog bağlantısı. ${PRICING.setupDays} iş günü, ${formatTRY(PRICING.setupFee)} + KDV.`,
+  description: `Trendyol–Meta CPAS kurulumunu uzman ekibimiz yapar: Trendyol yetkilendirme, Meta Business kurulumu, katalog bağlantısı. ${DEFAULTS.setupDays} iş günü içinde teslim.`,
 };
 
 const TIMELINE = [
@@ -52,7 +56,9 @@ const INCLUDED = [
   "Kurulum sonrası 14 gün öncelikli destek",
 ];
 
-export default function SetupPage() {
+export default async function SetupPage() {
+  const { pricing } = await getSettings();
+  const PRICING = { ...DEFAULTS, ...pricing };
   return (
     <>
       <section className="bg-gradient-to-b from-brand-50/60 to-white px-4 pb-12 pt-16 sm:px-6 lg:px-8">

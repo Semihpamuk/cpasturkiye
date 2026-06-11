@@ -3,10 +3,11 @@ import {
   addOrder,
   findValidCode,
   generateId,
+  getSettings,
   incrementCodeUsage,
   type Order,
 } from "@/lib/db";
-import { computeOrderQuote, PRICING } from "@/lib/site";
+import { computeOrderQuote } from "@/lib/site";
 
 const INSTALLMENTS = ["single", "3", "6", "9"] as const;
 
@@ -26,6 +27,7 @@ export async function POST(req: Request) {
       : "single";
     const discountCodeInput =
       typeof body.discountCode === "string" ? body.discountCode.trim() : "";
+    const includeSetup = Boolean(body.includeSetup);
 
     // Fatura bilgileri
     const invoiceType = body.invoiceType === "company" ? "company" : "individual";
@@ -69,24 +71,29 @@ export async function POST(req: Request) {
     ) {
       return NextResponse.json({ error: "Geçersiz alan uzunluğu" }, { status: 400 });
     }
-    if (isAgency && storeCount >= PRICING.agencyContactThreshold) {
+    // Güncel fiyatlar admin ayarlarından gelir; istemciden gelen tutara güvenme
+    const settings = await getSettings();
+
+    if (isAgency && storeCount >= settings.pricing.agencyContactThreshold) {
       return NextResponse.json(
-        { error: "7+ mağaza için lütfen iletişime geçin" },
+        { error: "Bu mağaza sayısı için lütfen iletişime geçin" },
         { status: 400 }
       );
     }
 
-    // İndirim kodunu sunucu tarafında yeniden doğrula — istemciden gelen tutara güvenme
+    // İndirim kodunu sunucu tarafında yeniden doğrula
     const validCode = discountCodeInput ? await findValidCode(discountCodeInput) : null;
 
-    // Online ödeme: kurulum bedeli toplama dahil edilmez (ayrıca tahsil edilir)
-    const quote = computeOrderQuote({
-      isAgency,
-      storeCount,
-      billing,
-      includeSetup: false,
-      discount: validCode ? { type: validCode.type, value: validCode.value } : null,
-    });
+    const quote = computeOrderQuote(
+      {
+        isAgency,
+        storeCount,
+        billing,
+        includeSetup,
+        discount: validCode ? { type: validCode.type, value: validCode.value } : null,
+      },
+      settings.pricing
+    );
 
     const order: Order = {
       id: generateId(),
@@ -101,6 +108,7 @@ export async function POST(req: Request) {
       installment,
       discountCode: validCode ? validCode.code : null,
       subscriptionNet: quote.subscriptionNet,
+      includeSetup,
       setupNet: quote.setupNet,
       discountAmount: quote.discountAmount,
       vatAmount: quote.vatAmount,

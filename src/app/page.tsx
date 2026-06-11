@@ -3,6 +3,7 @@ import DashboardMockup from "@/components/DashboardMockup";
 import PricingCards from "@/components/PricingCards";
 import CtaSection from "@/components/CtaSection";
 import CpasFlowAnimation from "@/components/CpasFlowAnimation";
+import ReferencesBar from "@/components/ReferencesBar";
 import Reveal from "@/components/Reveal";
 import CountUp from "@/components/CountUp";
 
@@ -245,6 +246,9 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* ====== REFERANS BARI ====== */}
+      <ReferencesBar />
 
       {/* ====== İSTATİSTİK BANDI ====== */}
       <section className="relative overflow-hidden bg-ink-900 px-4 py-16 sm:px-6 lg:px-8">

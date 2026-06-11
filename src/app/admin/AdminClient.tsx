@@ -29,6 +29,7 @@ interface Order {
   installment: string;
   discountCode: string | null;
   discountAmount: number;
+  includeSetup: boolean;
   setupNet: number;
   total: number;
   status: "new" | "contacted" | "paid" | "cancelled";
@@ -53,7 +54,17 @@ interface Lead {
   status: "new" | "contacted" | "closed";
 }
 
-type Tab = "orders" | "codes" | "leads";
+type Tab = "orders" | "codes" | "leads" | "settings";
+
+interface SettingsForm {
+  starter: string;
+  extraStore: string;
+  agencyPerStore: string;
+  agencyContactThreshold: string;
+  setupFee: string;
+  yearlyDiscountPercent: string;
+  referencesText: string;
+}
 
 const ORDER_STATUS_LABELS: Record<Order["status"], { label: string; cls: string }> = {
   new: { label: "Yeni", cls: "bg-blue-100 text-blue-700" },
@@ -97,11 +108,23 @@ export default function AdminClient() {
   });
   const [codeError, setCodeError] = useState("");
 
+  const [settingsForm, setSettingsForm] = useState<SettingsForm>({
+    starter: "",
+    extraStore: "",
+    agencyPerStore: "",
+    agencyContactThreshold: "",
+    setupFee: "",
+    yearlyDiscountPercent: "",
+    referencesText: "",
+  });
+  const [settingsStatus, setSettingsStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
+
   const loadAll = useCallback(async () => {
-    const [codesRes, ordersRes, leadsRes] = await Promise.all([
+    const [codesRes, ordersRes, leadsRes, settingsRes] = await Promise.all([
       fetch("/api/admin/codes"),
       fetch("/api/admin/orders"),
       fetch("/api/admin/leads"),
+      fetch("/api/admin/settings"),
     ]);
     if (codesRes.status === 401) {
       setAuthed(false);
@@ -110,6 +133,18 @@ export default function AdminClient() {
     setCodes(await codesRes.json());
     setOrders(await ordersRes.json());
     setLeads(await leadsRes.json());
+    const settings = await settingsRes.json();
+    if (settings?.pricing) {
+      setSettingsForm({
+        starter: String(settings.pricing.starter),
+        extraStore: String(settings.pricing.extraStore),
+        agencyPerStore: String(settings.pricing.agencyPerStore),
+        agencyContactThreshold: String(settings.pricing.agencyContactThreshold),
+        setupFee: String(settings.pricing.setupFee),
+        yearlyDiscountPercent: String(Math.round(settings.pricing.yearlyDiscount * 100)),
+        referencesText: (settings.references || []).join("\n"),
+      });
+    }
     setAuthed(true);
   }, []);
 
@@ -178,6 +213,35 @@ export default function AdminClient() {
       body: JSON.stringify({ id, status }),
     });
     await loadAll();
+  }
+
+  async function saveSettings(event: React.FormEvent) {
+    event.preventDefault();
+    setSettingsStatus("saving");
+    try {
+      const res = await fetch("/api/admin/settings", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          pricing: {
+            starter: Number(settingsForm.starter),
+            extraStore: Number(settingsForm.extraStore),
+            agencyPerStore: Number(settingsForm.agencyPerStore),
+            agencyContactThreshold: Number(settingsForm.agencyContactThreshold),
+            setupFee: Number(settingsForm.setupFee),
+            yearlyDiscount: Number(settingsForm.yearlyDiscountPercent) / 100,
+          },
+          references: settingsForm.referencesText
+            .split("\n")
+            .map((line) => line.trim())
+            .filter(Boolean),
+        }),
+      });
+      setSettingsStatus(res.ok ? "saved" : "error");
+      if (res.ok) setTimeout(() => setSettingsStatus("idle"), 2500);
+    } catch {
+      setSettingsStatus("error");
+    }
   }
 
   async function setLeadStatus(id: string, status: Lead["status"]) {
@@ -299,6 +363,7 @@ export default function AdminClient() {
               ["orders", `Siparişler (${orders.length})`],
               ["codes", `İndirim Kodları (${codes.length})`],
               ["leads", `Form Başvuruları (${leads.length})`],
+              ["settings", "⚙ Ayarlar"],
             ] as [Tab, string][]
           ).map(([id, label]) => (
             <button
@@ -362,10 +427,16 @@ export default function AdminClient() {
                         : `${order.installment} taksit`}{" "}
                       · {order.billing === "yearly" ? "Yıllık" : "Aylık"}
                     </p>
-                    {order.setupNet > 0 && (
-                      <p className="text-[11px] text-amber-600">
-                        + Kurulum {formatTRY(order.setupNet)} (ayrı)
+                    {order.includeSetup ? (
+                      <p className="text-[11px] font-semibold text-green-600">
+                        ✓ Kurulum dahil
                       </p>
+                    ) : (
+                      order.setupNet > 0 && (
+                        <p className="text-[11px] text-amber-600">
+                          + Kurulum {formatTRY(order.setupNet)} (ayrı)
+                        </p>
+                      )
                     )}
                   </div>
                 </div>
@@ -628,6 +699,88 @@ export default function AdminClient() {
               </div>
             ))}
           </div>
+        )}
+
+        {/* ===== AYARLAR ===== */}
+        {tab === "settings" && (
+          <form onSubmit={saveSettings} className="mt-6 space-y-6">
+            <div className="rounded-2xl border border-ink-200 bg-white p-6 shadow-sm">
+              <h2 className="font-display text-base font-bold text-ink-900">
+                💰 Fiyatlandırma
+              </h2>
+              <p className="mt-1 text-xs text-ink-500">
+                Buradaki değerler anasayfa, fiyatlandırma ve satın alma sayfalarına anında
+                yansır. Tutarlar KDV hariç TL&apos;dir.
+              </p>
+              <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {(
+                  [
+                    ["starter", "Starter — ilk mağaza (₺/ay)"],
+                    ["extraStore", "Ek mağaza (₺/ay)"],
+                    ["agencyPerStore", "Ajans — mağaza başına (₺/ay)"],
+                    ["agencyContactThreshold", "Özel teklif eşiği (mağaza adedi)"],
+                    ["setupFee", "Kurulum bedeli (₺, tek seferlik)"],
+                    ["yearlyDiscountPercent", "Yıllık ödeme indirimi (%)"],
+                  ] as [keyof SettingsForm, string][]
+                ).map(([key, label]) => (
+                  <label key={key} className="block">
+                    <span className="mb-1.5 block text-xs font-semibold text-ink-700">
+                      {label}
+                    </span>
+                    <input
+                      required
+                      type="number"
+                      min={0}
+                      value={settingsForm[key]}
+                      onChange={(e) =>
+                        setSettingsForm({ ...settingsForm, [key]: e.target.value })
+                      }
+                      className="w-full rounded-lg border border-ink-300 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
+                    />
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-ink-200 bg-white p-6 shadow-sm">
+              <h2 className="font-display text-base font-bold text-ink-900">
+                🏪 Referans Mağazalar
+              </h2>
+              <p className="mt-1 text-xs text-ink-500">
+                Anasayfadaki kayan referans barında gösterilir. Her satıra bir mağaza adı
+                yaz.
+              </p>
+              <textarea
+                rows={8}
+                value={settingsForm.referencesText}
+                onChange={(e) =>
+                  setSettingsForm({ ...settingsForm, referencesText: e.target.value })
+                }
+                placeholder={"Modavera\nLunaHome Tekstil\n..."}
+                className="mt-4 w-full rounded-lg border border-ink-300 px-3 py-2 font-mono text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
+              />
+            </div>
+
+            <div className="flex items-center gap-4">
+              <button
+                type="submit"
+                disabled={settingsStatus === "saving"}
+                className="rounded-xl bg-brand-600 px-8 py-3 text-sm font-bold text-white shadow-md transition-colors hover:bg-brand-700 disabled:opacity-60"
+              >
+                {settingsStatus === "saving" ? "Kaydediliyor..." : "Ayarları Kaydet"}
+              </button>
+              {settingsStatus === "saved" && (
+                <span className="text-sm font-semibold text-green-600">
+                  ✓ Kaydedildi — site anında güncellendi
+                </span>
+              )}
+              {settingsStatus === "error" && (
+                <span className="text-sm font-semibold text-red-600">
+                  Kaydedilemedi, tekrar dene
+                </span>
+              )}
+            </div>
+          </form>
         )}
       </section>
     </div>

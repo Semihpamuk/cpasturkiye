@@ -2,11 +2,8 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import {
-  computeOrderQuote,
-  formatTRY,
-  PRICING,
-} from "@/lib/site";
+import { computeOrderQuote, formatTRY } from "@/lib/site";
+import { useSettings } from "@/lib/useSettings";
 
 type InvoiceType = "individual" | "company";
 
@@ -28,11 +25,13 @@ const INSTALLMENT_OPTIONS: { id: Installment; label: string; note: string }[] = 
 ];
 
 export default function CheckoutClient() {
+  const { pricing } = useSettings();
   const [step, setStep] = useState<Step>("configure");
   const [isAgency, setIsAgency] = useState(false);
   const [storeCount, setStoreCount] = useState(1);
   const [billing, setBilling] = useState<Billing>("monthly");
   const [installment, setInstallment] = useState<Installment>("3");
+  const [includeSetup, setIncludeSetup] = useState(true);
 
   const [codeInput, setCodeInput] = useState("");
   const [codeStatus, setCodeStatus] = useState<"idle" | "checking" | "invalid">("idle");
@@ -54,14 +53,17 @@ export default function CheckoutClient() {
 
   const quote = useMemo(
     () =>
-      computeOrderQuote({
-        isAgency,
-        storeCount,
-        billing,
-        includeSetup: false,
-        discount: discount ? { type: discount.type, value: discount.value } : null,
-      }),
-    [isAgency, storeCount, billing, discount]
+      computeOrderQuote(
+        {
+          isAgency,
+          storeCount,
+          billing,
+          includeSetup,
+          discount: discount ? { type: discount.type, value: discount.value } : null,
+        },
+        pricing
+      ),
+    [isAgency, storeCount, billing, discount, includeSetup, pricing]
   );
 
   const installmentCount = installment === "single" ? 1 : Number(installment);
@@ -103,6 +105,7 @@ export default function CheckoutClient() {
           storeCount,
           billing,
           installment,
+          includeSetup,
           discountCode: discount?.code || "",
           invoiceType,
           ...invoice,
@@ -212,10 +215,10 @@ export default function CheckoutClient() {
                   <p className="text-sm font-semibold text-ink-900">Mağaza sayısı</p>
                   <p className="text-xs text-ink-500">
                     {isAgency
-                      ? `Mağaza başına ${formatTRY(PRICING.agencyPerStore)}/ay`
+                      ? `Mağaza başına ${formatTRY(pricing.agencyPerStore)}/ay`
                       : storeCount <= 1
-                        ? `İlk mağaza ${formatTRY(PRICING.starter)}/ay`
-                        : `${formatTRY(PRICING.starter)} + ek mağaza başına ${formatTRY(PRICING.extraStore)}/ay`}
+                        ? `İlk mağaza ${formatTRY(pricing.starter)}/ay`
+                        : `${formatTRY(pricing.starter)} + ek mağaza başına ${formatTRY(pricing.extraStore)}/ay`}
                   </p>
                 </div>
                 <div className="flex items-center gap-3">
@@ -243,7 +246,7 @@ export default function CheckoutClient() {
 
               {quote.requiresContact && (
                 <p className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
-                  {PRICING.agencyContactThreshold}+ mağaza için özel hacim fiyatı
+                  {pricing.agencyContactThreshold}+ mağaza için özel hacim fiyatı
                   sunuyoruz —{" "}
                   <Link href="/iletisim" className="font-bold underline">
                     bizimle iletişime geç
@@ -287,7 +290,7 @@ export default function CheckoutClient() {
                   </span>
                   <p className="font-display text-sm font-bold text-ink-900">Yıllık</p>
                   <p className="mt-1 text-xs text-ink-500">
-                    {formatTRY(Math.round(quote.monthlySubscription * (1 - PRICING.yearlyDiscount)))}
+                    {formatTRY(Math.round(quote.monthlySubscription * (1 - pricing.yearlyDiscount)))}
                     /ay&apos;a denk gelir — 12 ay peşin
                   </p>
                 </button>
@@ -325,10 +328,62 @@ export default function CheckoutClient() {
               </div>
             </div>
 
+            {/* Kurulum hizmeti */}
+            <div className="rounded-2xl border border-ink-200 bg-white p-6 shadow-sm">
+              <h2 className="font-display text-base font-bold text-ink-900">
+                4. Kurulum hizmeti
+              </h2>
+              <p className="mt-1 text-xs text-ink-500">
+                Trendyol yetkilendirme, Meta Business kurulumu ve CPAS bağlantısı —
+                yaklaşık 7 iş günü.{" "}
+                <Link href="/kurulum" className="font-semibold text-brand-700 underline">
+                  Detaylar
+                </Link>
+              </p>
+              <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                <button
+                  type="button"
+                  onClick={() => setIncludeSetup(true)}
+                  className={`relative rounded-xl border-2 p-4 text-left transition-colors ${
+                    includeSetup
+                      ? "border-brand-500 bg-brand-50"
+                      : "border-ink-200 hover:border-ink-300"
+                  }`}
+                >
+                  <span className="absolute -top-2.5 right-3 rounded-full bg-brand-600 px-2.5 py-0.5 text-[10px] font-bold text-white">
+                    ÖNERİLEN
+                  </span>
+                  <p className="font-display text-sm font-bold text-ink-900">
+                    Şimdi siparişe ekle
+                  </p>
+                  <p className="mt-1 text-xs text-ink-500">
+                    {formatTRY(pricing.setupFee)} + KDV — tek ödemede her şey tamam,
+                    kurulum sırası hemen ayrılır
+                  </p>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIncludeSetup(false)}
+                  className={`rounded-xl border-2 p-4 text-left transition-colors ${
+                    !includeSetup
+                      ? "border-brand-500 bg-brand-50"
+                      : "border-ink-200 hover:border-ink-300"
+                  }`}
+                >
+                  <p className="font-display text-sm font-bold text-ink-900">
+                    Daha sonra ayrıca öde
+                  </p>
+                  <p className="mt-1 text-xs text-ink-500">
+                    Ekibimiz arayıp kurulum planını ve ödemesini ayrıca netleştirir
+                  </p>
+                </button>
+              </div>
+            </div>
+
             {/* İndirim kodu */}
             <div className="rounded-2xl border border-ink-200 bg-white p-6 shadow-sm">
               <h2 className="font-display text-base font-bold text-ink-900">
-                4. İndirim kodu{" "}
+                5. İndirim kodu{" "}
                 <span className="font-sans text-xs font-normal text-ink-400">
                   (varsa)
                 </span>
@@ -389,7 +444,7 @@ export default function CheckoutClient() {
               >
                 <div>
                   <h2 className="font-display text-base font-bold text-ink-900">
-                    5. İletişim bilgilerin
+                    6. İletişim bilgilerin
                   </h2>
                   <p className="mt-1 text-xs text-ink-500">
                     Ödemeni güvenle tamamlamak için ekibimiz seni arayacak.
@@ -431,7 +486,7 @@ export default function CheckoutClient() {
 
                 <div className="border-t border-ink-100 pt-6">
                   <h2 className="font-display text-base font-bold text-ink-900">
-                    6. Fatura bilgileri
+                    7. Fatura bilgileri
                   </h2>
                   <p className="mt-1 text-xs text-ink-500">
                     Faturanı doğru kesebilmemiz için gereklidir.
@@ -561,6 +616,14 @@ export default function CheckoutClient() {
                     {formatTRY(quote.subscriptionNet)}
                   </dd>
                 </div>
+                {includeSetup && (
+                  <div className="flex justify-between">
+                    <dt className="text-ink-600">Kurulum (tek seferlik)</dt>
+                    <dd className="font-semibold text-ink-900">
+                      {formatTRY(quote.setupNet)}
+                    </dd>
+                  </div>
+                )}
                 {quote.discountAmount > 0 && (
                   <div className="flex justify-between text-green-700">
                     <dt>İndirim ({discount?.code})</dt>
@@ -606,28 +669,39 @@ export default function CheckoutClient() {
                 )}
               </dl>
 
-              {/* Kurulum uyarısı — toplama dahil DEĞİL */}
-              <div className="mt-5 rounded-xl border border-amber-300 bg-amber-50 p-4">
-                <div className="flex items-start gap-2.5">
-                  <svg className="mt-0.5 h-5 w-5 shrink-0 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
-                  </svg>
-                  <div>
-                    <p className="text-xs font-bold text-amber-900">
-                      Kurulum bedeli bu tutara dahil değildir
-                    </p>
-                    <p className="mt-1 text-xs leading-relaxed text-amber-800">
-                      Tek seferlik kurulum hizmeti{" "}
-                      <strong>{formatTRY(quote.setupNet)} + KDV</strong> olup ayrıca tahsil
-                      edilir. Ekibimiz sipariş sonrası kurulum planını ve ödemesini seninle
-                      netleştirir.{" "}
-                      <Link href="/kurulum" className="font-semibold underline">
-                        Kuruluma neler dahil?
-                      </Link>
-                    </p>
+              {includeSetup ? (
+                <div className="mt-5 rounded-xl border border-green-200 bg-green-50 p-4">
+                  <p className="text-xs font-bold text-green-800">
+                    ✓ Kurulum hizmeti siparişe dahil
+                  </p>
+                  <p className="mt-1 text-xs leading-relaxed text-green-700">
+                    Ödeme sonrası kurulum sıran hemen ayrılır; ~7 iş gününde sistemin
+                    hazır teslim edilir.
+                  </p>
+                </div>
+              ) : (
+                <div className="mt-5 rounded-xl border border-amber-300 bg-amber-50 p-4">
+                  <div className="flex items-start gap-2.5">
+                    <svg className="mt-0.5 h-5 w-5 shrink-0 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                    </svg>
+                    <div>
+                      <p className="text-xs font-bold text-amber-900">
+                        Kurulum bedeli bu tutara dahil değildir
+                      </p>
+                      <p className="mt-1 text-xs leading-relaxed text-amber-800">
+                        Tek seferlik kurulum hizmeti{" "}
+                        <strong>{formatTRY(quote.setupNet)} + KDV</strong> olup ayrıca
+                        tahsil edilir. Ekibimiz sipariş sonrası kurulum planını ve
+                        ödemesini seninle netleştirir.{" "}
+                        <Link href="/kurulum" className="font-semibold underline">
+                          Kuruluma neler dahil?
+                        </Link>
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
 
               {step === "configure" && (
                 <button

@@ -50,28 +50,45 @@ export interface OrderQuote {
   requiresContact: boolean;
 }
 
-export function computeMonthlySubscription(isAgency: boolean, storeCount: number): number {
-  if (isAgency) return PRICING.agencyPerStore * storeCount;
-  if (storeCount <= 1) return PRICING.starter;
-  return PRICING.starter + PRICING.extraStore * (storeCount - 1);
+export interface PricingValues {
+  starter: number;
+  extraStore: number;
+  agencyPerStore: number;
+  agencyContactThreshold: number;
+  setupFee: number;
+  yearlyDiscount: number;
 }
 
-export function computeOrderQuote(input: OrderInput): OrderQuote {
+export function computeMonthlySubscription(
+  isAgency: boolean,
+  storeCount: number,
+  pricing: PricingValues = PRICING
+): number {
+  if (isAgency) return pricing.agencyPerStore * storeCount;
+  if (storeCount <= 1) return pricing.starter;
+  return pricing.starter + pricing.extraStore * (storeCount - 1);
+}
+
+export function computeOrderQuote(
+  input: OrderInput,
+  pricing: PricingValues = PRICING
+): OrderQuote {
   const requiresContact =
-    input.isAgency && input.storeCount >= PRICING.agencyContactThreshold;
+    input.isAgency && input.storeCount >= pricing.agencyContactThreshold;
 
   const monthlySubscription = computeMonthlySubscription(
     input.isAgency,
-    input.storeCount
+    input.storeCount,
+    pricing
   );
 
   const subscriptionNet =
     input.billing === "yearly"
-      ? Math.round(monthlySubscription * 12 * (1 - PRICING.yearlyDiscount))
+      ? Math.round(monthlySubscription * 12 * (1 - pricing.yearlyDiscount))
       : monthlySubscription;
 
-  // Kurulum bedeli bilgi amaçlı döndürülür; online ödeme toplamına dahil edilmez.
-  const setupNet = PRICING.setupFee;
+  // Kurulum: müşteri isterse siparişe dahil edilir, istemezse ayrıca tahsil edilir.
+  const setupNet = pricing.setupFee;
   const includeSetup = input.includeSetup ?? false;
   const subtotal = subscriptionNet + (includeSetup ? setupNet : 0);
 

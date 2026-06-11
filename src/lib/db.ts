@@ -32,10 +32,11 @@ export interface Order {
   installment: "single" | "3" | "6" | "9";
   discountCode: string | null;
   subscriptionNet: number;
-  setupNet: number; // ayrıca tahsil edilecek kurulum bedeli (toplama dahil değil)
+  includeSetup: boolean; // kurulum siparişe dahil mi
+  setupNet: number; // kurulum bedeli (dahilse toplama eklenir, değilse ayrıca tahsil)
   discountAmount: number;
   vatAmount: number;
-  total: number; // yalnızca abonelik + KDV
+  total: number;
   status: "new" | "contacted" | "paid" | "cancelled";
   // Fatura bilgileri
   invoiceType: "individual" | "company";
@@ -59,6 +60,41 @@ export interface Lead {
   status: "new" | "contacted" | "closed";
 }
 
+export interface PricingSettings {
+  starter: number;
+  extraStore: number;
+  agencyPerStore: number;
+  agencyContactThreshold: number;
+  setupFee: number;
+  yearlyDiscount: number; // 0–1 arası (0.2 = %20)
+}
+
+export interface SiteSettings {
+  pricing: PricingSettings;
+  references: string[];
+}
+
+export const DEFAULT_SETTINGS: SiteSettings = {
+  pricing: {
+    starter: 5000,
+    extraStore: 3000,
+    agencyPerStore: 4000,
+    agencyContactThreshold: 7,
+    setupFee: 25000,
+    yearlyDiscount: 0.2,
+  },
+  references: [
+    "Modavera",
+    "LunaHome Tekstil",
+    "Trendline Ayakkabı",
+    "Bella Cosmetics",
+    "KidsJoy Oyuncak",
+    "UrbanFit Spor",
+    "Nordica Living",
+    "Pearl Aksesuar",
+  ],
+};
+
 async function readCollection<T>(name: string): Promise<T[]> {
   try {
     const raw = await fs.readFile(path.join(DATA_DIR, `${name}.json`), "utf-8");
@@ -73,6 +109,32 @@ async function writeCollection<T>(name: string, items: T[]): Promise<void> {
   await fs.writeFile(
     path.join(DATA_DIR, `${name}.json`),
     JSON.stringify(items, null, 2),
+    "utf-8"
+  );
+}
+
+// --- Site ayarları (fiyatlar + referanslar) ---
+
+export async function getSettings(): Promise<SiteSettings> {
+  try {
+    const raw = await fs.readFile(path.join(DATA_DIR, "settings.json"), "utf-8");
+    const parsed = JSON.parse(raw) as Partial<SiteSettings>;
+    return {
+      pricing: { ...DEFAULT_SETTINGS.pricing, ...(parsed.pricing || {}) },
+      references: Array.isArray(parsed.references)
+        ? parsed.references
+        : DEFAULT_SETTINGS.references,
+    };
+  } catch {
+    return DEFAULT_SETTINGS;
+  }
+}
+
+export async function saveSettings(settings: SiteSettings): Promise<void> {
+  await fs.mkdir(DATA_DIR, { recursive: true });
+  await fs.writeFile(
+    path.join(DATA_DIR, "settings.json"),
+    JSON.stringify(settings, null, 2),
     "utf-8"
   );
 }
