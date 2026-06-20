@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import CtaSection from "@/components/CtaSection";
 import { SITE } from "@/lib/site";
 import Link from "next/link";
@@ -52,9 +53,14 @@ export default function AboutPage() {
     <>
       <section className="bg-gradient-to-b from-brand-50/60 to-white px-4 pb-12 pt-16 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
-          <span className="inline-block rounded-full border border-brand-200 bg-white px-4 py-1.5 text-xs font-semibold text-brand-700 shadow-sm">
-            Türkiye&apos;nin CPAS öncüsü
-          </span>
+          <Image
+            src="/og-image.png"
+            alt="CPAS Türkiye"
+            width={320}
+            height={168}
+            className="mx-auto h-20 w-auto rounded-xl"
+            priority
+          />
           <h1 className="mt-6 font-display text-4xl font-extrabold tracking-tight text-ink-900 sm:text-5xl">
             Reklam ajansından SaaS platformuna
           </h1>

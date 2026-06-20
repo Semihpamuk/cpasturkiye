@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 const NAV_LINKS = [
   { href: "/ozellikler", label: "Özellikler" },
@@ -18,16 +19,15 @@ export default function Navbar() {
   return (
     <header className="sticky top-0 z-50 border-b border-ink-100 bg-white/90 backdrop-blur-md">
       <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        <Link href="/" className="flex items-center gap-2">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-brand-500 to-brand-700 font-display text-lg font-bold text-white">
-            J
-          </span>
-          <span className="font-display text-xl font-bold tracking-tight text-ink-900">
-            Jale
-          </span>
-          <span className="mt-1 hidden rounded-full bg-brand-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-brand-700 sm:inline-block">
-            CPAS
-          </span>
+        <Link href="/" className="flex items-center">
+          <Image
+            src="/og-image.png"
+            alt="CPAS Türkiye"
+            width={120}
+            height={63}
+            className="h-9 w-auto"
+            priority
+          />
         </Link>
 
         <div className="hidden items-center gap-7 lg:flex">

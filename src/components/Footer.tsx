@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { SITE } from "@/lib/site";
 
 const PRODUCT_LINKS = [
@@ -29,11 +30,14 @@ export default function Footer() {
       <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
         <div className="grid grid-cols-2 gap-10 md:grid-cols-4 lg:grid-cols-5">
           <div className="col-span-2 lg:col-span-2">
-            <Link href="/" className="flex items-center gap-2">
-              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-brand-500 to-brand-700 font-display text-lg font-bold text-white">
-                J
-              </span>
-              <span className="font-display text-xl font-bold text-ink-900">Jale</span>
+            <Link href="/">
+              <Image
+                src="/og-image.png"
+                alt="CPAS Türkiye"
+                width={160}
+                height={84}
+                className="h-10 w-auto"
+              />
             </Link>
             <p className="mt-4 max-w-sm text-sm leading-relaxed text-ink-500">
               Türkiye&apos;nin ilk Trendyol–Meta CPAS reklam yönetim platformu.{" "}
