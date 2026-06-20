@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import CtaSection from "@/components/CtaSection";
 import { BLOG_POSTS, formatDate, getPostBySlug } from "@/lib/blog";
+import { SITE } from "@/lib/site";
 
 interface BlogPostPageProps {
   params: Promise<{ slug: string }>;
@@ -19,6 +20,14 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
   return {
     title: post.title,
     description: post.excerpt,
+    alternates: { canonical: `/blog/${slug}` },
+    openGraph: {
+      type: "article",
+      title: post.title,
+      description: post.excerpt,
+      publishedTime: post.date,
+      authors: ["Jale Yazılım ve Reklam Hizmetleri"],
+    },
   };
 }
 
@@ -30,8 +39,33 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     notFound();
   }
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: post.title,
+    description: post.excerpt,
+    datePublished: post.date,
+    dateModified: post.date,
+    author: {
+      "@type": "Organization",
+      name: SITE.company,
+      url: SITE.url,
+    },
+    publisher: {
+      "@type": "Organization",
+      name: SITE.name,
+      url: SITE.url,
+    },
+    url: `${SITE.url}/blog/${post.slug}`,
+    mainEntityOfPage: `${SITE.url}/blog/${post.slug}`,
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <article className="px-4 py-16 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-2xl">
           <Link

@@ -3,9 +3,10 @@ import Link from "next/link";
 import { BLOG_POSTS, formatDate } from "@/lib/blog";
 
 export const metadata: Metadata = {
-  title: "Blog",
+  title: "Blog — CPAS ve Trendyol Meta Reklam Rehberleri",
   description:
-    "CPAS, Trendyol–Meta reklamcılığı ve e-ticaret büyümesi üzerine rehberler, stratejiler ve optimizasyon taktikleri.",
+    "CPAS nedir, Trendyol reklam yetkisi nasıl alınır, ROAS nasıl yükseltilir? Trendyol–Meta reklamcılığı üzerine sahadan gelen rehberler ve optimizasyon taktikleri.",
+  alternates: { canonical: "/blog" },
 };
 
 export default function BlogPage() {

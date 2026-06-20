@@ -5,9 +5,10 @@ import CtaSection from "@/components/CtaSection";
 import { PRICING, formatTRY } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "Sık Sorulan Sorular",
+  title: "Sık Sorulan Sorular — CPAS, Kurulum ve Abonelik",
   description:
-    "CPAS nedir? Trendyol mağazam Meta'ya nasıl bağlanır? Jale hakkında sık sorulan soruların yanıtları.",
+    "CPAS nedir? Trendyol mağazam Meta'ya nasıl bağlanır? Kurulumu abonelik olmadan satın alabilir miyim? Jale hakkında sık sorulan tüm sorular.",
+  alternates: { canonical: "/sss" },
 };
 
 const FAQ_SECTIONS: { title: string; items: FaqItem[] }[] = [
@@ -34,6 +35,16 @@ const FAQ_SECTIONS: { title: string; items: FaqItem[] }[] = [
         answer:
           "Trendyol'da aktif satış yapan ve aylık en az 100 sipariş hacmine ulaşmış satıcılar için idealdir. Bu hacmin altındaki mağazalarda reklam verisi optimize olacak kadar sinyal üretemeyebilir. Ayrıca birden fazla satıcıyı yöneten dijital ajanslar için özel ajans planımız mevcuttur.",
       },
+      {
+        question: "CPAS ile gerçekçi ROAS beklentisi ne olmalı?",
+        answer:
+          "Doğru kurulu bir CPAS kampanyasında, ilk 4–6 haftalık öğrenme sürecinden sonra ROAS tipik olarak 4–8 bandında seyreder. Yeniden pazarlama kampanyaları (ürünü görüntüleyen ama almayan kullanıcılar) ise genellikle 8–15 bandına çıkar. Bu rakamlar kategori, kâr marjı ve bütçeye göre değişir; ancak yönettiğimiz kampanyaların %95'i Trendyol iç reklamlarını geride bıraktı.",
+      },
+      {
+        question: "Trendyol CPAS reklam yetkisi almak kaç gün sürer?",
+        answer:
+          "Trendyol'un inceleme süresi genellikle 2–5 iş günüdür. Başvuruda mağazanın en az 3 ay aktif satış geçmişine sahip olması ve ürün listeleme kurallarına uygun olması aranır. Bazı kategorilerde ek belgeler istenebilir. Kurulum hizmetimiz kapsamında bu süreci sizin adınıza başlatıp takip ediyoruz.",
+      },
     ],
   },
   {
@@ -57,6 +68,10 @@ const FAQ_SECTIONS: { title: string; items: FaqItem[] }[] = [
         question: "Trendyol'dan nasıl yetki alınıyor?",
         answer:
           "Trendyol Satıcı Paneli üzerinden CPAS reklam yetkilendirme talebini birlikte başlatıyoruz. Onay süreci Trendyol tarafında genellikle birkaç iş günü sürer; biz süreci sizin adınıza takip ediyoruz.",
+      },
+      {
+        question: "Kurulum hizmetini abonelik almadan tek başına satın alabilir miyim?",
+        answer: `Evet. Kurulum hizmeti abonelikten bağımsız olarak tek başına satın alınabilir. ${formatTRY(PRICING.setupFee)} + KDV olan bu tek seferlik ücretle, Trendyol yetkilendirmesinden Meta Business Manager kurulumuna, CPAS katalog bağlantısından Jale entegrasyonuna kadar tüm teknik kurulum ${PRICING.setupDays} iş günü içinde tamamlanır. Kurulum sayfasından veya /satin-al?type=setup bağlantısıyla güvenli iyzico ödemesi yapabilirsiniz.`,
       },
     ],
   },
@@ -107,9 +122,28 @@ const FAQ_SECTIONS: { title: string; items: FaqItem[] }[] = [
   },
 ];
 
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: FAQ_SECTIONS.flatMap((section) =>
+    section.items.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: item.answer,
+      },
+    }))
+  ),
+};
+
 export default function FaqPage() {
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
       <section className="bg-gradient-to-b from-brand-50/60 to-white px-4 pb-12 pt-16 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
           <h1 className="font-display text-4xl font-extrabold tracking-tight text-ink-900 sm:text-5xl">

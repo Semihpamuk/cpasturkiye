@@ -5,6 +5,7 @@ import { SITE, PRICING, formatTRY } from "@/lib/site";
 export const metadata: Metadata = {
   title: "Hizmet Sözleşmesi",
   description: "Jale (cpasturkiye.com) platform hizmet sözleşmesi (SaaS kullanım koşulları).",
+  alternates: { canonical: "/hizmet-sozlesmesi" },
 };
 
 export default function ServiceAgreementPage() {

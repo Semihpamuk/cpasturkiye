@@ -6,6 +6,7 @@ export const metadata: Metadata = {
   title: "Özellikler",
   description:
     "Jale'nin Trendyol–Meta CPAS reklam yönetimi özellikleri: gerçek ROAS takibi, AI bütçe optimizasyonu, otomatik katalog senkronizasyonu, ajans paneli ve daha fazlası.",
+  alternates: { canonical: "/ozellikler" },
 };
 
 interface FeatureDetail {

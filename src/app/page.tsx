@@ -6,6 +6,7 @@ import CpasFlowAnimation from "@/components/CpasFlowAnimation";
 import ReferencesBar from "@/components/ReferencesBar";
 import Reveal from "@/components/Reveal";
 import CountUp from "@/components/CountUp";
+import { SITE, PRICING, formatTRY } from "@/lib/site";
 
 const STEPS = [
   {
@@ -152,9 +153,117 @@ const TESTIMONIALS = [
   },
 ];
 
+const homeFaqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: [
+    {
+      "@type": "Question",
+      name: "CPAS nedir?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "CPAS (Collaborative Performance Advertising Solution), Meta'nın pazaryeri satıcıları için geliştirdiği iş ortağı reklam çözümüdür. Trendyol ürün kataloğunu Meta'ya bağlar; Facebook ve Instagram reklamları doğrudan Trendyol mağazasına satış olarak döner ve her sipariş gerçek veriyle ölçülür.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "Trendyol mağazam Meta'ya nasıl bağlanır?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Trendyol'dan CPAS reklam yetkisi alınır, ardından Meta Business Manager'da katalog oluşturulup Trendyol ürün feed'iyle eşleştirilir. Jale bu teknik süreci ortalama 7 iş günü içinde uçtan uca yönetir.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "CPAS ile ne kadar ROAS (Reklam Harcama Getirisi) beklenebilir?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Doğru kurulumda 4–8× ROAS tipik aralıktır; yeniden pazarlama kampanyaları 8–15× bandına çıkabilir. Jale'nin yönettiği kampanyaların %95'i Trendyol iç reklamlarını geride bıraktı, minimum 1.5× daha iyi sonuç verdi.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "Kurulumu abonelik almadan tek başına satın alabilir miyim?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Evet. Kurulum hizmeti SaaS aboneliğinden bağımsız olarak tek başına satın alınabilir. Tek seferlik kurulum ücreti, Trendyol yetkilendirme, Meta Business Manager kurulumu, CPAS katalog bağlantısı ve Jale entegrasyonunu kapsar. Ödeme iyzico altyapısıyla güvenli şekilde yapılır.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "Trendyol CPAS reklam yetkisi almak için ne gerekir?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Trendyol'da aktif ve onaylı bir mağaza, en az 3 ay satış geçmişi ve ürün listeleme kurallarına uyum gerekir. Onay süreci genellikle 2–5 iş günü sürer. Jale bu süreci sizin adınıza başlatıp takip eder.",
+      },
+    },
+  ],
+};
+
+const softwareAppJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  name: SITE.name,
+  applicationCategory: "BusinessApplication",
+  operatingSystem: "Web",
+  offers: {
+    "@type": "Offer",
+    priceCurrency: "TRY",
+    availability: "https://schema.org/InStock",
+    url: `${SITE.url}/satin-al`,
+  },
+  description: SITE.description,
+  url: SITE.url,
+};
+
+const organizationJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: SITE.name,
+  legalName: SITE.company,
+  url: SITE.url,
+  email: SITE.email,
+  address: {
+    "@type": "PostalAddress",
+    addressLocality: "İstanbul",
+    addressCountry: "TR",
+  },
+  description: SITE.description,
+  sameAs: [],
+};
+
+const websiteJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: SITE.name,
+  url: SITE.url,
+  description: SITE.description,
+  potentialAction: {
+    "@type": "SearchAction",
+    target: `${SITE.url}/blog?q={search_term_string}`,
+    "query-input": "required name=search_term_string",
+  },
+};
+
 export default function HomePage() {
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(homeFaqJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareAppJsonLd) }}
+      />
       {/* ====== HERO ====== */}
       <section className="relative overflow-hidden bg-gradient-to-b from-brand-50/60 via-white to-white">
         <div className="mx-auto grid max-w-7xl items-center gap-12 px-4 pb-20 pt-16 sm:px-6 lg:grid-cols-2 lg:px-8 lg:pb-28 lg:pt-24">
@@ -552,6 +661,49 @@ export default function HomePage() {
           </Reveal>
           <div className="mt-14">
             <PricingCards />
+          </div>
+        </div>
+      </section>
+
+      {/* ====== CPAS HIZLI CEVAPLAR (SEO + AI arama) ====== */}
+      <section className="border-t border-ink-100 px-4 py-20 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-4xl">
+          <Reveal>
+            <h2 className="font-display text-2xl font-bold tracking-tight text-ink-900 sm:text-3xl text-center mb-10">
+              CPAS hakkında en çok sorulanlar
+            </h2>
+          </Reveal>
+          <div className="grid gap-6 sm:grid-cols-2">
+            {[
+              {
+                q: "CPAS nedir?",
+                a: "Meta'nın pazaryeri satıcıları için geliştirdiği iş ortağı reklam çözümüdür. Trendyol kataloğunuzu Meta'ya bağlar; Facebook/Instagram reklamları doğrudan Trendyol'da satışa dönüşür ve her sipariş gerçek veriyle ölçülür.",
+              },
+              {
+                q: "Trendyol mağazam Meta'ya nasıl bağlanır?",
+                a: "Trendyol'dan CPAS reklam yetkisi alınır, ardından Meta Business Manager'da katalog oluşturulup eşleştirilir. Jale bu teknik süreci 7 iş günü içinde sizin adınıza tamamlar.",
+              },
+              {
+                q: "CPAS ile ne kadar ROAS beklenebilir?",
+                a: "Doğru kurulumda 4–8× ROAS tipik aralıktır. Yönettiğimiz kampanyaların %95'i Trendyol iç reklamlarını geride bıraktı; en kötü senaryoda bile 1.5× daha iyi sonuç.",
+              },
+              {
+                q: "Kurulumu abonelik almadan satın alabilir miyim?",
+                a: `Evet. ${formatTRY(PRICING.setupFee)} + KDV tek seferlik kurulum hizmeti, abonelikten bağımsız olarak satın alınabilir. Güvenli iyzico ödemesiyle anında başlayın.`,
+              },
+            ].map((item) => (
+              <Reveal key={item.q}>
+                <div className="rounded-2xl border border-ink-200 bg-white p-6 shadow-sm">
+                  <h3 className="font-display text-sm font-bold text-ink-900">{item.q}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-ink-600">{item.a}</p>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+          <div className="mt-8 text-center">
+            <Link href="/sss" className="text-sm font-semibold text-brand-700 underline underline-offset-4 hover:text-brand-800">
+              Tüm soruları gör →
+            </Link>
           </div>
         </div>
       </section>

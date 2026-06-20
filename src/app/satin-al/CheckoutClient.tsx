@@ -1,15 +1,14 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { computeOrderQuote, formatTRY } from "@/lib/site";
 import { useSettings } from "@/lib/useSettings";
 
 type InvoiceType = "individual" | "company";
-
 type Billing = "monthly" | "yearly";
-type Installment = "single" | "3" | "6" | "9";
-type Step = "configure" | "details" | "done";
+type Step = "configure" | "details" | "payment" | "done" | "failed";
 
 interface AppliedDiscount {
   code: string;
@@ -17,20 +16,14 @@ interface AppliedDiscount {
   value: number;
 }
 
-const INSTALLMENT_OPTIONS: { id: Installment; label: string; note: string }[] = [
-  { id: "single", label: "Tek Çekim", note: "Kredi kartı veya havale/EFT" },
-  { id: "3", label: "3 Taksit", note: "Peşin fiyatına — vade farkı yok" },
-  { id: "6", label: "6 Taksit", note: "Anlaşmalı kartlarda" },
-  { id: "9", label: "9 Taksit", note: "Anlaşmalı kartlarda" },
-];
-
 export default function CheckoutClient() {
   const { pricing } = useSettings();
+  const searchParams = useSearchParams();
+
   const [step, setStep] = useState<Step>("configure");
   const [isAgency, setIsAgency] = useState(false);
   const [storeCount, setStoreCount] = useState(1);
   const [billing, setBilling] = useState<Billing>("monthly");
-  const [installment, setInstallment] = useState<Installment>("3");
   const [includeSetup, setIncludeSetup] = useState(true);
 
   const [codeInput, setCodeInput] = useState("");
@@ -47,9 +40,52 @@ export default function CheckoutClient() {
     address: "",
     city: "",
   });
+
+  const [setupOnly, setSetupOnly] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const [orderId, setOrderId] = useState("");
+  const [checkoutFormContent, setCheckoutFormContent] = useState("");
+  const iyzFormRef = useRef<HTMLDivElement>(null);
+
+  // Detect URL params: ?type=setup → setup-only mode; ?payment=success|failure → result
+  useEffect(() => {
+    const type = searchParams.get("type");
+    const payment = searchParams.get("payment");
+    const oid = searchParams.get("orderId");
+
+    if (type === "setup") {
+      setSetupOnly(true);
+      setStep("details"); // skip configure step
+    }
+
+    if (payment === "success" && oid) {
+      setOrderId(oid);
+      setStep("done");
+    } else if (payment === "failure" || payment === "error") {
+      setStep("failed");
+    }
+  }, [searchParams]);
+
+  // Inject iyzico checkout form scripts into DOM when payment step activates
+  useEffect(() => {
+    if (step !== "payment" || !checkoutFormContent || !iyzFormRef.current) return;
+
+    const container = iyzFormRef.current;
+    container.innerHTML = checkoutFormContent;
+
+    Array.from(container.querySelectorAll("script")).forEach((oldScript) => {
+      const newScript = document.createElement("script");
+      if (oldScript.src) {
+        newScript.src = oldScript.src;
+        newScript.async = true;
+      } else {
+        newScript.textContent = oldScript.textContent ?? "";
+      }
+      document.head.appendChild(newScript);
+      oldScript.remove();
+    });
+  }, [step, checkoutFormContent]);
 
   const quote = useMemo(
     () =>
@@ -59,15 +95,13 @@ export default function CheckoutClient() {
           storeCount,
           billing,
           includeSetup,
+          setupOnly,
           discount: discount ? { type: discount.type, value: discount.value } : null,
         },
         pricing
       ),
-    [isAgency, storeCount, billing, discount, includeSetup, pricing]
+    [isAgency, storeCount, billing, discount, includeSetup, setupOnly, pricing]
   );
-
-  const installmentCount = installment === "single" ? 1 : Number(installment);
-  const perInstallment = Math.ceil(quote.total / installmentCount);
 
   async function applyCode() {
     if (!codeInput.trim()) return;
@@ -91,12 +125,12 @@ export default function CheckoutClient() {
     }
   }
 
-  async function submitOrder(event: React.FormEvent<HTMLFormElement>) {
+  async function startPayment(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setSubmitting(true);
     setSubmitError("");
     try {
-      const res = await fetch("/api/orders", {
+      const res = await fetch("/api/payment/initialize", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -104,8 +138,8 @@ export default function CheckoutClient() {
           isAgency,
           storeCount,
           billing,
-          installment,
           includeSetup,
+          setupOnly,
           discountCode: discount?.code || "",
           invoiceType,
           ...invoice,
@@ -113,11 +147,11 @@ export default function CheckoutClient() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setSubmitError(data.error || "Sipariş alınamadı, lütfen tekrar deneyin.");
+        setSubmitError(data.error || "Ödeme başlatılamadı, lütfen tekrar deneyin.");
         return;
       }
-      setOrderId(data.orderId);
-      setStep("done");
+      setCheckoutFormContent(data.checkoutFormContent as string);
+      setStep("payment");
     } catch {
       setSubmitError("Bağlantı hatası — lütfen tekrar deneyin.");
     } finally {
@@ -125,6 +159,7 @@ export default function CheckoutClient() {
     }
   }
 
+  // ── Success ──────────────────────────────────────────────────────────
   if (step === "done") {
     return (
       <section className="flex min-h-[70vh] items-center justify-center px-4 py-20">
@@ -135,14 +170,14 @@ export default function CheckoutClient() {
             </svg>
           </div>
           <h1 className="mt-6 font-display text-3xl font-bold text-ink-900">
-            Siparişin alındı! 🎉
+            Ödemen alındı!
           </h1>
           <p className="mt-4 leading-relaxed text-ink-600">
-            Sipariş numaran: <strong className="text-ink-900">{orderId}</strong>
+            Sipariş numaranız: <strong className="text-ink-900">{orderId}</strong>
           </p>
           <p className="mt-2 leading-relaxed text-ink-600">
-            Ekibimiz en geç 1 iş günü içinde seni arayacak; ödemeni seçtiğin taksit
-            seçeneğiyle güvenle tamamlayıp kurulum sürecini hemen başlatacağız.
+            Onay e-postasını kontrol et. Ekibimiz en geç 1 iş günü içinde kurulum
+            sürecini başlatmak için seninle iletişime geçecek.
           </p>
           <Link
             href="/"
@@ -155,24 +190,82 @@ export default function CheckoutClient() {
     );
   }
 
+  // ── Failure ──────────────────────────────────────────────────────────
+  if (step === "failed") {
+    return (
+      <section className="flex min-h-[70vh] items-center justify-center px-4 py-20">
+        <div className="max-w-lg text-center">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
+            <svg className="h-8 w-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </div>
+          <h1 className="mt-6 font-display text-3xl font-bold text-ink-900">
+            Ödeme tamamlanamadı
+          </h1>
+          <p className="mt-4 leading-relaxed text-ink-600">
+            Ödeme işlemi başarısız oldu ya da iptal edildi. Kart bilgilerini kontrol
+            edip tekrar deneyebilirsin.
+          </p>
+          <button
+            type="button"
+            onClick={() => {
+              setStep("details");
+              window.history.replaceState({}, "", "/satin-al");
+            }}
+            className="mt-8 inline-block rounded-xl bg-brand-600 px-8 py-3 text-sm font-semibold text-white shadow-md hover:bg-brand-700"
+          >
+            Tekrar Dene
+          </button>
+          <p className="mt-4 text-sm text-ink-500">
+            Yardım için{" "}
+            <Link href="/iletisim" className="font-semibold text-brand-700 underline">
+              bizimle iletişime geç
+            </Link>
+          </p>
+        </div>
+      </section>
+    );
+  }
+
+  // ── Payment (iyzico modal injected) ──────────────────────────────────
+  if (step === "payment") {
+    return (
+      <section className="flex min-h-[70vh] flex-col items-center justify-center px-4 py-20">
+        <div className="mb-6 text-center">
+          <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-4 border-brand-200 border-t-brand-600" />
+          <p className="text-sm text-ink-600">
+            Güvenli ödeme formu yükleniyor...
+          </p>
+          <p className="mt-1 text-xs text-ink-400">
+            iyzico altyapısıyla 256-bit SSL şifreli ödeme
+          </p>
+        </div>
+        <div ref={iyzFormRef} id="iyzipay-checkout-form" className="w-full max-w-lg" />
+      </section>
+    );
+  }
+
+  // ── Main form (configure + details) ──────────────────────────────────
   return (
     <section className="bg-gradient-to-b from-brand-50/60 to-white px-4 py-14 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-6xl">
         <div className="max-w-2xl">
           <h1 className="font-display text-3xl font-extrabold tracking-tight text-ink-900 sm:text-4xl">
-            Hemen başla
+            {setupOnly ? "Kurulum Hizmetini Satın Al" : "Hemen başla"}
           </h1>
           <p className="mt-3 text-ink-600">
-            Paketini yapılandır, ödeme planını seç. Ekibimiz ödemenin ardından 7 iş günü
-            içinde sistemini hazır teslim eder.
+            {setupOnly
+              ? "Trendyol–Meta CPAS bağlantısını uzman ekibimiz kurar. Ortalama 7 iş günü içinde sisteminiz hazır teslim edilir."
+              : "Paketini yapılandır ve güvenli ödeme adımına geç. Ödemenin ardından 7 iş günü içinde sistemin hazır teslim edilir."}
           </p>
         </div>
 
         <div className="mt-10 grid gap-8 lg:grid-cols-[1fr_400px]">
-          {/* ===== SOL: Yapılandırma ===== */}
+          {/* ===== LEFT: Configuration ===== */}
           <div className="space-y-8">
-            {/* Hesap tipi */}
-            <div className="rounded-2xl border border-ink-200 bg-white p-6 shadow-sm">
+            {/* Account type — hidden in setup-only mode */}
+            {!setupOnly && <div className="rounded-2xl border border-ink-200 bg-white p-6 shadow-sm">
               <h2 className="font-display text-base font-bold text-ink-900">
                 1. Hesap tipi
               </h2>
@@ -254,10 +347,10 @@ export default function CheckoutClient() {
                   .
                 </p>
               )}
-            </div>
+            </div>}
 
-            {/* Ödeme dönemi */}
-            <div className="rounded-2xl border border-ink-200 bg-white p-6 shadow-sm">
+            {/* Billing period — hidden in setup-only mode */}
+            {!setupOnly && <div className="rounded-2xl border border-ink-200 bg-white p-6 shadow-sm">
               <h2 className="font-display text-base font-bold text-ink-900">
                 2. Abonelik dönemi
               </h2>
@@ -295,43 +388,12 @@ export default function CheckoutClient() {
                   </p>
                 </button>
               </div>
-            </div>
+            </div>}
 
-            {/* Taksit */}
-            <div className="rounded-2xl border border-ink-200 bg-white p-6 shadow-sm">
+            {/* Setup service — hidden in setup-only mode (already known) */}
+            {!setupOnly && <div className="rounded-2xl border border-ink-200 bg-white p-6 shadow-sm">
               <h2 className="font-display text-base font-bold text-ink-900">
-                3. Ödeme planı
-              </h2>
-              <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                {INSTALLMENT_OPTIONS.map((option) => (
-                  <button
-                    key={option.id}
-                    type="button"
-                    onClick={() => setInstallment(option.id)}
-                    className={`relative rounded-xl border-2 p-4 text-left transition-colors ${
-                      installment === option.id
-                        ? "border-brand-500 bg-brand-50"
-                        : "border-ink-200 hover:border-ink-300"
-                    }`}
-                  >
-                    {option.id === "3" && (
-                      <span className="absolute -top-2.5 right-3 rounded-full bg-brand-600 px-2.5 py-0.5 text-[10px] font-bold text-white">
-                        EN POPÜLER
-                      </span>
-                    )}
-                    <p className="font-display text-sm font-bold text-ink-900">
-                      {option.label}
-                    </p>
-                    <p className="mt-1 text-xs text-ink-500">{option.note}</p>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Kurulum hizmeti */}
-            <div className="rounded-2xl border border-ink-200 bg-white p-6 shadow-sm">
-              <h2 className="font-display text-base font-bold text-ink-900">
-                4. Kurulum hizmeti
+                3. Kurulum hizmeti
               </h2>
               <p className="mt-1 text-xs text-ink-500">
                 Trendyol yetkilendirme, Meta Business kurulumu ve CPAS bağlantısı —
@@ -378,12 +440,12 @@ export default function CheckoutClient() {
                   </p>
                 </button>
               </div>
-            </div>
+            </div>}
 
-            {/* İndirim kodu */}
+            {/* Discount code */}
             <div className="rounded-2xl border border-ink-200 bg-white p-6 shadow-sm">
               <h2 className="font-display text-base font-bold text-ink-900">
-                5. İndirim kodu{" "}
+                {setupOnly ? "İndirim kodu" : "4. İndirim kodu"}{" "}
                 <span className="font-sans text-xs font-normal text-ink-400">
                   (varsa)
                 </span>
@@ -436,18 +498,18 @@ export default function CheckoutClient() {
               )}
             </div>
 
-            {/* İletişim + Fatura bilgileri */}
+            {/* Contact + Invoice form */}
             {step === "details" && (
               <form
-                onSubmit={submitOrder}
+                onSubmit={startPayment}
                 className="space-y-6 rounded-2xl border-2 border-brand-300 bg-white p-6 shadow-md"
               >
                 <div>
                   <h2 className="font-display text-base font-bold text-ink-900">
-                    6. İletişim bilgilerin
+                    {setupOnly ? "1. İletişim bilgilerin" : "5. İletişim bilgilerin"}
                   </h2>
                   <p className="mt-1 text-xs text-ink-500">
-                    Ödemeni güvenle tamamlamak için ekibimiz seni arayacak.
+                    Fatura ve kurulum koordinasyonu için gereklidir.
                   </p>
                   <div className="mt-4 grid gap-4 sm:grid-cols-2">
                     <input
@@ -486,7 +548,7 @@ export default function CheckoutClient() {
 
                 <div className="border-t border-ink-100 pt-6">
                   <h2 className="font-display text-base font-bold text-ink-900">
-                    7. Fatura bilgileri
+                    {setupOnly ? "2. Fatura bilgileri" : "6. Fatura bilgileri"}
                   </h2>
                   <p className="mt-1 text-xs text-ink-500">
                     Faturanı doğru kesebilmemiz için gereklidir.
@@ -593,13 +655,16 @@ export default function CheckoutClient() {
                   disabled={submitting || quote.requiresContact}
                   className="w-full rounded-xl bg-brand-600 px-6 py-3.5 text-sm font-bold text-white shadow-md transition-all hover:bg-brand-700 disabled:opacity-60"
                 >
-                  {submitting ? "Gönderiliyor..." : "Siparişi Tamamla"}
+                  {submitting ? "Ödeme başlatılıyor..." : "Güvenli Ödemeye Geç →"}
                 </button>
+                <p className="text-center text-[11px] text-ink-400">
+                  iyzico altyapısıyla 256-bit SSL şifreli güvenli ödeme
+                </p>
               </form>
             )}
           </div>
 
-          {/* ===== SAĞ: Sipariş özeti ===== */}
+          {/* ===== RIGHT: Order summary ===== */}
           <div className="lg:sticky lg:top-24 lg:self-start">
             <div className="rounded-2xl border border-ink-200 bg-white p-6 shadow-lg">
               <h2 className="font-display text-lg font-bold text-ink-900">
@@ -607,22 +672,33 @@ export default function CheckoutClient() {
               </h2>
 
               <dl className="mt-5 space-y-3 text-sm">
-                <div className="flex justify-between">
-                  <dt className="text-ink-600">
-                    Abonelik ({billing === "yearly" ? "yıllık" : "aylık"} ·{" "}
-                    {storeCount} mağaza{isAgency ? " · ajans" : ""})
-                  </dt>
-                  <dd className="font-semibold text-ink-900">
-                    {formatTRY(quote.subscriptionNet)}
-                  </dd>
-                </div>
-                {includeSetup && (
+                {setupOnly ? (
                   <div className="flex justify-between">
-                    <dt className="text-ink-600">Kurulum (tek seferlik)</dt>
+                    <dt className="text-ink-600">Kurulum Hizmeti (tek seferlik)</dt>
                     <dd className="font-semibold text-ink-900">
                       {formatTRY(quote.setupNet)}
                     </dd>
                   </div>
+                ) : (
+                  <>
+                    <div className="flex justify-between">
+                      <dt className="text-ink-600">
+                        Abonelik ({billing === "yearly" ? "yıllık" : "aylık"} ·{" "}
+                        {storeCount} mağaza{isAgency ? " · ajans" : ""})
+                      </dt>
+                      <dd className="font-semibold text-ink-900">
+                        {formatTRY(quote.subscriptionNet)}
+                      </dd>
+                    </div>
+                    {includeSetup && (
+                      <div className="flex justify-between">
+                        <dt className="text-ink-600">Kurulum (tek seferlik)</dt>
+                        <dd className="font-semibold text-ink-900">
+                          {formatTRY(quote.setupNet)}
+                        </dd>
+                      </div>
+                    )}
+                  </>
                 )}
                 {quote.discountAmount > 0 && (
                   <div className="flex justify-between text-green-700">
@@ -646,30 +722,28 @@ export default function CheckoutClient() {
                 </div>
                 <div className="flex items-baseline justify-between border-t-2 border-ink-900 pt-4">
                   <dt className="font-display text-base font-bold text-ink-900">
-                    Bugün ödenecek
+                    Toplam
                   </dt>
                   <dd className="font-display text-2xl font-extrabold text-ink-900">
                     {formatTRY(quote.total)}
                   </dd>
                 </div>
-                {installmentCount > 1 && (
-                  <div className="rounded-xl bg-brand-50 px-4 py-3 text-center">
-                    <p className="text-xs text-ink-600">
-                      {installment} taksit ile aylık
-                    </p>
-                    <p className="font-display text-xl font-bold text-brand-700">
-                      {formatTRY(perInstallment)} × {installmentCount}
-                    </p>
-                    {installment === "3" && (
-                      <p className="mt-0.5 text-[11px] font-semibold text-green-700">
-                        Peşin fiyatına — vade farkı yok
-                      </p>
-                    )}
-                  </div>
-                )}
               </dl>
 
-              {includeSetup ? (
+              {setupOnly ? (
+                <div className="mt-5 rounded-xl border border-green-200 bg-green-50 p-4">
+                  <p className="text-xs font-bold text-green-800">
+                    ✓ Trendyol–Meta CPAS kurulum hizmeti
+                  </p>
+                  <p className="mt-1 text-xs leading-relaxed text-green-700">
+                    Ödeme sonrası ekibimiz sizinle iletişime geçer; ~7 iş gününde
+                    sisteminiz hazır teslim edilir.{" "}
+                    <Link href="/kurulum" className="font-semibold underline">
+                      Kuruluma neler dahil?
+                    </Link>
+                  </p>
+                </div>
+              ) : includeSetup ? (
                 <div className="mt-5 rounded-xl border border-green-200 bg-green-50 p-4">
                   <p className="text-xs font-bold text-green-800">
                     ✓ Kurulum hizmeti siparişe dahil
@@ -692,8 +766,7 @@ export default function CheckoutClient() {
                       <p className="mt-1 text-xs leading-relaxed text-amber-800">
                         Tek seferlik kurulum hizmeti{" "}
                         <strong>{formatTRY(quote.setupNet)} + KDV</strong> olup ayrıca
-                        tahsil edilir. Ekibimiz sipariş sonrası kurulum planını ve
-                        ödemesini seninle netleştirir.{" "}
+                        tahsil edilir.{" "}
                         <Link href="/kurulum" className="font-semibold underline">
                           Kuruluma neler dahil?
                         </Link>
@@ -703,20 +776,52 @@ export default function CheckoutClient() {
                 </div>
               )}
 
-              {step === "configure" && (
+              {/* iyzico / kart logoları */}
+              <div className="mt-5 rounded-xl border border-ink-100 bg-ink-50 px-4 py-3">
+                <p className="mb-2.5 text-center text-[10px] font-semibold uppercase tracking-wider text-ink-400">
+                  Güvenli Ödeme
+                </p>
+                <div className="flex items-center justify-center gap-3">
+                  {/* iyzico rozeti */}
+                  <span className="flex items-center gap-1 rounded-md border border-[#1A1A2E]/20 bg-[#1A1A2E] px-2.5 py-1">
+                    <span className="text-[11px] font-bold tracking-tight text-white">iyzico</span>
+                    <span className="text-[9px] text-blue-300">ile Öde</span>
+                  </span>
+                  {/* Visa */}
+                  <span className="flex h-7 w-12 items-center justify-center rounded-md border border-ink-200 bg-white px-1.5">
+                    <span className="font-display text-base font-black italic text-[#1A1F71]">VISA</span>
+                  </span>
+                  {/* Mastercard */}
+                  <span className="flex h-7 w-12 items-center justify-center rounded-md border border-ink-200 bg-white px-1">
+                    <span className="flex">
+                      <span className="h-5 w-5 rounded-full bg-[#EB001B] opacity-90" />
+                      <span className="-ml-2.5 h-5 w-5 rounded-full bg-[#F79E1B] opacity-90" />
+                    </span>
+                  </span>
+                  {/* SSL */}
+                  <span className="flex items-center gap-1 rounded-md border border-green-200 bg-green-50 px-2 py-1">
+                    <svg className="h-3 w-3 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                    </svg>
+                    <span className="text-[10px] font-semibold text-green-700">SSL</span>
+                  </span>
+                </div>
+              </div>
+
+              {step === "configure" && !setupOnly && (
                 <button
                   type="button"
                   disabled={quote.requiresContact}
                   onClick={() => setStep("details")}
-                  className="mt-6 w-full rounded-xl bg-brand-600 px-6 py-3.5 text-sm font-bold text-white shadow-md transition-all hover:bg-brand-700 disabled:opacity-60"
+                  className="mt-5 w-full rounded-xl bg-brand-600 px-6 py-3.5 text-sm font-bold text-white shadow-md transition-all hover:bg-brand-700 disabled:opacity-60"
                 >
                   Devam Et →
                 </button>
               )}
 
               <p className="mt-4 text-center text-[11px] leading-relaxed text-ink-400">
-                Siparişi tamamladığında ekibimiz seni arayarak ödemeni güvenle alır ve
-                kurulumu başlatır.{" "}
+                Ödemeyi tamamladıktan sonra sisteme erişimin ve kurulum sıran hemen
+                ayrılır.{" "}
                 <Link href="/mesafeli-satis-sozlesmesi" className="underline">
                   Mesafeli Satış Sözleşmesi
                 </Link>

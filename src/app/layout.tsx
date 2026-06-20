@@ -23,11 +23,18 @@ export const metadata: Metadata = {
   description: SITE.description,
   keywords: [
     "CPAS",
+    "CPAS nedir",
+    "Trendyol CPAS",
     "Trendyol reklam",
-    "Meta reklam",
+    "Trendyol Meta reklam",
     "Trendyol Meta entegrasyonu",
     "Collaborative Performance Advertising Solution",
     "Trendyol satıcı reklam",
+    "CPAS reklam yetkisi",
+    "Trendyol Facebook reklam",
+    "Trendyol Instagram reklam",
+    "CPAS kurulum",
+    "Trendyol ROAS",
   ],
   openGraph: {
     type: "website",
@@ -36,6 +43,23 @@ export const metadata: Metadata = {
     siteName: SITE.name,
     title: `${SITE.name} — Trendyol Reklamlarını Meta'dan Yönet`,
     description: SITE.description,
+    images: [
+      {
+        url: `${SITE.url}/og-image.png`,
+        width: 1200,
+        height: 630,
+        alt: `${SITE.name} — Trendyol CPAS Reklam Yönetim Platformu`,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${SITE.name} — Trendyol Reklamlarını Meta'dan Yönet`,
+    description: SITE.description,
+    images: [`${SITE.url}/og-image.png`],
+  },
+  alternates: {
+    canonical: SITE.url,
   },
 };
 

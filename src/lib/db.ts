@@ -32,15 +32,44 @@ export interface Order {
   installment: "single" | "3" | "6" | "9";
   discountCode: string | null;
   subscriptionNet: number;
-  includeSetup: boolean; // kurulum siparişe dahil mi
-  setupNet: number; // kurulum bedeli (dahilse toplama eklenir, değilse ayrıca tahsil)
+  includeSetup: boolean;
+  setupNet: number;
   discountAmount: number;
   vatAmount: number;
   total: number;
   status: "new" | "contacted" | "paid" | "cancelled";
   // Fatura bilgileri
   invoiceType: "individual" | "company";
-  identityNo: string; // TC kimlik no (bireysel)
+  identityNo: string;
+  companyName: string;
+  taxOffice: string;
+  taxNumber: string;
+  address: string;
+  city: string;
+  // iyzico ödeme bilgileri (opsiyonel)
+  paymentId?: string;
+  conversationId?: string;
+}
+
+export interface PendingOrder {
+  conversationId: string;
+  createdAt: string;
+  name: string;
+  phone: string;
+  email: string;
+  storeUrl: string;
+  isAgency: boolean;
+  storeCount: number;
+  billing: "monthly" | "yearly";
+  includeSetup: boolean;
+  discountCode: string | null;
+  subscriptionNet: number;
+  setupNet: number;
+  discountAmount: number;
+  vatAmount: number;
+  total: number;
+  invoiceType: "individual" | "company";
+  identityNo: string;
   companyName: string;
   taxOffice: string;
   taxNumber: string;
@@ -225,5 +254,26 @@ export async function updateLeadStatus(
   await writeCollection(
     "leads",
     leads.map((l) => (l.id === id ? { ...l, status } : l))
+  );
+}
+
+// --- Bekleyen ödemeler (iyzico callback'ten önce geçici olarak saklanır) ---
+
+export async function savePendingOrder(order: PendingOrder): Promise<void> {
+  const orders = await readCollection<PendingOrder>("pending-orders");
+  const without = orders.filter((o) => o.conversationId !== order.conversationId);
+  await writeCollection("pending-orders", [order, ...without]);
+}
+
+export async function getPendingOrder(conversationId: string): Promise<PendingOrder | null> {
+  const orders = await readCollection<PendingOrder>("pending-orders");
+  return orders.find((o) => o.conversationId === conversationId) ?? null;
+}
+
+export async function deletePendingOrder(conversationId: string): Promise<void> {
+  const orders = await readCollection<PendingOrder>("pending-orders");
+  await writeCollection(
+    "pending-orders",
+    orders.filter((o) => o.conversationId !== conversationId)
   );
 }

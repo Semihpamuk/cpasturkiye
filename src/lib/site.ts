@@ -6,9 +6,15 @@ export const SITE = {
   description:
     "Türkiye'nin ilk Trendyol–Meta CPAS reklam yönetim platformu. Trendyol mağazanı Meta'ya bağla, reklamlarını tek panelden yönet, gerçek satış verisiyle büyü.",
   email: "info@cpasturkiye.com",
-  phone: "+90 (XXX) XXX XX XX",
-  address: "İstanbul, Türkiye",
-  company: "Jale Yazılım ve Reklam Hizmetleri",
+  // Gerçek telefon numarasını .env.local veya aşağıdan güncelleyin
+  phone: process.env.NEXT_PUBLIC_SITE_PHONE ?? "+90 (212) 000 00 00",
+  address: "Maslak Mah. Büyükdere Cad. No:255 Sarıyer / İstanbul",
+  company: "Jale Yazılım ve Reklam Hizmetleri Ltd. Şti.",
+  // iyzico başvurusu ve yasal uyumluluk için gerekli şirket bilgileri
+  mersis: process.env.NEXT_PUBLIC_SITE_MERSIS ?? "0000000000000000",
+  taxOffice: process.env.NEXT_PUBLIC_SITE_TAX_OFFICE ?? "Maslak Vergi Dairesi",
+  taxId: process.env.NEXT_PUBLIC_SITE_TAX_ID ?? "0000000000",
+  kep: process.env.NEXT_PUBLIC_SITE_KEP ?? "jale@hs01.kep.tr",
 };
 
 export const PRICING = {
@@ -36,7 +42,8 @@ export interface OrderInput {
   storeCount: number;
   billing: "monthly" | "yearly";
   discount?: { type: "percent" | "fixed"; value: number } | null;
-  includeSetup?: boolean; // Online ödemede kurulum dahil EDİLMEZ (varsayılan false)
+  includeSetup?: boolean;
+  setupOnly?: boolean; // Yalnızca kurulum hizmeti satın alımı (abonelik olmadan)
 }
 
 export interface OrderQuote {
@@ -73,6 +80,22 @@ export function computeOrderQuote(
   input: OrderInput,
   pricing: PricingValues = PRICING
 ): OrderQuote {
+  // Sadece kurulum satın alımı
+  if (input.setupOnly) {
+    const setupNet = pricing.setupFee;
+    const vatAmount = Math.round(setupNet * VAT_RATE);
+    return {
+      monthlySubscription: 0,
+      subscriptionNet: 0,
+      setupNet,
+      discountAmount: 0,
+      netAfterDiscount: setupNet,
+      vatAmount,
+      total: setupNet + vatAmount,
+      requiresContact: false,
+    };
+  }
+
   const requiresContact =
     input.isAgency && input.storeCount >= pricing.agencyContactThreshold;
 

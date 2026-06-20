@@ -10,6 +10,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Kurulum Hizmeti",
   description: `Trendyol–Meta CPAS kurulumunu uzman ekibimiz yapar: Trendyol yetkilendirme, Meta Business kurulumu, katalog bağlantısı. ${DEFAULTS.setupDays} iş günü içinde teslim.`,
+  alternates: { canonical: "/kurulum" },
 };
 
 const TIMELINE = [
@@ -82,6 +83,23 @@ export default async function SetupPage() {
               tek seferlik · ortalama {PRICING.setupDays} iş günü
             </span>
           </div>
+          <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+            <Link
+              href="/satin-al?type=setup"
+              className="rounded-xl bg-brand-600 px-8 py-3.5 text-sm font-bold text-white shadow-md hover:bg-brand-700 transition-colors"
+            >
+              Kurulumu Hemen Satın Al →
+            </Link>
+            <Link
+              href="/iletisim"
+              className="rounded-xl border-2 border-ink-200 bg-white px-8 py-3.5 text-sm font-bold text-ink-700 hover:border-ink-300 transition-colors"
+            >
+              Önce Görüşelim
+            </Link>
+          </div>
+          <p className="mt-3 text-xs text-ink-400">
+            Abonelik zorunlu değildir · Güvenli iyzico ödemesi
+          </p>
         </div>
       </section>
 

@@ -93,13 +93,22 @@ export default function Navbar() {
                 {link.label}
               </Link>
             ))}
-            <Link
-              href="/satin-al"
-              className="mt-2 rounded-lg bg-brand-600 px-4 py-2.5 text-center text-sm font-semibold text-white"
-              onClick={() => setIsOpen(false)}
-            >
-              Satın Al
-            </Link>
+            <div className="mt-2 grid grid-cols-2 gap-2">
+              <Link
+                href="/iletisim"
+                className="rounded-lg border border-ink-300 px-4 py-2.5 text-center text-sm font-semibold text-ink-700"
+                onClick={() => setIsOpen(false)}
+              >
+                Sizi Arayalım
+              </Link>
+              <Link
+                href="/satin-al"
+                className="rounded-lg bg-brand-600 px-4 py-2.5 text-center text-sm font-semibold text-white"
+                onClick={() => setIsOpen(false)}
+              >
+                Satın Al
+              </Link>
+            </div>
           </div>
         </div>
       )}

@@ -58,6 +58,54 @@ export const BLOG_POSTS: BlogPost[] = [
       "5) Anomalileri erken yakalayın. ROAS düşüşleri çoğu zaman ani başlar: bir kreatif yorulur, bir rakip agresif fiyat kırar, bir ürün stok sorunu yaşar. Günlük takip eden satıcı, sorunu 1 günde yakalar; haftalık bakan satıcı 7 günlük bütçeyi yakmış olur. Jale'nin anomali motoru bu izlemeyi 7/24 sizin yerinize yapar ve eşik aşıldığında anında bildirim gönderir.",
     ],
   },
+  {
+    slug: "trendyol-cpas-reklam-yetkisi-nasil-alinir",
+    title: "Trendyol CPAS Reklam Yetkisi Nasıl Alınır? Adım Adım 2026 Rehberi",
+    excerpt:
+      "Trendyol CPAS reklam yetkisi almak için nelere dikkat etmeli, süreç kaç gün sürer, hangi koşullar aranır? Satıcılar için güncel adım adım rehber.",
+    date: "2026-06-10",
+    readingMinutes: 6,
+    category: "Rehber",
+    content: [
+      "Trendyol CPAS (Collaborative Performance Advertising Solution) kullanabilmek için önce Trendyol'dan reklam yetkisi almanız gerekir. Bu yetki olmadan ürün kataloğunuzu Meta'ya bağlamanız mümkün değildir. Peki bu süreç nasıl işler, kimler başvurabilir?",
+      "Temel başvuru koşulları şunlardır: Trendyol'da aktif ve onaylı bir mağazanıza sahip olmanız, mağazanızın en az 3 ay aktif satış geçmişi bulunması ve ürün listeleme kurallarına uyumlu olmanız gerekir. Bazı kategorilerde (kozmetik, sağlık ürünleri) ek belgeler istenebilir. Mağaza puanınızın belirli bir eşiğin üzerinde olması da süreci hızlandıran faktörlerden biridir.",
+      "Başvuru süreci şu şekilde ilerler: Trendyol Satıcı Paneli'nde 'Reklam' veya 'CPAS' bölümüne girin. Buradan Meta Business Manager hesabınızı bağlamak için yetkilendirme talebinde bulunabilirsiniz. Trendyol bu talebi inceler ve genellikle 2–5 iş günü içinde yanıt verir. Onay sonrasında ürün kataloğunuz Meta'ya aktarılabilir hale gelir.",
+      "En sık karşılaşılan sorunlar şunlardır: Meta Business Manager hesabının doğrulanmamış olması, ödeme yöntemi eklenmemiş reklam hesabı ve katalog segmentlerinin hatalı yapılandırılması. Bu teknik engeller, özellikle ilk kez kurulum yapanlar için saatler hatta günler alabiliyor. Jale, bu sürecin tamamını sizin adınıza yönetiyor ve yetki onayından Meta bağlantısına kadar her adımı takip ediyor.",
+      "Yetki aldıktan sonra ne olur? Meta Business Manager'da bir katalog oluşturmanız, bunu Trendyol'un paylaştığı ürün feed'iyle eşleştirmeniz ve ardından dinamik reklam kampanyaları kurmanız gerekir. Bu aşamalar birbirini izler ve her birinde teknik bir hata, bütçenizin boşa gitmesine yol açabilir. Jale, 7 günlük kurulum hizmetiyle tüm bu süreci uçtan uca yönetir.",
+    ],
+  },
+  {
+    slug: "trendyol-meta-reklam-entegrasyonu-nedir",
+    title: "Trendyol Meta Reklam Entegrasyonu: Facebook ve Instagram'dan Satış",
+    excerpt:
+      "Trendyol mağazanızı Meta'ya nasıl bağlarsınız? Facebook ve Instagram reklamlarıyla Trendyol'da satışlarınızı artırmanın teknik ve stratejik yolu.",
+    date: "2026-06-15",
+    readingMinutes: 5,
+    category: "Rehber",
+    content: [
+      "Trendyol satıcıları artık Meta'nın (Facebook ve Instagram) reklam gücünü doğrudan Trendyol mağazaları için kullanabiliyor. Bu entegrasyon, CPAS (Collaborative Performance Advertising Solution) teknolojisiyle mümkün hale geliyor. Peki bu entegrasyon ne işe yarar ve nasıl çalışır?",
+      "Normal bir e-ticaret reklamında şu sorunla karşılaşırsınız: kullanıcı reklamı görür, kendi sitenize gelir, satın alır; bu satışı Meta pikseline bildirirsiniz. Ama Trendyol'da satış yapıyorsanız pikseli kuramaz ve gerçek dönüşüm verisine ulaşamazsınız. CPAS bu boşluğu kapatır: Trendyol, sipariş verilerini doğrudan Meta ile paylaşır. Hangi reklamın hangi siparişi getirdiğini net olarak görürsünüz.",
+      "Entegrasyonun teknik adımları şöyle sıralanır: (1) Trendyol'dan CPAS reklam yetkisi alınır, (2) Meta Business Manager hesabı oluşturulur veya düzenlenir, (3) Trendyol ürün kataloğu Meta'ya aktarılır, (4) Katalog segmentleri oluşturulur, (5) Dinamik reklam kampanyaları kurulur. Her adımın birbiriyle uyumlu çalışması gerekir; bir hata tüm veri akışını bozar.",
+      "Entegrasyon tamamlandığında ne değişir? Facebook ve Instagram'da Trendyol mağazanızın ürünlerini tanıtan otomatik reklamlar yayınlayabilirsiniz. Kullanıcı davranışına göre kişiselleştirilen dinamik reklamlar, kullanıcının önceden incelediği ürünleri ona yeniden gösterir. Bu yeniden pazarlama mekanizması, normal Trendyol içi reklamlara kıyasla genellikle 2–4 kat daha yüksek dönüşüm oranı sağlar.",
+      "Hangi mağazalar bu entegrasyondan en çok kazanır? Aylık en az 100 sipariş alan, 20'den fazla ürünü olan ve kâr marjı yeterli mağazalar. Bu kriterleri sağlıyorsanız ve hâlâ CPAS kullanmıyorsanız, her geçen ay rekabette geri kalmaya devam ediyorsunuz demektir. Jale ile kurulumu 7 iş gününde tamamlayın, rakipleriniz fark etmeden avantajı yakalayın.",
+    ],
+  },
+  {
+    slug: "cpas-ile-trendyol-ic-reklam-karsilastirma",
+    title: "CPAS mi, Trendyol İç Reklam mı? Hangisi Daha Kârlı?",
+    excerpt:
+      "Trendyol içi reklamlar ile CPAS (Meta) reklamları arasındaki fark nedir? Hangi durumda hangisini kullanmalısınız? ROAS ve maliyet karşılaştırması.",
+    date: "2026-06-18",
+    readingMinutes: 5,
+    category: "Strateji",
+    content: [
+      "Trendyol satıcılarının önünde iki temel reklam kanalı var: platform içi reklamlar (ürün öne çıkarma, mağaza reklamı) ve platform dışı CPAS reklamları (Meta üzerinden). Bu iki kanal birbirini dışlamaz — doğru strateji ikisini birlikte kullanmaktır. Ama nasıl ve ne zaman?",
+      "Trendyol içi reklamların avantajı, satın alma niyetli bir kitleye ulaşmanızdır. Trendyol'da aktif alışveriş yapan kullanıcılar zaten satın almaya hazırdır. Dezavantajı ise rekabetin yüksek olması ve reklam maliyetlerinin giderek artmasıdır. Ayrıca yalnızca Trendyol kullanıcılarına ulaşırsınız — platformun dışındaki potansiyel müşterilere dokunamazsınız.",
+      "CPAS (Meta) reklamlarının avantajı ise kitledir: Facebook ve Instagram'ın 35+ milyon Türk kullanıcısına ulaşabilirsiniz. Trendyol'daki ürünlerinizi hiç Trendyol'a girmemiş kitlelere tanıtabilir, farkındalık yaratabilir ve dönüşüm sağlayabilirsiniz. Gerçek satış verisiyle beslenen AI algoritması zamanla kârlı kitleyi öğrenir ve giderek daha verimli çalışır.",
+      "Tipik ROAS karşılaştırması: Trendyol içi reklamlar, yüksek rekabetli kategorilerde genellikle ROAS 2–4 aralığında seyreder. CPAS reklamları, iyi optimize edildiğinde 4–10 aralığına çıkabilir. Başlangıçta CPAS öğrenme aşaması nedeniyle düşük başlar ama 4–6 hafta içinde stabilize olup uzun vadede üstün performans gösterir.",
+      "Hangi stratejiyi seçmeli? Başlangıç dönemi veya küçük mağazalar için Trendyol içi reklamlar daha güvenlidir. Aylık 100+ sipariş alan mağazalar için CPAS vazgeçilmez bir büyüme motorudur. İdeal kullanım: Trendyol içi reklamlarla sizi arayanları yakalayın, CPAS ile sizi henüz tanımayanlara ulaşın. Jale platformu her iki kanalın verisini birleştirip hangi bütçenin nereye gitmesi gerektiğini size söyler.",
+    ],
+  },
 ];
 
 export function getPostBySlug(slug: string): BlogPost | undefined {

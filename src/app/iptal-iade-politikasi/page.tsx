@@ -5,6 +5,7 @@ import { SITE, PRICING, formatTRY } from "@/lib/site";
 export const metadata: Metadata = {
   title: "İptal ve İade Politikası",
   description: "Jale (cpasturkiye.com) abonelik iptal ve iade koşulları.",
+  alternates: { canonical: "/iptal-iade-politikasi" },
 };
 
 export default function RefundPolicyPage() {

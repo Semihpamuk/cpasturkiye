@@ -5,6 +5,7 @@ import { SITE, PRICING, formatTRY } from "@/lib/site";
 export const metadata: Metadata = {
   title: "Mesafeli Satış Sözleşmesi",
   description: "Jale (cpasturkiye.com) mesafeli satış sözleşmesi.",
+  alternates: { canonical: "/mesafeli-satis-sozlesmesi" },
 };
 
 export default function DistanceSalesPage() {

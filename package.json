@@ -9,7 +9,10 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@types/nodemailer": "^8.0.1",
+    "iyzipay": "^2.0.68",
     "next": "^15.5.4",
+    "nodemailer": "^9.0.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },

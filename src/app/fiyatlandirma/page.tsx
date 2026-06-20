@@ -13,6 +13,7 @@ export const metadata: Metadata = {
   title: "Fiyatlandırma",
   description:
     "Jale CPAS platformu fiyatları: tek mağaza, çoklu mağaza ve ajans planları. Yıllık ödemede %20 indirim. Şeffaf fiyatlandırma, gizli ücret yok.",
+  alternates: { canonical: "/fiyatlandirma" },
 };
 
 const buildFaq = (setupFee: number) => [

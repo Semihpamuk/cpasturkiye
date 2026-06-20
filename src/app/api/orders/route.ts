@@ -47,6 +47,12 @@ export async function POST(req: Request) {
     if (name.length > 200 || phone.length > 50 || email.length > 200 || storeUrl.length > 500) {
       return NextResponse.json({ error: "Geçersiz alan uzunluğu" }, { status: 400 });
     }
+    if (storeUrl && !/^https?:\/\/(www\.)?trendyol\.com\//i.test(storeUrl)) {
+      return NextResponse.json(
+        { error: "Mağaza URL'si geçerli bir Trendyol mağaza adresi olmalıdır" },
+        { status: 400 }
+      );
+    }
     if (!address || !city) {
       return NextResponse.json(
         { error: "Fatura adresi ve şehir zorunludur" },

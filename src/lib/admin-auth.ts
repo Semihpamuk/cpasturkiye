@@ -4,12 +4,22 @@ import { cookies } from "next/headers";
 const COOKIE_NAME = "jale_admin";
 const SESSION_HOURS = 24;
 
+const INSECURE_DEFAULTS = new Set(["dev-secret-change-in-production", "jale2026"]);
+
 function getSecret(): string {
-  return process.env.ADMIN_SECRET || "dev-secret-change-in-production";
+  const secret = process.env.ADMIN_SECRET ?? "dev-secret-change-in-production";
+  if (process.env.NODE_ENV === "production" && INSECURE_DEFAULTS.has(secret)) {
+    console.error("[SECURITY] ADMIN_SECRET ortam değişkeni güçlü bir değerle ayarlanmalıdır.");
+  }
+  return secret;
 }
 
 export function getAdminPassword(): string {
-  return process.env.ADMIN_PASSWORD || "jale2026";
+  const password = process.env.ADMIN_PASSWORD ?? "jale2026";
+  if (process.env.NODE_ENV === "production" && INSECURE_DEFAULTS.has(password)) {
+    console.error("[SECURITY] ADMIN_PASSWORD ortam değişkeni güçlü bir değerle ayarlanmalıdır.");
+  }
+  return password;
 }
 
 function sign(payload: string): string {
