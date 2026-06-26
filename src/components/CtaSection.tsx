@@ -9,8 +9,8 @@ export default function CtaSection() {
           <br className="hidden sm:block" /> Meta&apos;nın gücü seni bekliyor.
         </h2>
         <p className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-ink-500">
-          Kurulumdan optimizasyona kadar her adımda yanındayız. 7 günde sistemin hazır,
-          reklamların yayında.
+          Kurulumdan optimizasyona kadar her adımda yanındayız. Ortalama 7 iş günü içinde
+          sistemin hazır, reklamların yayında.
         </p>
         <Link
           href="/satin-al"

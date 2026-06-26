@@ -8,7 +8,7 @@ import { breadcrumbJsonLd } from "@/lib/seo";
 export const metadata: Metadata = {
   title: "İletişim",
   description:
-    "Jale ekibiyle iletişime geçin: demo talep edin, fiyat teklifi alın veya sorularınızı sorun. 1 iş günü içinde dönüş yapıyoruz.",
+    "CPAS Türkiye ekibiyle iletişime geçin: demo talep edin, fiyat teklifi alın veya sorularınızı sorun. 1 iş günü içinde dönüş yapıyoruz.",
   alternates: { canonical: "/iletisim" },
 };
 

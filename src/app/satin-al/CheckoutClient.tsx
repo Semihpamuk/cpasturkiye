@@ -257,7 +257,7 @@ export default function CheckoutClient() {
           <p className="mt-3 text-ink-600">
             {setupOnly
               ? "Trendyol–Meta CPAS bağlantısını uzman ekibimiz kurar. Ortalama 7 iş günü içinde sisteminiz hazır teslim edilir."
-              : "Paketini yapılandır ve güvenli ödeme adımına geç. Ödemenin ardından 7 iş günü içinde sistemin hazır teslim edilir."}
+              : "Paketini yapılandır ve güvenli ödeme adımına geç. Ödemenin ardından ortalama 7 iş günü içinde sistemin hazır teslim edilir."}
           </p>
         </div>
 

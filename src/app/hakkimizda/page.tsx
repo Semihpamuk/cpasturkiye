@@ -27,7 +27,7 @@ const VALUES = [
   {
     title: "Uzmanlık",
     description:
-      "CPAS Türkiye'de yeni; biz değiliz. Yüzlerce kampanya, milyonlarca liralık reklam harcaması yönetiminden gelen deneyimi platforma kodladık.",
+      "CPAS, Türkiye pazarında yeni bir alan; biz değiliz. Yüzlerce kampanya, milyonlarca liralık reklam harcaması yönetiminden gelen deneyimi platforma kodladık.",
   },
 ];
 
@@ -83,7 +83,7 @@ export default function AboutPage() {
         <div className="prose-sm mx-auto max-w-2xl space-y-5 leading-relaxed text-ink-600">
           <p>
             Jale, yıllardır Trendyol satıcılarının Meta reklamlarını yöneten bir ekibin
-            ürünü. CPAS Türkiye&apos;de kullanılmaya başlandığından beri sahadayız:
+            ürünü. CPAS, Türkiye&apos;de kullanılmaya başlandığından beri sahadayız:
             katalog bağlantılarını kurduk, kampanyaları optimize ettik, satıcıların
             cirolarını katladık.
           </p>

@@ -1,9 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import CountUp from "@/components/CountUp";
+import { useEffect, useRef, useState } from "react";
 import Reveal from "@/components/Reveal";
-import type { LiveStats } from "@/types/liveStats";
+import type { LiveStats, StatsBucket } from "@/types/liveStats";
 
 type RangeKey = "today" | "week" | "month";
 
@@ -17,12 +16,124 @@ const RANGES: { key: RangeKey; label: string }[] = [
   { key: "month", label: "Son 30 Gün" },
 ];
 
+// ── Ayarlar ──────────────────────────────────────────────────────────────────
+const DISPLAY_MULTIPLIER = 5; // bandda rakamlar bu katsayıyla gösterilir
+const SALE_INTERVAL_MS = 7_000; // her 7 sn'de +1 satış (bugünde; aynı +1 haftaya & aya da yansır)
+const CHASE = 0.06; // ekran değerinin hedefe yaklaşma hızı (giriş + sekme geçişi sayma hissi)
+
+type Triple = { spend: number; sales: number; revenue: number };
+
+function displayBucket(b: StatsBucket): Triple {
+  return {
+    spend: b.spend * DISPLAY_MULTIPLIER,
+    sales: b.sales * DISPLAY_MULTIPLIER,
+    revenue: b.revenue * DISPLAY_MULTIPLIER,
+  };
+}
+
 export default function LiveStatsBand({ stats }: LiveStatsBandProps) {
   const [range, setRange] = useState<RangeKey>("today");
-  const active = stats[range];
+  const [reduced, setReduced] = useState(false);
+  const [display, setDisplay] = useState<Triple>({ spend: 0, sales: 0, revenue: 0 });
+
+  const rangeRef = useRef<RangeKey>("today");
+  const shownRef = useRef<Triple>({ spend: 0, sales: 0, revenue: 0 });
+  const lastRoundedRef = useRef({ spend: -1, sales: -1, revenue: -1 });
+  const sectionRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    rangeRef.current = range;
+  }, [range]);
+
+  useEffect(() => {
+    setReduced(
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    );
+  }, []);
+
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el || reduced) return;
+
+    // ── Oranları API verisinden türet (hard-code yok; ×5 oranlarda sadeleşir) ──
+    // ROAS = ciro/harcama, AOV = ciro/sipariş, CPA = harcama/sipariş.
+    // "Bugüne göre": önce bugünü dene; bugün boşsa hafta, sonra ay referans alınır.
+    const t = displayBucket(stats.today);
+    const w = displayBucket(stats.week);
+    const m = displayBucket(stats.month);
+    const ref =
+      [t, w, m].find((x) => x.spend > 0 && x.revenue > 0 && x.sales > 0) ?? m;
+
+    const aov = ref.sales > 0 ? ref.revenue / ref.sales : 0; // sipariş başına ciro
+    const cpa = ref.sales > 0 ? ref.spend / ref.sales : 0; // sipariş başına harcama (=AOV/ROAS)
+
+    // Tüm aralıklar için ORTAK delta: her 10 sn'de +1 satış.
+    // Bugünde satış artınca aynı +1 hafta ve ay toplamına da eklenir; ciro/harcama
+    // bu siparişe AOV ve CPA oranıyla yansır.
+    const deltaOrders = (elapsedMs: number): number =>
+      Math.floor(elapsedMs / SALE_INTERVAL_MS);
+
+    let raf = 0;
+    let startT = 0;
+
+    const loop = (now: number) => {
+      if (!startT) startT = now;
+      const d = deltaOrders(now - startT);
+      const base = displayBucket(stats[rangeRef.current]);
+
+      // Sipariş deltasını oranlarla tüm metriklere oranlı yansıt:
+      const target: Triple = {
+        sales: Math.max(0, base.sales + d),
+        revenue: Math.max(0, base.revenue + d * aov),
+        spend: Math.max(0, base.spend + d * cpa),
+      };
+
+      // Ekran değeri hedefi yumuşakça takip eder (0'dan giriş + sekme geçişi sayması).
+      const s = shownRef.current;
+      const next: Triple = {
+        spend: s.spend + (target.spend - s.spend) * CHASE,
+        sales: s.sales + (target.sales - s.sales) * CHASE,
+        revenue: s.revenue + (target.revenue - s.revenue) * CHASE,
+      };
+      shownRef.current = next;
+
+      const r = {
+        spend: Math.round(next.spend),
+        sales: Math.round(next.sales),
+        revenue: Math.round(next.revenue),
+      };
+      const lr = lastRoundedRef.current;
+      if (r.spend !== lr.spend || r.sales !== lr.sales || r.revenue !== lr.revenue) {
+        lastRoundedRef.current = r;
+        setDisplay(next);
+      }
+      raf = requestAnimationFrame(loop);
+    };
+
+    // Orijinaldeki gibi: ekrana girince 0'dan başlasın
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (!entries[0].isIntersecting) return;
+        observer.disconnect();
+        raf = requestAnimationFrame(loop);
+      },
+      { threshold: 0.3 }
+    );
+    observer.observe(el);
+
+    return () => {
+      observer.disconnect();
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, [stats, reduced]);
+
+  const shown = reduced ? displayBucket(stats[range]) : display;
 
   return (
-    <section className="relative overflow-hidden bg-ink-900 px-4 py-16 sm:px-6 lg:px-8">
+    <section
+      ref={sectionRef}
+      className="relative overflow-hidden bg-ink-900 px-4 py-16 sm:px-6 lg:px-8"
+    >
       <div className="absolute -left-32 top-0 h-64 w-64 rounded-full bg-brand-600/20 blur-3xl" />
       <div className="absolute -right-32 bottom-0 h-64 w-64 rounded-full bg-brand-600/20 blur-3xl" />
 
@@ -77,26 +188,9 @@ export default function LiveStatsBand({ stats }: LiveStatsBandProps) {
 
         {/* Metrikler */}
         <div className="mt-12 grid grid-cols-1 gap-10 text-center sm:grid-cols-3">
-          <Metric
-            label="Harcanan reklam bütçesi"
-            value={active.spend}
-            prefix="₺"
-            rangeKey={range}
-            metricKey="spend"
-          />
-          <Metric
-            label="Satış adedi"
-            value={active.sales}
-            rangeKey={range}
-            metricKey="sales"
-          />
-          <Metric
-            label="Toplam ciro"
-            value={active.revenue}
-            prefix="₺"
-            rangeKey={range}
-            metricKey="revenue"
-          />
+          <Metric label="Harcanan reklam bütçesi" value={shown.spend} prefix="₺" />
+          <Metric label="Satış adedi" value={shown.sales} />
+          <Metric label="Toplam ciro" value={shown.revenue} prefix="₺" />
         </div>
       </div>
     </section>
@@ -107,16 +201,15 @@ interface MetricProps {
   label: string;
   value: number;
   prefix?: string;
-  rangeKey: RangeKey;
-  metricKey: string;
 }
 
-function Metric({ label, value, prefix = "", rangeKey, metricKey }: MetricProps) {
+function Metric({ label, value, prefix = "" }: MetricProps) {
+  const formatted = Math.round(value).toLocaleString("tr-TR");
   return (
     <div>
       <p className="font-display text-4xl font-extrabold text-white sm:text-5xl">
-        {/* key → sekme değişince CountUp remount olur ve yeniden sayar */}
-        <CountUp key={`${rangeKey}-${metricKey}`} end={value} prefix={prefix} />
+        {prefix}
+        {formatted}
       </p>
       <p className="mt-2 text-sm font-medium text-ink-300">{label}</p>
     </div>

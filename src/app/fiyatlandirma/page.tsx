@@ -39,7 +39,7 @@ const buildFaq = (setupFee: number) => [
       "Hayır. Meta'ya ödediğiniz reklam harcaması size aittir ve doğrudan kendi Meta hesabınızdan tahsil edilir. Jale aboneliği yalnızca platform ve yönetim hizmetini kapsar. Bütçenizin tam kontrolü sizdedir.",
   },
   {
-    question: "7'den fazla mağazam var, ne yapmalıyım?",
+    question: "7 veya daha fazla mağazam var, ne yapmalıyım?",
     answer:
       "Agency planında 7 ve üzeri mağaza için özel hacim fiyatlandırması sunuyoruz. İletişim sayfasından bize ulaşın, ihtiyacınıza göre teklif hazırlayalım.",
   },

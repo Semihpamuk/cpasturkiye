@@ -114,7 +114,7 @@ export default async function SetupPage() {
       <section className="px-4 py-16 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl">
           <h2 className="text-center font-display text-3xl font-bold tracking-tight text-ink-900">
-            7 günlük kurulum süreci
+            Ortalama 7 iş günlük kurulum süreci
           </h2>
           <p className="mt-3 text-center text-ink-600">
             Adım adım ne olacağını bil — sürpriz yok.

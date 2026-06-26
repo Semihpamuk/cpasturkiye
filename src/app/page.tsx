@@ -138,7 +138,7 @@ const COMPARISON = [
 const TESTIMONIALS = [
   {
     quote:
-      "Trendyol'da aylık 800 sipariş alıyorduk ama Meta reklamlarına nasıl geçeceğimizi bilmiyorduk. Jale ekibi 1 haftada her şeyi kurdu. 3. ayın sonunda ciromuz %60 arttı.",
+      "Trendyol'da aylık 800 sipariş alıyorduk ama Meta reklamlarına nasıl geçeceğimizi bilmiyorduk. CPAS Türkiye ekibi 1 haftada her şeyi kurdu. 3. ayın sonunda ciromuz %60 arttı.",
     name: "Emre K.",
     role: "Tekstil Satıcısı — İstanbul",
   },
@@ -311,11 +311,11 @@ export default async function HomePage() {
             </Reveal>
             <Reveal delay={200}>
               <p className="mt-6 max-w-xl text-lg leading-relaxed text-ink-600">
-                Türkiye&apos;de bu hizmeti uçtan uca verebilen neredeyse tek ekibiz.
-                Yönettiğimiz kampanyaların{" "}
+                Trendyol reklamlarını <strong className="text-ink-900">ürün bazlı
+                optimize eden tek ekibiz.</strong> Yönettiğimiz kampanyaların{" "}
                 <strong className="text-ink-900">%95&apos;i Trendyol&apos;un iç reklamlarından
                 daha iyi sonuç aldı</strong> — en kötü senaryoda bile{" "}
-                <strong className="text-ink-900">1.5 kat daha iyi</strong>.
+                <strong className="text-ink-900">1.5 kat</strong>.
               </p>
             </Reveal>
             <Reveal delay={300}>
@@ -338,7 +338,7 @@ export default async function HomePage() {
             <Reveal delay={400}>
               <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-3 text-sm text-ink-500">
                 <span className="flex items-center gap-2">
-                  <CheckIcon /> 7 günde kurulum
+                  <CheckIcon /> Ortalama 7 iş günü kurulum
                 </span>
                 <span className="flex items-center gap-2">
                   <CheckIcon /> Peşin fiyatına 3 taksit
@@ -400,12 +400,12 @@ export default async function HomePage() {
                 Business mimarisi, katalog segmentasyonu ve CPAS&apos;e özgü kampanya
                 kurgusu gerektirir. Türkiye&apos;de bu zinciri uçtan uca kurabilen ajans
                 sayısı bir elin parmağını geçmez — <strong className="text-ink-900">ürün
-                bazlı performans verisini görüp yönetebilen ise neredeyse sadece biziz.</strong>
+                bazlı optimizasyon yapabilen ise tek ekibiz.</strong>
               </p>
               <p className="mt-4 leading-relaxed text-ink-600">
-                Yıllardır bu işi müşterilerimiz için elle yapıyorduk. Şimdi tüm bilgi
-                birikimimizi Jale&apos;ye kodladık: sen panelden yönetirsin, sistem bizim
-                deneyimimizle çalışır.
+                CPAS Türkiye olarak yıllardır bu işi müşterilerimiz için elle yapıyorduk.
+                Şimdi tüm bilgi birikimimizi Jale&apos;ye kodladık: sen panelden yönetirsin,
+                sistem bizim deneyimimizle çalışır.
               </p>
             </Reveal>
             <Reveal delay={150}>
@@ -421,7 +421,7 @@ export default async function HomePage() {
                   },
                   {
                     title: "Ürün bazlı performans verisi",
-                    text: "Hangi ürünün ne harcayıp ne kazandırdığını görmek — bu veriye erişip yönetebilen tek ekibiz.",
+                    text: "Hangi ürünün ne harcayıp ne kazandırdığını görmek — ürün bazlı optimizasyon yapan tek ekibiz.",
                   },
                   {
                     title: "Sürekli optimizasyon",
@@ -518,21 +518,20 @@ export default async function HomePage() {
           </Reveal>
           <Reveal delay={200}>
             <p className="font-display text-4xl font-extrabold text-white sm:text-5xl">
-              <CountUp end={7} suffix=" gün" />
+              <CountUp end={7} suffix=" iş günü" />
             </p>
             <p className="mt-2 text-sm leading-snug text-ink-300">
-              içinde kurulum tamamlanır, reklamların{" "}
+              ortalamada kurulum tamamlanır, reklamların{" "}
               <span className="font-semibold text-white">yayında olur</span>
             </p>
           </Reveal>
           <Reveal delay={300}>
             <p className="font-display text-4xl font-extrabold text-white sm:text-5xl">
-              <CountUp end={1} suffix=". ekip" />
+              Tek
             </p>
             <p className="mt-2 text-sm leading-snug text-ink-300">
-              Türkiye&apos;de bu hizmeti{" "}
-              <span className="font-semibold text-white">uçtan uca verebilen</span> sayılı
-              ekipten biriyiz
+              Türkiye&apos;de Trendyol reklamlarını{" "}
+              <span className="font-semibold text-white">ürün bazlı optimize eden</span> ekip
             </p>
           </Reveal>
         </div>
@@ -583,10 +582,9 @@ export default async function HomePage() {
 
           <Reveal delay={150}>
             <p className="mx-auto mt-8 max-w-2xl text-center text-sm leading-relaxed text-ink-500">
-              Sonuçlarımız ortada: yönettiğimiz kampanyaların{" "}
-              <strong className="text-ink-800">%95&apos;i Trendyol iç reklamlarını geçti</strong>,
-              geri kalanı bile <strong className="text-ink-800">minimum 1.5 kat</strong> daha
-              iyi performans gösterdi.
+              Trendyol içi reklam ürününü listede bir sıra yukarı taşır; CPAS ise markanı
+              Facebook ve Instagram&apos;daki milyonlarca yeni kullanıcının akışına sokar.
+              İkisi rakip değil — birlikte en iyi sonucu verir.
             </p>
           </Reveal>
         </div>
@@ -664,7 +662,7 @@ export default async function HomePage() {
                 Şeffaf fiyatlandırma
               </h2>
               <p className="mt-4 text-lg text-ink-600">
-                Gizli ücret yok. Peşin fiyatına 3 taksit ve taksit seçenekleriyle.
+                Gizli ücret yok. Mağaza sayına göre öde, peşin fiyatına 3 taksit imkânıyla.
               </p>
             </div>
           </Reveal>
@@ -690,11 +688,11 @@ export default async function HomePage() {
               },
               {
                 q: "Trendyol mağazam Meta'ya nasıl bağlanır?",
-                a: "Trendyol'dan CPAS reklam yetkisi alınır, ardından Meta Business Manager'da katalog oluşturulup eşleştirilir. Jale bu teknik süreci 7 iş günü içinde sizin adınıza tamamlar.",
+                a: "Trendyol'dan CPAS reklam yetkisi alınır, ardından Meta Business Manager'da katalog oluşturulup eşleştirilir. Jale bu teknik süreci ortalama 7 iş günü içinde sizin adınıza tamamlar.",
               },
               {
                 q: "CPAS ile ne kadar ROAS beklenebilir?",
-                a: "Doğru kurulumda 4–8× ROAS tipik aralıktır. Yönettiğimiz kampanyaların %95'i Trendyol iç reklamlarını geride bıraktı; en kötü senaryoda bile 1.5× daha iyi sonuç.",
+                a: "Doğru kurulumda 4–8× ROAS tipik aralıktır; yeniden pazarlama kampanyaları 8–15× bandına çıkabilir. Sonuç kategori, kâr marjı ve bütçeye göre değişir.",
               },
               {
                 q: "Kurulumu abonelik almadan satın alabilir miyim?",
