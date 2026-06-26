@@ -7,6 +7,8 @@ import ReferencesBar from "@/components/ReferencesBar";
 import TestimonialsSpotlight from "@/components/TestimonialsSpotlight";
 import Reveal from "@/components/Reveal";
 import CountUp from "@/components/CountUp";
+import LiveStatsBand from "@/components/LiveStatsBand";
+import { getLiveStats } from "@/lib/liveStats";
 import { SITE, PRICING, formatTRY } from "@/lib/site";
 
 const STEPS = [
@@ -265,7 +267,9 @@ const websiteJsonLd = {
   description: SITE.description,
 };
 
-export default function HomePage() {
+export default async function HomePage() {
+  const liveStats = await getLiveStats();
+
   return (
     <>
       <script
@@ -445,7 +449,51 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ====== İSTATİSTİK BANDI ====== */}
+      {/* ====== CANLI İSTATİSTİK BANDI (Jale verisi) ====== */}
+      {liveStats && <LiveStatsBand stats={liveStats} />}
+
+      {/* ====== CANLI AKIŞ + NASIL ÇALIŞIR ====== */}
+      <section className="bg-ink-50 px-4 py-20 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl">
+          <Reveal>
+            <div className="mx-auto max-w-2xl text-center">
+              <h2 className="font-display text-3xl font-bold tracking-tight text-ink-900 sm:text-4xl">
+                Nasıl çalışır?
+              </h2>
+              <p className="mt-4 text-lg text-ink-600">
+                Kataloğun Trendyol&apos;dan akar, reklamların Meta&apos;da döner, satışlar
+                gerçek veriyle ölçülür.
+              </p>
+            </div>
+          </Reveal>
+
+          <Reveal delay={100}>
+            <div className="mx-auto mt-12 max-w-4xl rounded-3xl border border-ink-200 bg-white p-6 shadow-sm sm:p-10">
+              <CpasFlowAnimation />
+            </div>
+          </Reveal>
+
+          <div className="mt-12 grid gap-8 md:grid-cols-3">
+            {STEPS.map((step, index) => (
+              <Reveal key={step.number} delay={index * 120}>
+                <div className="h-full rounded-2xl border border-ink-200 bg-white p-8 shadow-sm transition-shadow hover:shadow-md">
+                  <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 font-display text-xl font-bold text-white">
+                    {step.number}
+                  </span>
+                  <h3 className="mt-5 font-display text-lg font-bold text-ink-900">
+                    {step.title}
+                  </h3>
+                  <p className="mt-2.5 text-sm leading-relaxed text-ink-600">
+                    {step.description}
+                  </p>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ====== İSTATİSTİK BANDI (BAŞARI) ====== */}
       <section className="relative overflow-hidden bg-ink-900 px-4 py-16 sm:px-6 lg:px-8">
         <div className="absolute -left-32 top-0 h-64 w-64 rounded-full bg-brand-600/20 blur-3xl" />
         <div className="absolute -right-32 bottom-0 h-64 w-64 rounded-full bg-brand-600/20 blur-3xl" />
@@ -487,47 +535,6 @@ export default function HomePage() {
               ekipten biriyiz
             </p>
           </Reveal>
-        </div>
-      </section>
-
-      {/* ====== CANLI AKIŞ + NASIL ÇALIŞIR ====== */}
-      <section className="bg-ink-50 px-4 py-20 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl">
-          <Reveal>
-            <div className="mx-auto max-w-2xl text-center">
-              <h2 className="font-display text-3xl font-bold tracking-tight text-ink-900 sm:text-4xl">
-                Nasıl çalışır?
-              </h2>
-              <p className="mt-4 text-lg text-ink-600">
-                Kataloğun Trendyol&apos;dan akar, reklamların Meta&apos;da döner, satışlar
-                gerçek veriyle ölçülür.
-              </p>
-            </div>
-          </Reveal>
-
-          <Reveal delay={100}>
-            <div className="mx-auto mt-12 max-w-4xl rounded-3xl border border-ink-200 bg-white p-6 shadow-sm sm:p-10">
-              <CpasFlowAnimation />
-            </div>
-          </Reveal>
-
-          <div className="mt-12 grid gap-8 md:grid-cols-3">
-            {STEPS.map((step, index) => (
-              <Reveal key={step.number} delay={index * 120}>
-                <div className="h-full rounded-2xl border border-ink-200 bg-white p-8 shadow-sm transition-shadow hover:shadow-md">
-                  <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 font-display text-xl font-bold text-white">
-                    {step.number}
-                  </span>
-                  <h3 className="mt-5 font-display text-lg font-bold text-ink-900">
-                    {step.title}
-                  </h3>
-                  <p className="mt-2.5 text-sm leading-relaxed text-ink-600">
-                    {step.description}
-                  </p>
-                </div>
-              </Reveal>
-            ))}
-          </div>
         </div>
       </section>
 
