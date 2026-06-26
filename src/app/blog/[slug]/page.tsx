@@ -60,11 +60,30 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     mainEntityOfPage: `${SITE.url}/blog/${post.slug}`,
   };
 
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Ana Sayfa", item: SITE.url },
+      { "@type": "ListItem", position: 2, name: "Blog", item: `${SITE.url}/blog` },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: post.title,
+        item: `${SITE.url}/blog/${post.slug}`,
+      },
+    ],
+  };
+
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
       <article className="px-4 py-16 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-2xl">

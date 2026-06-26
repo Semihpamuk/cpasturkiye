@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import ContactForm from "@/components/ContactForm";
 import { SITE } from "@/lib/site";
 import Link from "next/link";
+import JsonLd from "@/components/JsonLd";
+import { breadcrumbJsonLd } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: "İletişim",
@@ -12,8 +14,15 @@ export const metadata: Metadata = {
 
 export default function ContactPage() {
   return (
-    <section className="bg-gradient-to-b from-brand-50/60 to-white px-4 py-16 sm:px-6 lg:px-8">
-      <div className="mx-auto grid max-w-6xl gap-14 lg:grid-cols-2">
+    <>
+      <JsonLd
+        data={breadcrumbJsonLd([
+          { name: "Ana Sayfa", path: "" },
+          { name: "İletişim", path: "/iletisim" },
+        ])}
+      />
+      <section className="bg-gradient-to-b from-brand-50/60 to-white px-4 py-16 sm:px-6 lg:px-8">
+        <div className="mx-auto grid max-w-6xl gap-14 lg:grid-cols-2">
         <div>
           <h1 className="font-display text-4xl font-extrabold tracking-tight text-ink-900 sm:text-5xl">
             Hadi konuşalım
@@ -82,6 +91,7 @@ export default function ContactPage() {
             <p><strong>Unvan:</strong> {SITE.company}</p>
             <p><strong>Adres:</strong> {SITE.address}</p>
             <p><strong>MERSİS No:</strong> {SITE.mersis}</p>
+            <p><strong>Ticaret Sicil No:</strong> {SITE.tradeRegistryNo}</p>
             <p><strong>Vergi Dairesi / No:</strong> {SITE.taxOffice} / {SITE.taxId}</p>
             <p><strong>E-posta:</strong> {SITE.email}</p>
             <p><strong>Telefon:</strong> {SITE.phone}</p>
@@ -100,6 +110,7 @@ export default function ContactPage() {
           <ContactForm />
         </div>
       </div>
-    </section>
+      </section>
+    </>
   );
 }

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { findValidCode, getSettings, savePendingOrder } from "@/lib/db";
-import { computeOrderQuote } from "@/lib/site";
+import { computeOrderQuote, VAT_RATE } from "@/lib/site";
 import { initializeCheckoutForm, type IyzicoBasketItem } from "@/lib/iyzico";
 import { SITE } from "@/lib/site";
 
@@ -85,28 +85,55 @@ export async function POST(req: Request) {
         ? `Ajans Planı — ${storeCount} Mağaza — ${billing === "yearly" ? "Yıllık" : "Aylık"}`
         : `Standart Plan — ${storeCount} Mağaza — ${billing === "yearly" ? "Yıllık" : "Aylık"}`;
 
-      const subscriptionTotal = (
-        quote.netAfterDiscount + quote.vatAmount - (includeSetup ? Math.round(quote.setupNet * 1.2) : 0)
-      );
+      // İndirim ve KDV dahil toplam (quote.total), kalemler arasında brüt
+      // (KDV dahil) ağırlıklarına göre orantılı paylaştırılır. Böylece kalem
+      // toplamı her zaman quote.total'a birebir eşit olur (iyzico bunu zorunlu
+      // kılar) ve hiçbir kalem indirim nedeniyle negatife/sıfıra düşmez.
+      const grossSubscription = Math.round(quote.subscriptionNet * (1 + VAT_RATE));
+      const grossSetup = includeSetup
+        ? Math.round(quote.setupNet * (1 + VAT_RATE))
+        : 0;
+      const grossTotal = grossSubscription + grossSetup;
 
-      basketItems = [
-        {
-          id: "subscription",
-          name: planLabel,
-          category1: "SaaS Abonelik",
-          itemType: "VIRTUAL",
-          price: subscriptionTotal.toFixed(2),
-        },
-      ];
+      // Kurulum kaleminin toplam içindeki payı (yuvarlama farkı abonelikte toplanır)
+      const setupItemPrice =
+        includeSetup && grossTotal > 0
+          ? Math.round((quote.total * grossSetup) / grossTotal)
+          : 0;
+      const subscriptionItemPrice = quote.total - setupItemPrice;
 
-      if (includeSetup) {
-        basketItems.push({
-          id: "setup",
-          name: "Kurulum Hizmeti (tek seferlik)",
-          category1: "Profesyonel Hizmet",
-          itemType: "VIRTUAL",
-          price: Math.round(quote.setupNet * 1.2).toFixed(2),
-        });
+      // Güvenlik ağı: orantılama sonucu bir kalem geçersiz (≤0) olursa, tek
+      // birleşik kalem kullan — iyzico sıfır/negatif kalemi reddeder.
+      if (subscriptionItemPrice <= 0 || (includeSetup && setupItemPrice <= 0)) {
+        basketItems = [
+          {
+            id: "order",
+            name: includeSetup ? `${planLabel} + Kurulum` : planLabel,
+            category1: "SaaS Abonelik",
+            itemType: "VIRTUAL",
+            price: quote.total.toFixed(2),
+          },
+        ];
+      } else {
+        basketItems = [
+          {
+            id: "subscription",
+            name: planLabel,
+            category1: "SaaS Abonelik",
+            itemType: "VIRTUAL",
+            price: subscriptionItemPrice.toFixed(2),
+          },
+        ];
+
+        if (includeSetup) {
+          basketItems.push({
+            id: "setup",
+            name: "Kurulum Hizmeti (tek seferlik)",
+            category1: "Profesyonel Hizmet",
+            itemType: "VIRTUAL",
+            price: setupItemPrice.toFixed(2),
+          });
+        }
       }
     }
 

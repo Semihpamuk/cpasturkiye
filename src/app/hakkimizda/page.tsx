@@ -3,6 +3,8 @@ import Image from "next/image";
 import CtaSection from "@/components/CtaSection";
 import { SITE } from "@/lib/site";
 import Link from "next/link";
+import JsonLd from "@/components/JsonLd";
+import { breadcrumbJsonLd } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: "Hakkımızda — Jale CPAS Platformu",
@@ -51,6 +53,12 @@ const MILESTONES = [
 export default function AboutPage() {
   return (
     <>
+      <JsonLd
+        data={breadcrumbJsonLd([
+          { name: "Ana Sayfa", path: "" },
+          { name: "Hakkımızda", path: "/hakkimizda" },
+        ])}
+      />
       <section className="bg-gradient-to-b from-brand-50/60 to-white px-4 pb-12 pt-16 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
           <Image
@@ -153,6 +161,7 @@ export default function AboutPage() {
           <div className="mt-4 grid gap-1.5 text-sm text-ink-600 sm:grid-cols-2">
             <p><span className="font-semibold text-ink-800">Ticaret Unvanı:</span> {SITE.company}</p>
             <p><span className="font-semibold text-ink-800">MERSİS No:</span> {SITE.mersis}</p>
+            <p><span className="font-semibold text-ink-800">Ticaret Sicil No:</span> {SITE.tradeRegistryNo}</p>
             <p><span className="font-semibold text-ink-800">Vergi Dairesi / No:</span> {SITE.taxOffice} / {SITE.taxId}</p>
             <p><span className="font-semibold text-ink-800">Adres:</span> {SITE.address}</p>
             <p><span className="font-semibold text-ink-800">E-posta:</span> {SITE.email}</p>

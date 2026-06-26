@@ -1,0 +1,39 @@
+# Jale — CPAS Türkiye
+
+> Türkiye'nin Trendyol–Meta CPAS reklam yönetim platformu. Trendyol mağazanı Meta'ya (Facebook & Instagram) bağla, reklamlarını tek panelden yönet, gerçek satış verisiyle büyü. Site: https://cpasturkiye.com
+
+## Tanım
+
+CPAS (Collaborative Performance Advertising Solution), Meta'nın pazaryeri satıcıları için geliştirdiği iş birliğine dayalı performans reklam çözümüdür. Trendyol'daki ürün kataloğunu Meta reklam sistemine bağlar; Facebook ve Instagram reklamlarının doğrudan Trendyol siparişi olarak ölçülmesini sağlar. Normal Meta reklamlarından farkı: dönüşüm tahmini değil, Trendyol'un paylaştığı gerçek sipariş verisiyle birebir eşleştirilir.
+
+## Kimler kullanabilir
+
+- Trendyol'da aktif ve onaylı mağazası olan satıcılar
+- Son 30 günde en az ~100 sipariş alan mağazalar (Meta optimizasyon algoritması için yeterli veri sinyali)
+- Reklam matematiğine uygun kâr marjına sahip ürünler
+- En az 10–20 aktif ürünlü katalog (dinamik katalog reklamları için ideal)
+- Trendyol'dan CPAS reklam yetkisi alınması gerekir
+
+## Hizmet
+
+Jale, CPAS kurulumunun tamamını (Trendyol yetkilendirme, Meta Business Manager, katalog eşleştirme, kampanya kurulumu) satıcı adına yönetir ve sistemi 7 iş gününde teslim eder. Platform; günlük katalog senkronizasyonu, ürün bazında ROAS analizi, AI bütçe önerileri ve 7/24 anomali izleme sunar.
+
+## Ana Sayfalar
+
+- [Ana Sayfa](https://cpasturkiye.com): Platform tanıtımı ve genel bakış
+- [Özellikler](https://cpasturkiye.com/ozellikler): Platform yetenekleri
+- [Fiyatlandırma](https://cpasturkiye.com/fiyatlandirma): Abonelik ve kurulum paketleri
+- [Kurulum](https://cpasturkiye.com/kurulum): 7 günlük kurulum süreci
+- [Satın Al](https://cpasturkiye.com/satin-al): Sipariş ve ödeme
+- [SSS](https://cpasturkiye.com/sss): Sık sorulan sorular
+- [Hakkımızda](https://cpasturkiye.com/hakkimizda): Şirket bilgisi
+- [İletişim](https://cpasturkiye.com/iletisim): İletişim ve ön değerlendirme talebi
+
+## Blog (Rehber İçerikler)
+
+- [CPAS Nedir? Trendyol Satıcıları İçin Eksiksiz Rehber](https://cpasturkiye.com/blog/cpas-nedir-trendyol-saticilari-icin-rehber)
+- [Trendyol Satıcısı Meta Reklamlarına Ne Zaman Geçmeli?](https://cpasturkiye.com/blog/trendyol-saticisi-meta-reklamlarina-ne-zaman-gecmeli)
+- [ROAS Nasıl Yükseltilir? CPAS Kampanyalarında 5 Kanıtlanmış Taktik](https://cpasturkiye.com/blog/roas-nasil-yukseltilir-cpas-kampanyalarinda-5-taktik)
+- [Trendyol CPAS Reklam Yetkisi Nasıl Alınır? Adım Adım 2026 Rehberi](https://cpasturkiye.com/blog/trendyol-cpas-reklam-yetkisi-nasil-alinir)
+- [Trendyol Meta Reklam Entegrasyonu: Facebook ve Instagram'dan Satış](https://cpasturkiye.com/blog/trendyol-meta-reklam-entegrasyonu-nedir)
+- [CPAS mi, Trendyol İç Reklam mı? Hangisi Daha Kârlı?](https://cpasturkiye.com/blog/cpas-ile-trendyol-ic-reklam-karsilastirma)

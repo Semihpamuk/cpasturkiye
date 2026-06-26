@@ -83,7 +83,14 @@ const getPlans = (PRICING: PricingValues): Plan[] => [
   },
 ];
 
-export default function PricingCards() {
+interface PricingCardsProps {
+  /** Anasayfa özeti için: her kartta sadece ilk birkaç özelliği göster */
+  compact?: boolean;
+}
+
+const COMPACT_FEATURE_COUNT = 6;
+
+export default function PricingCards({ compact = false }: PricingCardsProps) {
   const [isYearly, setIsYearly] = useState(false);
   const { pricing } = useSettings();
   const plans = getPlans(pricing);
@@ -168,7 +175,7 @@ export default function PricingCards() {
             </div>
 
             <ul className="mt-8 flex-1 space-y-3">
-              {plan.features.map((feature) => (
+              {(compact ? plan.features.slice(0, COMPACT_FEATURE_COUNT) : plan.features).map((feature) => (
                 <li key={feature.text} className="flex items-start gap-2.5 text-sm">
                   {feature.included ? (
                     <svg
@@ -196,6 +203,16 @@ export default function PricingCards() {
                   </span>
                 </li>
               ))}
+              {compact && plan.features.length > COMPACT_FEATURE_COUNT && (
+                <li className="pt-1">
+                  <Link
+                    href="/fiyatlandirma"
+                    className="text-sm font-semibold text-brand-700 underline underline-offset-2 hover:text-brand-800"
+                  >
+                    + {plan.features.length - COMPACT_FEATURE_COUNT} özellik daha →
+                  </Link>
+                </li>
+              )}
             </ul>
 
             <Link

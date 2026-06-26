@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Plus_Jakarta_Sans } from "next/font/google";
+import { Inter, Plus_Jakarta_Sans, Fraunces } from "next/font/google";
 import SiteChrome from "@/components/SiteChrome";
 import { SITE } from "@/lib/site";
 import "./globals.css";
@@ -12,6 +12,11 @@ const inter = Inter({
 const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin", "latin-ext"],
   variable: "--font-jakarta",
+});
+
+const fraunces = Fraunces({
+  subsets: ["latin", "latin-ext"],
+  variable: "--font-fraunces",
 });
 
 export const metadata: Metadata = {
@@ -70,7 +75,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="tr">
-      <body className={`${inter.variable} ${jakarta.variable} font-sans`}>
+      <body className={`${inter.variable} ${jakarta.variable} ${fraunces.variable} font-sans`}>
         <SiteChrome>{children}</SiteChrome>
       </body>
     </html>

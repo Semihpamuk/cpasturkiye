@@ -3,6 +3,8 @@ import Link from "next/link";
 import CtaSection from "@/components/CtaSection";
 import { PRICING as DEFAULTS, formatTRY } from "@/lib/site";
 import { getSettings } from "@/lib/db";
+import JsonLd from "@/components/JsonLd";
+import { breadcrumbJsonLd } from "@/lib/seo";
 
 // Fiyatlar admin panelinden güncellenebildiği için sayfa istek anında render edilir
 export const dynamic = "force-dynamic";
@@ -62,6 +64,12 @@ export default async function SetupPage() {
   const PRICING = { ...DEFAULTS, ...pricing };
   return (
     <>
+      <JsonLd
+        data={breadcrumbJsonLd([
+          { name: "Ana Sayfa", path: "" },
+          { name: "Kurulum Hizmeti", path: "/kurulum" },
+        ])}
+      />
       <section className="bg-gradient-to-b from-brand-50/60 to-white px-4 pb-12 pt-16 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
           <span className="inline-block rounded-full border border-brand-200 bg-white px-4 py-1.5 text-xs font-semibold text-brand-700 shadow-sm">

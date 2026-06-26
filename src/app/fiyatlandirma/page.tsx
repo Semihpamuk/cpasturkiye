@@ -5,6 +5,8 @@ import FaqAccordion from "@/components/FaqAccordion";
 import CtaSection from "@/components/CtaSection";
 import { PRICING as DEFAULTS, formatTRY } from "@/lib/site";
 import { getSettings } from "@/lib/db";
+import JsonLd from "@/components/JsonLd";
+import { breadcrumbJsonLd } from "@/lib/seo";
 
 // Fiyatlar admin panelinden güncellenebildiği için sayfa istek anında render edilir
 export const dynamic = "force-dynamic";
@@ -53,6 +55,12 @@ export default async function PricingPage() {
   const PRICING_FAQ = buildFaq(pricing.setupFee);
   return (
     <>
+      <JsonLd
+        data={breadcrumbJsonLd([
+          { name: "Ana Sayfa", path: "" },
+          { name: "Fiyatlandırma", path: "/fiyatlandirma" },
+        ])}
+      />
       <section className="bg-gradient-to-b from-brand-50/60 to-white px-4 pb-12 pt-16 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
           <h1 className="font-display text-4xl font-extrabold tracking-tight text-ink-900 sm:text-5xl">

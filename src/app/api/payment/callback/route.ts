@@ -20,11 +20,11 @@ export async function POST(req: Request) {
     const status = params.get("status");
 
     if (!token) {
-      return NextResponse.redirect(`${SITE.url}/satin-al?payment=error&reason=no_token`);
+      return NextResponse.redirect(`${SITE.url}/satin-al?payment=error&reason=no_token`, 303);
     }
 
     if (status === "failure") {
-      return NextResponse.redirect(`${SITE.url}/satin-al?payment=failure`);
+      return NextResponse.redirect(`${SITE.url}/satin-al?payment=failure`, 303);
     }
 
     // Sunucu tarafında ödemeyi doğrula
@@ -33,7 +33,8 @@ export async function POST(req: Request) {
     if (result.status !== "success" || result.paymentStatus !== "SUCCESS") {
       console.error("iyzico retrieve failure:", result);
       return NextResponse.redirect(
-        `${SITE.url}/satin-al?payment=failure&reason=${result.errorCode ?? "unknown"}`
+        `${SITE.url}/satin-al?payment=failure&reason=${result.errorCode ?? "unknown"}`,
+        303
       );
     }
 
@@ -113,9 +114,9 @@ export async function POST(req: Request) {
       paymentId: order.paymentId,
     });
 
-    return NextResponse.redirect(`${SITE.url}/satin-al?payment=success&orderId=${order.id}`);
+    return NextResponse.redirect(`${SITE.url}/satin-al?payment=success&orderId=${order.id}`, 303);
   } catch (err) {
     console.error("payment/callback error:", err);
-    return NextResponse.redirect(`${SITE.url}/satin-al?payment=error`);
+    return NextResponse.redirect(`${SITE.url}/satin-al?payment=error`, 303);
   }
 }

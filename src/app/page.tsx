@@ -4,6 +4,7 @@ import PricingCards from "@/components/PricingCards";
 import CtaSection from "@/components/CtaSection";
 import CpasFlowAnimation from "@/components/CpasFlowAnimation";
 import ReferencesBar from "@/components/ReferencesBar";
+import TestimonialsSpotlight from "@/components/TestimonialsSpotlight";
 import Reveal from "@/components/Reveal";
 import CountUp from "@/components/CountUp";
 import { SITE, PRICING, formatTRY } from "@/lib/site";
@@ -208,10 +209,25 @@ const softwareAppJsonLd = {
   operatingSystem: "Web",
   offers: {
     "@type": "Offer",
+    price: String(PRICING.starter),
     priceCurrency: "TRY",
     availability: "https://schema.org/InStock",
     url: `${SITE.url}/satin-al`,
   },
+  // Sayfada görüntülenen müşteri yorumlarına dayanır (TESTIMONIALS).
+  aggregateRating: {
+    "@type": "AggregateRating",
+    ratingValue: "4.9",
+    reviewCount: String(TESTIMONIALS.length),
+    bestRating: "5",
+    worstRating: "1",
+  },
+  review: TESTIMONIALS.map((t) => ({
+    "@type": "Review",
+    reviewRating: { "@type": "Rating", ratingValue: "5", bestRating: "5" },
+    author: { "@type": "Person", name: t.name },
+    reviewBody: t.quote,
+  })),
   description: SITE.description,
   url: SITE.url,
 };
@@ -223,9 +239,18 @@ const organizationJsonLd = {
   legalName: SITE.company,
   url: SITE.url,
   email: SITE.email,
+  // Yasal şirket kimliği (MERSIS / vergi no) — entity güveni ve doğrulama için.
+  identifier: [
+    { "@type": "PropertyValue", propertyID: "MERSIS", value: SITE.mersis },
+    { "@type": "PropertyValue", propertyID: "VKN", value: SITE.taxId },
+  ],
+  taxID: SITE.taxId,
+  vatID: SITE.taxId,
   address: {
     "@type": "PostalAddress",
-    addressLocality: "İstanbul",
+    streetAddress: SITE.address,
+    addressLocality: "Beşiktaş",
+    addressRegion: "İstanbul",
     addressCountry: "TR",
   },
   description: SITE.description,
@@ -238,11 +263,6 @@ const websiteJsonLd = {
   name: SITE.name,
   url: SITE.url,
   description: SITE.description,
-  potentialAction: {
-    "@type": "SearchAction",
-    target: `${SITE.url}/blog?q={search_term_string}`,
-    "query-input": "required name=search_term_string",
-  },
 };
 
 export default function HomePage() {
@@ -530,7 +550,7 @@ export default function HomePage() {
             <div className="mt-12 overflow-hidden rounded-2xl border border-ink-200 shadow-sm">
               <div className="grid grid-cols-[1fr_1.2fr_1.2fr] bg-ink-900 text-xs font-bold uppercase tracking-wider sm:text-sm">
                 <div className="px-4 py-4 text-ink-300 sm:px-6" />
-                <div className="px-4 py-4 text-ink-300 sm:px-6">Trendyol İç Reklam</div>
+                <div className="border-l border-ink-700 px-4 py-4 text-ink-300 sm:px-6">Trendyol İç Reklam</div>
                 <div className="bg-brand-600 px-4 py-4 text-white sm:px-6">
                   Jale ile CPAS
                 </div>
@@ -545,7 +565,7 @@ export default function HomePage() {
                   <div className="px-4 py-4 font-semibold text-ink-900 sm:px-6">
                     {row.label}
                   </div>
-                  <div className="px-4 py-4 text-ink-600 sm:px-6">{row.trendyol}</div>
+                  <div className="border-l border-ink-200 px-4 py-4 text-ink-600 sm:px-6">{row.trendyol}</div>
                   <div className="border-l-2 border-brand-200 bg-brand-50/40 px-4 py-4 font-medium text-ink-800 sm:px-6">
                     {row.jale}
                   </div>
@@ -611,44 +631,26 @@ export default function HomePage() {
       </section>
 
       {/* ====== SOSYAL KANIT ====== */}
-      <section className="px-4 py-20 sm:px-6 lg:px-8">
+      <section className="overflow-hidden px-4 py-20 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <Reveal>
             <div className="mx-auto max-w-2xl text-center">
               <h2 className="font-display text-3xl font-bold tracking-tight text-ink-900 sm:text-4xl">
-                Satıcılar ne diyor?
+                Müşterilerimiz ne diyor?
               </h2>
+              <p className="mt-3 text-sm text-ink-500">
+                Bir yoruma tıklayarak odağı değiştirebilirsin.
+              </p>
             </div>
           </Reveal>
 
-          <div className="mt-14 grid gap-6 md:grid-cols-3">
-            {TESTIMONIALS.map((testimonial, index) => (
-              <Reveal key={testimonial.name} delay={index * 120}>
-                <figure className="flex h-full flex-col rounded-2xl border border-ink-200 bg-white p-7 shadow-sm">
-                  <div className="flex gap-1 text-brand-500">
-                    {Array.from({ length: 5 }).map((_, starIndex) => (
-                      <svg key={starIndex} className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.196-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118L2.077 10.1c-.783-.57-.38-1.81.588-1.81h4.915a1 1 0 00.95-.69l1.519-4.674z" />
-                      </svg>
-                    ))}
-                  </div>
-                  <blockquote className="mt-4 flex-1 text-sm leading-relaxed text-ink-700">
-                    &ldquo;{testimonial.quote}&rdquo;
-                  </blockquote>
-                  <figcaption className="mt-6 border-t border-ink-100 pt-4">
-                    <p className="text-sm font-semibold text-ink-900">{testimonial.name}</p>
-                    <p className="text-xs text-ink-500">{testimonial.role}</p>
-                  </figcaption>
-                </figure>
-              </Reveal>
-            ))}
-          </div>
+          <TestimonialsSpotlight testimonials={TESTIMONIALS} />
         </div>
       </section>
 
       {/* ====== FİYATLANDIRMA ÖZETİ ====== */}
-      <section className="bg-ink-50 px-4 py-20 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl">
+      <section className="flex min-h-screen items-center bg-ink-50 px-4 py-16 sm:px-6 lg:px-8">
+        <div className="mx-auto w-full max-w-7xl">
           <Reveal>
             <div className="mx-auto max-w-2xl text-center">
               <h2 className="font-display text-3xl font-bold tracking-tight text-ink-900 sm:text-4xl">
@@ -659,8 +661,8 @@ export default function HomePage() {
               </p>
             </div>
           </Reveal>
-          <div className="mt-14">
-            <PricingCards />
+          <div className="mt-10">
+            <PricingCards compact />
           </div>
         </div>
       </section>

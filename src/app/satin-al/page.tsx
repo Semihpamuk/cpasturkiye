@@ -1,6 +1,8 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import CheckoutClient from "./CheckoutClient";
+import JsonLd from "@/components/JsonLd";
+import { breadcrumbJsonLd } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: "Satın Al",
@@ -11,8 +13,16 @@ export const metadata: Metadata = {
 
 export default function CheckoutPage() {
   return (
-    <Suspense>
-      <CheckoutClient />
-    </Suspense>
+    <>
+      <JsonLd
+        data={breadcrumbJsonLd([
+          { name: "Ana Sayfa", path: "" },
+          { name: "Satın Al", path: "/satin-al" },
+        ])}
+      />
+      <Suspense>
+        <CheckoutClient />
+      </Suspense>
+    </>
   );
 }

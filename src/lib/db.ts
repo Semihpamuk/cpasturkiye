@@ -259,9 +259,18 @@ export async function updateLeadStatus(
 
 // --- Bekleyen ödemeler (iyzico callback'ten önce geçici olarak saklanır) ---
 
+// Ödeme yarıda kalan bekleyen siparişler için yaşam süresi (24 saat).
+const PENDING_ORDER_TTL_MS = 24 * 60 * 60 * 1000;
+
 export async function savePendingOrder(order: PendingOrder): Promise<void> {
   const orders = await readCollection<PendingOrder>("pending-orders");
-  const without = orders.filter((o) => o.conversationId !== order.conversationId);
+  const cutoff = Date.now() - PENDING_ORDER_TTL_MS;
+  // Aynı conversationId'yi değiştir ve süresi dolmuş (terk edilmiş) kayıtları temizle.
+  const without = orders.filter(
+    (o) =>
+      o.conversationId !== order.conversationId &&
+      new Date(o.createdAt).getTime() >= cutoff
+  );
   await writeCollection("pending-orders", [order, ...without]);
 }
 

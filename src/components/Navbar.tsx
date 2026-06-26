@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
+import Logo from "./Logo";
 
 const NAV_LINKS = [
   { href: "/ozellikler", label: "Özellikler" },
@@ -20,14 +20,7 @@ export default function Navbar() {
     <header className="sticky top-0 z-50 border-b border-ink-100 bg-white/90 backdrop-blur-md">
       <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link href="/" className="flex items-center">
-          <Image
-            src="/og-image.png"
-            alt="CPAS Türkiye"
-            width={120}
-            height={63}
-            className="h-9 w-auto"
-            priority
-          />
+          <Logo className="text-2xl" />
         </Link>
 
         <div className="hidden items-center gap-7 lg:flex">

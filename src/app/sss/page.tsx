@@ -3,6 +3,8 @@ import Link from "next/link";
 import FaqAccordion, { type FaqItem } from "@/components/FaqAccordion";
 import CtaSection from "@/components/CtaSection";
 import { PRICING, formatTRY } from "@/lib/site";
+import JsonLd from "@/components/JsonLd";
+import { breadcrumbJsonLd } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: "Sık Sorulan Sorular — CPAS, Kurulum ve Abonelik",
@@ -140,6 +142,12 @@ const faqJsonLd = {
 export default function FaqPage() {
   return (
     <>
+      <JsonLd
+        data={breadcrumbJsonLd([
+          { name: "Ana Sayfa", path: "" },
+          { name: "Sık Sorulan Sorular", path: "/sss" },
+        ])}
+      />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
