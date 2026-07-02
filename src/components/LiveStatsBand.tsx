@@ -6,8 +6,10 @@ import type { LiveStats, StatsBucket } from "@/types/liveStats";
 
 type RangeKey = "today" | "week" | "month";
 
-interface LiveStatsBandProps {
-  stats: LiveStats;
+interface StatsApiResponse {
+  success: boolean;
+  data?: LiveStats;
+  error?: string;
 }
 
 const RANGES: { key: RangeKey; label: string }[] = [
@@ -31,7 +33,8 @@ function displayBucket(b: StatsBucket): Triple {
   };
 }
 
-export default function LiveStatsBand({ stats }: LiveStatsBandProps) {
+export default function LiveStatsBand() {
+  const [stats, setStats] = useState<LiveStats | null>(null);
   const [range, setRange] = useState<RangeKey>("today");
   const [reduced, setReduced] = useState(false);
   const [display, setDisplay] = useState<Triple>({ spend: 0, sales: 0, revenue: 0 });
@@ -40,6 +43,23 @@ export default function LiveStatsBand({ stats }: LiveStatsBandProps) {
   const shownRef = useRef<Triple>({ spend: 0, sales: 0, revenue: 0 });
   const lastRoundedRef = useRef({ spend: -1, sales: -1, revenue: -1 });
   const sectionRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/live-stats")
+      .then((res) => res.json())
+      .then((json: StatsApiResponse) => {
+        if (!cancelled && json.success && json.data) {
+          setStats(json.data);
+        }
+      })
+      .catch(() => {
+        // Sessizce yut — bant zaten stats null iken hiç render edilmez.
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     rangeRef.current = range;
@@ -53,7 +73,7 @@ export default function LiveStatsBand({ stats }: LiveStatsBandProps) {
 
   useEffect(() => {
     const el = sectionRef.current;
-    if (!el || reduced) return;
+    if (!el || reduced || !stats) return;
 
     // ── Oranları API verisinden türet (hard-code yok; ×5 oranlarda sadeleşir) ──
     // ROAS = ciro/harcama, AOV = ciro/sipariş, CPA = harcama/sipariş.
@@ -126,6 +146,8 @@ export default function LiveStatsBand({ stats }: LiveStatsBandProps) {
       if (raf) cancelAnimationFrame(raf);
     };
   }, [stats, reduced]);
+
+  if (!stats) return null;
 
   const shown = reduced ? displayBucket(stats[range]) : display;
 

@@ -8,7 +8,6 @@ import TestimonialsSpotlight from "@/components/TestimonialsSpotlight";
 import Reveal from "@/components/Reveal";
 import CountUp from "@/components/CountUp";
 import LiveStatsBand from "@/components/LiveStatsBand";
-import { getLiveStats } from "@/lib/liveStats";
 import { SITE, PRICING, formatTRY } from "@/lib/site";
 
 const STEPS = [
@@ -267,9 +266,7 @@ const websiteJsonLd = {
   description: SITE.description,
 };
 
-export default async function HomePage() {
-  const liveStats = await getLiveStats();
-
+export default function HomePage() {
   return (
     <>
       <script
@@ -449,8 +446,8 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ====== CANLI İSTATİSTİK BANDI (Jale verisi) ====== */}
-      {liveStats && <LiveStatsBand stats={liveStats} />}
+      {/* ====== CANLI İSTATİSTİK BANDI (Jale verisi, client-side'da /api/live-stats'tan çekilir) ====== */}
+      <LiveStatsBand />
 
       {/* ====== CANLI AKIŞ + NASIL ÇALIŞIR ====== */}
       <section className="bg-ink-50 px-4 py-20 sm:px-6 lg:px-8">
