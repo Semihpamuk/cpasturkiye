@@ -19,7 +19,7 @@ const RANGES: { key: RangeKey; label: string }[] = [
 ];
 
 // ── Ayarlar ──────────────────────────────────────────────────────────────────
-const DISPLAY_MULTIPLIER = 5; // bandda rakamlar bu katsayıyla gösterilir
+const DISPLAY_MULTIPLIER = 1; // bandda gerçek (API) rakamları gösterilir — şişirme yok
 const SALE_INTERVAL_MS = 7_000; // her 7 sn'de +1 satış (bugünde; aynı +1 haftaya & aya da yansır)
 const CHASE = 0.06; // ekran değerinin hedefe yaklaşma hızı (giriş + sekme geçişi sayma hissi)
 
