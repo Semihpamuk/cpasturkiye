@@ -32,6 +32,13 @@ interface CaseCard {
 
 const PALETTE = ["#f27a1a", "#0866ff", "#16a34a", "#9333ea", "#ea580c", "#0891b2"];
 
+// Vaka kartına layık "gerçekten performans gösteren" kategori eşikleri.
+// Bu değerlerin altındaki (ör. 0 çeken, cılız) kategoriler gösterilmez.
+const MIN_REVENUE = 10_000; // toplam ciro (TL)
+const MIN_SPEND = 1_000; // toplam harcama (TL)
+const MIN_ROAS = 3; // vaka-değer ROAS tabanı
+const MAX_CARDS = 3;
+
 // ── Statik fallback (Jale verisi yokken) ──────────────────────────────────
 const FALLBACK: CaseCard[] = [
   {
@@ -210,8 +217,25 @@ export default function CaseStudies() {
       .then((res) => res.json())
       .then((json: ApiResponse) => {
         if (cancelled || !json.success || !json.data) return;
-        const live = json.data.categories.slice(0, 3).map(toCard);
-        if (live.length > 0) setCards(live);
+
+        // Yalnızca gerçekten performans gösteren kategoriler; ROAS'a göre (en iyi önce).
+        const live = json.data.categories
+          .filter(
+            (c) =>
+              c.revenue >= MIN_REVENUE &&
+              c.spend >= MIN_SPEND &&
+              c.roas >= MIN_ROAS
+          )
+          .sort((a, b) => b.roas - a.roas)
+          .slice(0, MAX_CARDS)
+          .map(toCard);
+
+        // 3'ten az gerçek kategori varsa kalanı temsili örneklerle doldur.
+        const fillers = FALLBACK.filter(
+          (f) => !live.some((l) => l.badge.toLowerCase() === f.badge.toLowerCase())
+        );
+        const filled = [...live, ...fillers].slice(0, MAX_CARDS);
+        if (filled.length > 0) setCards(filled);
       })
       .catch(() => {
         // Sessizce yut — statik fallback kalır.
