@@ -11,7 +11,7 @@ import PricingSingle from "@/components/PricingSingle";
 import FaqAccordion, { type FaqItem } from "@/components/FaqAccordion";
 import CtaSection from "@/components/CtaSection";
 import Reveal from "@/components/Reveal";
-import CountUp from "@/components/CountUp";
+import TrustStats from "@/components/TrustStats";
 import JsonLd from "@/components/JsonLd";
 import { SITE, PRICING, formatTRY } from "@/lib/site";
 
@@ -454,26 +454,7 @@ export default function HomePage() {
             </div>
 
             <Reveal className="mt-12">
-              <div className="grid grid-cols-3 divide-x divide-white/10 rounded-2xl border border-white/10 bg-white/[0.03] py-8 text-center">
-                <div>
-                  <p className="font-display text-3xl font-extrabold text-white sm:text-4xl">
-                    <CountUp end={40} suffix="+" />
-                  </p>
-                  <p className="mt-1 text-xs font-medium text-ink-400">yönetilen mağaza</p>
-                </div>
-                <div>
-                  <p className="font-display text-3xl font-extrabold text-white sm:text-4xl">
-                    <CountUp end={9.2} decimals={1} suffix="x" />
-                  </p>
-                  <p className="mt-1 text-xs font-medium text-ink-400">ortalama ROAS</p>
-                </div>
-                <div>
-                  <p className="font-display text-3xl font-extrabold text-white sm:text-4xl">
-                    <CountUp end={250} prefix="₺" suffix="M+" />
-                  </p>
-                  <p className="mt-1 text-xs font-medium text-ink-400">reklam kaynaklı ciro</p>
-                </div>
-              </div>
+              <TrustStats />
             </Reveal>
           </div>
         </div>
