@@ -95,14 +95,14 @@ export default function ContactForm() {
 
       <div>
         <label htmlFor="storeUrl" className="mb-1.5 block text-sm font-medium text-ink-800">
-          Trendyol Mağaza Linki
+          Mağaza Linki (Trendyol / Hepsiburada)
         </label>
         <input
           id="storeUrl"
           name="storeUrl"
           type="url"
           className="w-full rounded-lg border border-ink-300 px-4 py-2.5 text-sm text-ink-900 placeholder:text-ink-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
-          placeholder="https://www.trendyol.com/magaza/..."
+          placeholder="https://www.trendyol.com/magaza/... veya hepsiburada.com/..."
         />
       </div>
 

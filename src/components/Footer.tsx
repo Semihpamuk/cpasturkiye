@@ -3,10 +3,10 @@ import Logo from "./Logo";
 import { SITE } from "@/lib/site";
 
 const PRODUCT_LINKS = [
-  { href: "/satin-al", label: "Satın Al" },
-  { href: "/ozellikler", label: "Özellikler" },
+  { href: "/satin-al", label: "Hemen Başla" },
+  { href: "/ozellikler", label: "Hizmet Kapsamı" },
+  { href: "/kurulum", label: "Kurulum Süreci" },
   { href: "/fiyatlandirma", label: "Fiyatlandırma" },
-  { href: "/kurulum", label: "Kurulum Hizmeti" },
   { href: "/sss", label: "Sık Sorulan Sorular" },
 ];
 
@@ -34,8 +34,8 @@ export default function Footer() {
               <Logo className="text-2xl" />
             </Link>
             <p className="mt-4 max-w-sm text-sm leading-relaxed text-ink-500">
-              Türkiye&apos;nin ilk Trendyol–Meta CPAS reklam yönetim platformu.{" "}
-              {SITE.slogan}
+              Trendyol, Hepsiburada ve Amazon mağazaları için Meta CPAS kurulum ve
+              reklam yönetim hizmeti. {SITE.slogan}
             </p>
             <p className="mt-4 text-sm text-ink-500">{SITE.email}</p>
             <p className="mt-1 text-sm text-ink-500">{SITE.phone}</p>
@@ -58,7 +58,7 @@ export default function Footer() {
           </div>
 
           <div>
-            <h3 className="text-sm font-semibold text-ink-900">Ürün</h3>
+            <h3 className="text-sm font-semibold text-ink-900">Hizmet</h3>
             <ul className="mt-4 space-y-2.5">
               {PRODUCT_LINKS.map((link) => (
                 <li key={link.href}>
@@ -112,8 +112,9 @@ export default function Footer() {
               © {new Date().getFullYear()} {SITE.company}. Tüm hakları saklıdır.
             </p>
             <p className="text-xs text-ink-400">
-              Jale, Meta veya Trendyol ile resmi bir ortaklık iddiasında bulunmaz. CPAS,
-              Meta&apos;nın iş ortağı entegrasyon çözümüdür.
+              CPAS Türkiye; Meta, Trendyol, Hepsiburada veya Amazon ile resmi bir
+              ortaklık iddiasında bulunmaz. CPAS (Collaborative Ads), Meta&apos;nın
+              pazaryeri satıcılarına yönelik reklam çözümüdür.
             </p>
           </div>
           <p className="text-[10px] text-ink-300">

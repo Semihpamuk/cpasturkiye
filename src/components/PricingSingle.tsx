@@ -1,0 +1,119 @@
+"use client";
+
+import Link from "next/link";
+import { formatTRY } from "@/lib/site";
+import { useSettings } from "@/lib/useSettings";
+
+const INCLUDED = [
+  "Pazaryeri reklam yetkilendirmesi ve Meta Business kurulumu",
+  "CPAS katalog bağlantısı ve ürün feed'i yapılandırması",
+  "Piksel, event ve dönüşüm ölçümleme kurulumu",
+  "Kampanya mimarisi: retargeting + prospecting katmanları",
+  "Haftalık optimizasyon ve bütçe yönetimi",
+  "Her hafta PDF rapor + WhatsApp özeti",
+  "Aylık strateji görüşmesi",
+  "Öncelikli destek hattı",
+];
+
+/**
+ * Tek paket fiyatlandırma: 1. ay kurulum + ilk ay yönetim,
+ * 2. aydan itibaren aylık yönetim.
+ */
+export default function PricingSingle() {
+  const { pricing } = useSettings();
+
+  return (
+    <div className="mx-auto max-w-4xl">
+      <div className="relative overflow-hidden rounded-3xl border border-ink-200 bg-white shadow-xl shadow-ink-900/5">
+        {/* Üst vurgu şeridi */}
+        <div className="h-1.5 bg-gradient-to-r from-brand-500 via-brand-600 to-meta" />
+
+        <div className="grid gap-0 lg:grid-cols-2">
+          {/* 1. Ay */}
+          <div className="relative border-b border-ink-100 p-8 lg:border-b-0 lg:border-r sm:p-10">
+            <span className="inline-flex rounded-full bg-brand-50 px-3 py-1 text-xs font-bold uppercase tracking-wider text-brand-700 ring-1 ring-brand-200">
+              1. Ay
+            </span>
+            <h3 className="mt-4 font-display text-xl font-bold text-ink-900">
+              Kurulum + İlk Ay Yönetim
+            </h3>
+            <p className="mt-2 text-sm leading-relaxed text-ink-600">
+              Yetkilendirmeden kampanyaların yayına alınmasına kadar tüm teknik
+              kurulum ve ilk ayın yönetimi.
+            </p>
+            <p className="mt-6 flex items-baseline gap-2">
+              <span className="font-display text-4xl font-extrabold tracking-tight text-ink-900 sm:text-5xl">
+                {formatTRY(pricing.setupFee)}
+              </span>
+              <span className="text-sm font-semibold text-ink-500">+ KDV</span>
+            </p>
+            <p className="mt-2 text-xs text-ink-500">
+              Tek seferlik · Karta {""}
+              <strong className="text-ink-700">9&apos;a kadar taksit</strong> imkânı
+            </p>
+          </div>
+
+          {/* 2. Ay+ */}
+          <div className="p-8 sm:p-10">
+            <span className="inline-flex rounded-full bg-ink-100 px-3 py-1 text-xs font-bold uppercase tracking-wider text-ink-600 ring-1 ring-ink-200">
+              2. Ay ve Sonrası
+            </span>
+            <h3 className="mt-4 font-display text-xl font-bold text-ink-900">
+              Aylık Yönetim
+            </h3>
+            <p className="mt-2 text-sm leading-relaxed text-ink-600">
+              Haftalık optimizasyon döngüsü, raporlama ve strateji —
+              taahhüt yok, istediğiniz ay durdurabilirsiniz.
+            </p>
+            <p className="mt-6 flex items-baseline gap-2">
+              <span className="font-display text-4xl font-extrabold tracking-tight text-ink-900 sm:text-5xl">
+                {formatTRY(pricing.managementFee)}
+              </span>
+              <span className="text-sm font-semibold text-ink-500">+ KDV / ay</span>
+            </p>
+            <p className="mt-2 text-xs text-ink-500">
+              İlk ödeme 2. ayın başında · Fatura karşılığı
+            </p>
+          </div>
+        </div>
+
+        {/* Dahil olanlar */}
+        <div className="border-t border-ink-100 bg-ink-50/50 p-8 sm:p-10">
+          <p className="text-xs font-bold uppercase tracking-widest text-ink-500">
+            Pakete dahil olanlar
+          </p>
+          <ul className="mt-4 grid gap-x-8 gap-y-2.5 sm:grid-cols-2">
+            {INCLUDED.map((itemText) => (
+              <li key={itemText} className="flex items-start gap-2.5 text-sm text-ink-700">
+                <svg
+                  className="mt-0.5 h-4 w-4 shrink-0 text-green-600"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2.5}
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+                {itemText}
+              </li>
+            ))}
+          </ul>
+
+          <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
+            <p className="text-xs leading-relaxed text-ink-500">
+              Reklam bütçeniz bu tutarlara dahil değildir; doğrudan Meta&apos;ya, kendi
+              hesabınızdan ödenir. <br className="hidden sm:block" />
+              Operasyon kalitesi için her ay <strong className="text-ink-700">sınırlı sayıda</strong> yeni mağaza kabul ediyoruz.
+            </p>
+            <Link
+              href="/satin-al"
+              className="w-full shrink-0 rounded-xl bg-brand-600 px-8 py-3.5 text-center text-sm font-bold text-white shadow-md transition-all hover:bg-brand-700 hover:shadow-lg sm:w-auto"
+            >
+              Hemen Başla →
+            </Link>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

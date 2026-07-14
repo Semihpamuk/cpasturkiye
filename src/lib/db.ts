@@ -26,14 +26,14 @@ export interface Order {
   phone: string;
   email: string;
   storeUrl: string;
-  isAgency: boolean;
-  storeCount: number;
-  billing: "monthly" | "yearly";
+  /** Müşterinin satış yaptığı pazaryerleri (trendyol/hepsiburada/amazon) */
+  marketplaces: string[];
   installment: "single" | "3" | "6" | "9";
   discountCode: string | null;
-  subscriptionNet: number;
-  includeSetup: boolean;
+  /** 1. ay paketi (kurulum + ilk ay yönetim), KDV hariç net */
   setupNet: number;
+  /** 2. aydan itibaren aylık yönetim bedeli (bilgi amaçlı, KDV hariç) */
+  managementMonthly: number;
   discountAmount: number;
   vatAmount: number;
   total: number;
@@ -58,13 +58,10 @@ export interface PendingOrder {
   phone: string;
   email: string;
   storeUrl: string;
-  isAgency: boolean;
-  storeCount: number;
-  billing: "monthly" | "yearly";
-  includeSetup: boolean;
+  marketplaces: string[];
   discountCode: string | null;
-  subscriptionNet: number;
   setupNet: number;
+  managementMonthly: number;
   discountAmount: number;
   vatAmount: number;
   total: number;
@@ -90,12 +87,12 @@ export interface Lead {
 }
 
 export interface PricingSettings {
-  starter: number;
-  extraStore: number;
-  agencyPerStore: number;
-  agencyContactThreshold: number;
+  /** 1. ay paketi: kurulum + ilk ay yönetim (KDV hariç) */
   setupFee: number;
-  yearlyDiscount: number; // 0–1 arası (0.2 = %20)
+  /** 2. aydan itibaren aylık yönetim (KDV hariç) */
+  managementFee: number;
+  /** Kurulumun tamamlandığı ortalama iş günü */
+  setupDays: number;
 }
 
 export interface ReferenceItem {
@@ -110,12 +107,9 @@ export interface SiteSettings {
 
 export const DEFAULT_SETTINGS: SiteSettings = {
   pricing: {
-    starter: 5000,
-    extraStore: 3000,
-    agencyPerStore: 4000,
-    agencyContactThreshold: 7,
     setupFee: 25000,
-    yearlyDiscount: 0.2,
+    managementFee: 17000,
+    setupDays: 7,
   },
   references: [
     { name: "Modavera", url: "" },

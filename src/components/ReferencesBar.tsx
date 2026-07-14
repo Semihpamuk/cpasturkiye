@@ -26,7 +26,7 @@ export default function ReferencesBar() {
       className="border-y border-ink-100 bg-white py-6"
     >
       <p className="text-center text-xs font-semibold uppercase tracking-widest text-ink-400">
-        Reklamlarını Jale ile yöneten mağazalar
+        Reklamlarını CPAS Türkiye&apos;nin yönettiği mağazalardan bazıları
       </p>
       <div className="relative mt-4 overflow-hidden">
         <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-24 bg-gradient-to-r from-white to-transparent" />

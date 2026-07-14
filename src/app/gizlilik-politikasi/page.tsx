@@ -4,7 +4,7 @@ import { SITE } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Gizlilik Politikası",
-  description: "Jale (cpasturkiye.com) gizlilik politikası.",
+  description: "CPAS Türkiye (cpasturkiye.com) gizlilik politikası.",
   alternates: { canonical: "/gizlilik-politikasi" },
 };
 
@@ -13,7 +13,7 @@ export default function PrivacyPolicyPage() {
     <LegalPage
       title="Gizlilik Politikası"
       updatedAt="10 Haziran 2026"
-      intro={`İşbu Gizlilik Politikası, ${SITE.company} ("Şirket") tarafından işletilen ${SITE.domain} alan adlı web sitesi ve Jale platformu ("Platform") aracılığıyla toplanan kişisel verilerin işlenmesine ilişkin esasları açıklamaktadır.`}
+      intro={`İşbu Gizlilik Politikası, ${SITE.company} ("Şirket") tarafından işletilen ${SITE.domain} alan adlı web sitesi ve CPAS Türkiye hizmetleri ("Platform") aracılığıyla toplanan kişisel verilerin işlenmesine ilişkin esasları açıklamaktadır.`}
       sections={[
         {
           heading: "Toplanan Veriler",

@@ -24,23 +24,13 @@ export async function PUT(req: Request) {
 
     const updated: SiteSettings = {
       pricing: {
-        starter: num(body?.pricing?.starter, current.pricing.starter, 1),
-        extraStore: num(body?.pricing?.extraStore, current.pricing.extraStore, 1),
-        agencyPerStore: num(
-          body?.pricing?.agencyPerStore,
-          current.pricing.agencyPerStore,
-          1
-        ),
-        agencyContactThreshold: num(
-          body?.pricing?.agencyContactThreshold,
-          current.pricing.agencyContactThreshold,
-          2
-        ),
         setupFee: num(body?.pricing?.setupFee, current.pricing.setupFee, 0),
-        yearlyDiscount: Math.min(
-          0.9,
-          num(body?.pricing?.yearlyDiscount, current.pricing.yearlyDiscount, 0)
+        managementFee: num(
+          body?.pricing?.managementFee,
+          current.pricing.managementFee,
+          0
         ),
+        setupDays: num(body?.pricing?.setupDays, current.pricing.setupDays, 1),
       },
       references: Array.isArray(body?.references)
         ? body.references

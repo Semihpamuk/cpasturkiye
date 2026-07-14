@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
       title: post.title,
       description: post.excerpt,
       publishedTime: post.date,
-      authors: ["Jale Yazılım ve Reklam Hizmetleri"],
+      authors: ["CPAS Türkiye"],
     },
   };
 }

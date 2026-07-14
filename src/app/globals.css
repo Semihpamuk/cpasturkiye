@@ -22,9 +22,13 @@
   --color-ink-700: #334155;
   --color-ink-800: #1e293b;
   --color-ink-900: #0f172a;
+  --color-ink-950: #080e1e;
 
   --color-meta: #0866ff;
+  --color-meta-light: #4d94ff;
   --color-trendyol: #f27a1a;
+  --color-hepsiburada: #ff6000;
+  --color-amazon: #ff9900;
 
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-jakarta), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
@@ -46,6 +50,29 @@ h1, h2, h3, h4 {
 
 ::selection {
   @apply bg-brand-600 text-white;
+}
+
+/* ===== Koyu "teknik" bölümler ===== */
+.section-dark {
+  @apply bg-ink-950 text-ink-300;
+}
+.section-dark h1,
+.section-dark h2,
+.section-dark h3,
+.section-dark h4 {
+  @apply text-white;
+}
+
+/* İnce nokta ızgarası (koyu zemin) */
+.bg-dot-grid-dark {
+  background-image: radial-gradient(circle, rgba(148, 163, 184, 0.14) 1px, transparent 1px);
+  background-size: 26px 26px;
+}
+
+/* İnce nokta ızgarası (açık zemin) */
+.bg-dot-grid-light {
+  background-image: radial-gradient(circle, rgba(15, 23, 42, 0.07) 1px, transparent 1px);
+  background-size: 26px 26px;
 }
 
 /* ===== Scroll-reveal animasyonları ===== */
@@ -101,20 +128,54 @@ h1, h2, h3, h4 {
   to { transform: translateX(250%) skewX(-15deg); }
 }
 
+/* Beam: SVG yolu boyunca kayan ışık parçası */
+@keyframes beam-travel {
+  from { stroke-dashoffset: 0; }
+  to { stroke-dashoffset: -400; }
+}
+
+/* Yönetim döngüsü kartlarındaki ilerleme çubuğu */
+@keyframes cycle-progress {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+/* Yumuşak halka yayılımı (node vurgusu) */
+@keyframes ping-soft {
+  0% { transform: scale(1); opacity: 0.5; }
+  80%, 100% { transform: scale(1.9); opacity: 0; }
+}
+
 .animate-float-slow { animation: float-slow 5s ease-in-out infinite; }
 .animate-float-slower { animation: float-slower 7s ease-in-out infinite; }
 .animate-pulse-glow { animation: pulse-glow 6s ease-in-out infinite; }
 .animate-ticker { animation: ticker 30s linear infinite; }
+.animate-ping-soft { animation: ping-soft 2.4s cubic-bezier(0, 0, 0.2, 1) infinite; }
 
 .flow-line {
   stroke-dasharray: 8 8;
   animation: flow-dash 1.2s linear infinite;
 }
 
+.beam-line {
+  stroke-dasharray: 14 386;
+  animation: beam-travel 3.2s linear infinite;
+}
+
 .flow-node {
   animation: flow-pulse 2.4s ease-in-out infinite;
   transform-origin: center;
   transform-box: fill-box;
+}
+
+/* Vaka grafikleri: görünür olunca çizilen çizgi */
+.chart-line {
+  stroke-dasharray: var(--chart-length, 600);
+  stroke-dashoffset: var(--chart-length, 600);
+  transition: stroke-dashoffset 1.6s cubic-bezier(0.4, 0, 0.2, 1) 0.2s;
+}
+.chart-line.is-drawn {
+  stroke-dashoffset: 0;
 }
 
 /* ===== Hareket azaltma tercihi ===== */
@@ -128,9 +189,15 @@ h1, h2, h3, h4 {
   .animate-float-slower,
   .animate-pulse-glow,
   .animate-ticker,
+  .animate-ping-soft,
   .flow-line,
+  .beam-line,
   .flow-node {
     animation: none;
+  }
+  .chart-line {
+    stroke-dashoffset: 0;
+    transition: none;
   }
   html {
     scroll-behavior: auto;

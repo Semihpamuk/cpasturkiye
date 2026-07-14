@@ -7,9 +7,9 @@ import JsonLd from "@/components/JsonLd";
 import { breadcrumbJsonLd } from "@/lib/seo";
 
 export const metadata: Metadata = {
-  title: "Hakkımızda — Jale CPAS Platformu",
+  title: "Hakkımızda — CPAS Türkiye",
   description:
-    "Jale'nin hikayesi: yıllarca Trendyol satıcılarının Meta CPAS reklamlarını yönettik, şimdi bu deneyimi platforma dönüştürdük. Türkiye'de CPAS uzmanlığı.",
+    "CPAS Türkiye'nin hikayesi: yıllardır pazaryeri satıcılarının Meta CPAS reklamlarını yöneten ekip. Trendyol, Hepsiburada ve yakında Amazon için kurulum ve yönetim uzmanlığı.",
   alternates: { canonical: "/hakkimizda" },
 };
 
@@ -17,36 +17,36 @@ const VALUES = [
   {
     title: "Şeffaflık",
     description:
-      "Gerçek veriyle çalışırız. Raporlarda makyaj yok: hangi reklam ne kazandırdıysa onu görürsün. Fiyatlandırmada gizli kalem yok.",
+      "Gerçek veriyle çalışırız. Raporlarda makyaj yok: hangi reklam ne kazandırdıysa onu görürsünüz. Fiyatlandırmada gizli kalem yok.",
   },
   {
     title: "Satıcının yanında",
     description:
-      "Bütçenin sahibi sensin. AI önerilerimiz dahil hiçbir aksiyon onayın olmadan uygulanmaz. Platformu satıcıyı büyütmek için kurduk, bağımlı kılmak için değil.",
+      "Bütçenin sahibi sizsiniz; Meta'ya kendi hesabınızdan ödersiniz. Kurduğumuz her şey — katalog bağlantısı, piksel, kampanya yapısı — sizin mülkiyetinizde kalır.",
   },
   {
     title: "Uzmanlık",
     description:
-      "CPAS, Türkiye pazarında yeni bir alan; biz değiliz. Yüzlerce kampanya, milyonlarca liralık reklam harcaması yönetiminden gelen deneyimi platforma kodladık.",
+      "CPAS, Türkiye pazarında yeni bir alan; biz değiliz. Yüzlerce kampanya ve milyonlarca liralık reklam harcaması yönetiminden gelen deneyimle çalışırız.",
   },
 ];
 
 const MILESTONES = [
   {
     year: "2021",
-    text: "İlk Trendyol–Meta CPAS bağlantısını Türkiye'de kurarak satıcı hesaplarında uçtan uca yönetmeye başladık.",
+    text: "İlk Trendyol–Meta CPAS bağlantılarını kurarak satıcı hesaplarını uçtan uca yönetmeye başladık.",
   },
   {
     year: "2023",
-    text: "Yönettiğimiz aylık reklam harcaması 10M TL'yi aştı. Ajans süreçlerini standartlaştırıp otomasyon geliştirmeye başladık.",
+    text: "Yönettiğimiz aylık reklam harcaması 10M TL'yi aştı. Kurulum ve haftalık optimizasyon süreçlerimizi standartlaştırdık.",
   },
   {
     year: "2025",
-    text: "Jale SaaS platformunu hayata geçirdik: sahada edindiğimiz bilgi birikimini tüm Trendyol satıcılarının kullanabileceği bir ürüne dönüştürdük.",
+    text: "Kampanya izleme, anomali tespiti ve raporlama altyapımızı kendi geliştirdiğimiz araçlarla otomatikleştirdik.",
   },
   {
     year: "2026",
-    text: "iyzico entegrasyonuyla güvenli online ödeme altyapısını ve standalone kurulum satışını platforma ekledik.",
+    text: "Hepsiburada ile çalışmaya başladık; Amazon entegrasyonu için anlaşma aşamasındayız. Kurulum + yönetim hizmetini tek pakette, online ödemeyle sunuyoruz.",
   },
 ];
 
@@ -70,11 +70,11 @@ export default function AboutPage() {
             priority
           />
           <h1 className="mt-6 font-display text-4xl font-extrabold tracking-tight text-ink-900 sm:text-5xl">
-            Reklam ajansından SaaS platformuna
+            İşimiz belli: pazaryeri satıcısını Meta&apos;da büyütmek
           </h1>
           <p className="mt-5 text-lg leading-relaxed text-ink-600">
-            Yıllardır Trendyol satıcılarının Meta reklamlarını yöneten ekibiz.
-            Sahadan gelen deneyimi, herkese açık bir platforma dönüştürdük.
+            Yıllardır pazaryeri satıcılarının Meta CPAS reklamlarını yöneten ekibiz.
+            Tek işimiz bu — ve bu yüzden iyi yapıyoruz.
           </p>
         </div>
       </section>
@@ -82,28 +82,28 @@ export default function AboutPage() {
       <section className="px-4 py-8 sm:px-6 lg:px-8">
         <div className="prose-sm mx-auto max-w-2xl space-y-5 leading-relaxed text-ink-600">
           <p>
-            Jale, yıllardır Trendyol satıcılarının Meta reklamlarını yöneten bir ekibin
-            ürünü. CPAS, Türkiye&apos;de kullanılmaya başlandığından beri sahadayız:
+            CPAS Türkiye, yıllardır pazaryeri satıcılarının Meta reklamlarını yöneten
+            bir ekip. CPAS, Türkiye&apos;de kullanılmaya başlandığından beri sahadayız:
             katalog bağlantılarını kurduk, kampanyaları optimize ettik, satıcıların
             cirolarını katladık.
           </p>
           <p>
-            Zamanla şunu fark ettik: yaptığımız işin büyük kısmı tekrarlanabilir,
-            ölçülebilir ve otomatikleştirilebilirdi. Bütçe optimizasyonu, anomali takibi,
-            katalog senkronizasyonu, raporlama... Bunların hepsini her müşteri için elle
-            yapmak yerine, bir platforma dönüştürdük.
+            Bu yıllar bize bir şeyi net öğretti: pazaryeri reklamcılığı, klasik dijital
+            ajans işi değildir. Katalog segmentasyonu, satış verisi eşleştirmesi, stok
+            senkronu, pazaryeri onay süreçleri — hepsi kendi uzmanlığını ister. Genel
+            ajanslar bu alanda zorlanırken biz sadece bu işe odaklandık.
           </p>
           <p>
-            Bugün Jale; Trendyol satıcılarının kendi reklamlarını teknik bilgi
-            gerektirmeden yönetebildiği, ajansların onlarca mağazayı tek panelden kontrol
-            edebildiği bir SaaS platformu. Ajans deneyimimizden gelen tüm bilgi birikimi —
-            hangi kampanya yapısı işler, bütçe ne zaman artırılır, hangi sinyal tehlike
-            işaretidir — platformun yapay zekasına ve otomasyonlarına işlenmiş durumda.
+            Bugün Trendyol ve Hepsiburada satıcılarının Meta CPAS reklamlarını uçtan uca
+            kuruyor ve yönetiyoruz; Amazon entegrasyonumuz da çok yakında başlıyor.
+            Kampanya izleme, anomali tespiti ve raporlama süreçlerimizi kendi
+            geliştirdiğimiz araçlarla destekliyoruz — ama işin direksiyonunda her zaman
+            deneyimli bir insan var.
           </p>
           <p>
-            Misyonumuz net: <strong className="text-ink-900">Türkiye&apos;deki her Trendyol satıcısının,
-            büyüklüğü ne olursa olsun, Meta&apos;nın reklam gücüne profesyonel kalitede
-            erişebilmesi.</strong>
+            Misyonumuz net: <strong className="text-ink-900">Türkiye&apos;deki pazaryeri
+            satıcılarının, Meta&apos;nın reklam gücüne profesyonel kalitede, şeffaf ve
+            ölçülebilir şekilde erişebilmesi.</strong>
           </p>
         </div>
       </section>

@@ -4,7 +4,7 @@ import { SITE } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "KVKK Aydınlatma Metni",
-  description: "Jale (cpasturkiye.com) 6698 sayılı KVKK kapsamında aydınlatma metni.",
+  description: "CPAS Türkiye (cpasturkiye.com) 6698 sayılı KVKK kapsamında aydınlatma metni.",
   alternates: { canonical: "/kvkk" },
 };
 
@@ -53,7 +53,7 @@ export default function KvkkPage() {
         {
           heading: "Kişisel Verilerin Aktarılması",
           paragraphs: [
-            "Kişisel verileriniz; hizmetin sunulabilmesi için iş birliği yapılan teknoloji sağlayıcılarına (barındırma, bulut altyapı, ödeme kuruluşları), entegrasyon kapsamında Meta Platforms ve Trendyol'a, hukuki yükümlülükler kapsamında yetkili kamu kurum ve kuruluşlarına KVKK md. 8 ve 9'da öngörülen şartlara uygun olarak aktarılabilir. Yurt dışına veri aktarımı, KVKK'da öngörülen güvencelere uygun şekilde gerçekleştirilir.",
+            "Kişisel verileriniz; hizmetin sunulabilmesi için iş birliği yapılan teknoloji sağlayıcılarına (barındırma, bulut altyapı, ödeme kuruluşları), entegrasyon kapsamında Meta Platforms ile Trendyol, Hepsiburada ve Amazon gibi pazaryerlerine, hukuki yükümlülükler kapsamında yetkili kamu kurum ve kuruluşlarına KVKK md. 8 ve 9'da öngörülen şartlara uygun olarak aktarılabilir. Yurt dışına veri aktarımı, KVKK'da öngörülen güvencelere uygun şekilde gerçekleştirilir.",
           ],
         },
         {

@@ -7,45 +7,45 @@ import JsonLd from "@/components/JsonLd";
 import { breadcrumbJsonLd } from "@/lib/seo";
 
 export const metadata: Metadata = {
-  title: "Sık Sorulan Sorular — CPAS, Kurulum ve Abonelik",
+  title: "Sık Sorulan Sorular — CPAS, Kurulum ve Yönetim",
   description:
-    "CPAS nedir? Trendyol mağazam Meta'ya nasıl bağlanır? Kurulumu abonelik olmadan satın alabilir miyim? Jale hakkında sık sorulan tüm sorular.",
+    "CPAS nedir? Kurulum nasıl işler? Reklam bütçesi kimde? Hangi pazaryerleri destekleniyor? CPAS Türkiye'nin kurulum ve yönetim hizmeti hakkında sık sorulan tüm sorular.",
   alternates: { canonical: "/sss" },
 };
 
 const FAQ_SECTIONS: { title: string; items: FaqItem[] }[] = [
   {
-    title: "CPAS ve Platform",
+    title: "CPAS ve Hizmetimiz",
     items: [
       {
         question: "CPAS nedir?",
         answer:
-          "CPAS (Collaborative Performance Advertising Solution), Meta'nın pazaryeri satıcıları için geliştirdiği iş ortağı reklam çözümüdür. Trendyol ürün kataloğunuz Meta'ya bağlanır; Facebook ve Instagram'da verdiğiniz reklamlar doğrudan Trendyol mağazanıza yönlenir ve satışlar gerçek sipariş verisiyle ölçülür. Yani 'reklamım işe yarıyor mu?' sorusunun cevabını tahminle değil, gerçek satış rakamlarıyla görürsünüz.",
+          "CPAS (Collaborative Performance Advertising Solution / Collaborative Ads), Meta'nın pazaryeri satıcıları için geliştirdiği reklam çözümüdür. Pazaryerindeki ürün kataloğunuz Meta'ya bağlanır; Facebook ve Instagram'da verilen reklamlar doğrudan mağazanıza yönlenir ve satışlar gerçek sipariş verisiyle ölçülür. Yani 'reklamım işe yarıyor mu?' sorusunun cevabını tahminle değil, gerçek satış rakamlarıyla görürsünüz.",
       },
       {
-        question: "Jale tam olarak ne yapıyor?",
+        question: "CPAS Türkiye tam olarak ne yapıyor?",
         answer:
-          "Jale, Trendyol–Meta CPAS reklamlarınızı tek panelden yönetmenizi sağlayan bir SaaS platformudur. Kampanya yönetimi, gerçek ROAS raporlama, otomatik katalog senkronizasyonu, AI destekli bütçe önerileri ve anomali uyarıları sunar. Meta Ads Manager'ın karmaşasıyla uğraşmadan reklamlarınızı yönetirsiniz.",
+          "Trendyol, Hepsiburada ve yakında Amazon satıcıları için Meta CPAS reklamlarını uçtan uca kurar ve yönetiriz. İlk ay tüm teknik kurulum (yetkilendirme, katalog bağlantısı, ölçümleme, kampanya mimarisi) yapılır ve kampanyalar canlıya alınır; sonraki aylarda kampanyalarınız haftalık optimizasyon döngüsüyle bizim ekibimiz tarafından yönetilir. Panel öğrenmeniz, reklam yönetmeniz gerekmez — raporları okumanız yeterlidir.",
+      },
+      {
+        question: "Hangi pazaryerlerinde çalışıyorsunuz?",
+        answer:
+          "Trendyol ve Hepsiburada aktif olarak destekleniyor; Amazon entegrasyonumuz çok yakında başlıyor. Birden fazla pazaryerinde mağazanız varsa hepsi aynı paket kapsamında birlikte yönetilir.",
       },
       {
         question: "Normal Meta reklamından farkı ne?",
         answer:
-          "Normal Meta reklamlarında dönüşümler piksel tahminiyle ölçülür ve kendi e-ticaret siteniz gerekir. CPAS'te ise reklamlar doğrudan Trendyol mağazanıza yönlenir ve her satış, Trendyol sipariş verisiyle birebir eşleşir. Kendi siteniz olmasa bile Meta'nın dev kitlesine reklam verebilirsiniz.",
+          "Normal Meta reklamlarında dönüşümler piksel tahminiyle ölçülür ve kendi e-ticaret siteniz gerekir. CPAS'te reklamlar doğrudan pazaryeri mağazanıza yönlenir ve her satış, pazaryerinin sipariş verisiyle birebir eşleşir. Kendi siteniz olmasa bile Meta'nın dev kitlesine reklam verebilirsiniz.",
       },
       {
         question: "Hangi satıcılar için uygun?",
         answer:
-          "Trendyol'da aktif satış yapan ve aylık en az 100 sipariş hacmine ulaşmış satıcılar için idealdir. Bu hacmin altındaki mağazalarda reklam verisi optimize olacak kadar sinyal üretemeyebilir. Ayrıca birden fazla satıcıyı yöneten dijital ajanslar için özel ajans planımız mevcuttur.",
+          "Pazaryerinde aktif satış yapan, kataloğu oturmuş ve reklama düzenli bütçe ayırabilen satıcılar için idealdir. Çok yeni açılmış, satış geçmişi olmayan mağazalarda reklam verisi optimize olacak kadar sinyal üretemeyebilir — bu durumda dürüstçe söyler, doğru zamanı birlikte planlarız.",
       },
       {
         question: "CPAS ile gerçekçi ROAS beklentisi ne olmalı?",
         answer:
-          "Doğru kurulu bir CPAS kampanyasında, ilk 4–6 haftalık öğrenme sürecinden sonra ROAS tipik olarak 4–8 bandında seyreder. Yeniden pazarlama kampanyaları (ürünü görüntüleyen ama almayan kullanıcılar) ise genellikle 8–15 bandına çıkar. Bu rakamlar kategori, kâr marjı ve bütçeye göre değişir; ancak yönettiğimiz kampanyaların %95'i Trendyol iç reklamlarını geride bıraktı.",
-      },
-      {
-        question: "Trendyol CPAS reklam yetkisi almak kaç gün sürer?",
-        answer:
-          "Trendyol'un inceleme süresi genellikle 2–5 iş günüdür. Başvuruda mağazanın en az 3 ay aktif satış geçmişine sahip olması ve ürün listeleme kurallarına uygun olması aranır. Bazı kategorilerde ek belgeler istenebilir. Kurulum hizmetimiz kapsamında bu süreci sizin adınıza başlatıp takip ediyoruz.",
+          "Doğru kurulu bir CPAS kampanyasında, ilk 4–6 haftalık öğrenme sürecinden sonra ROAS tipik olarak 4–8 bandında seyreder. Retargeting kampanyaları (ürünü görüntüleyip almayan kullanıcılar) genellikle 8–15 bandına çıkar. Bu rakamlar kategori, kâr marjı ve bütçeye göre değişir — görüşmede sektörünüze benzer vakaların gerçek sonuçlarını paylaşırız.",
       },
     ],
   },
@@ -54,51 +54,56 @@ const FAQ_SECTIONS: { title: string; items: FaqItem[] }[] = [
     items: [
       {
         question: "Kurulum süreci nasıl işliyor?",
-        answer: `Kurulum, uzman ekibimiz tarafından yapılan ${PRICING.setupDays} iş günlük bir süreçtir: Trendyol reklam yetkilendirmesi, Meta Business Manager kurulumu, CPAS katalog bağlantısı, Jale entegrasyonu ve birebir eğitim. Ücreti tek seferlik ${formatTRY(PRICING.setupFee)} + KDV'dir. Detaylar Kurulum sayfamızdadır.`,
+        answer: `Kurulum, uzman ekibimiz tarafından yürütülen ortalama ${PRICING.setupDays} iş günlük bir süreçtir: pazaryeri reklam yetkilendirmesi, Meta Business Manager kurulumu, CPAS katalog bağlantısı, piksel/event ölçümleme, kampanya mimarisi ve canlıya alma. Gün gün akışı Kurulum sayfamızda görebilirsiniz.`,
       },
       {
         question: "Teknik bilgim yok, sorun olur mu?",
         answer:
-          "Hayır. Jale tam da bu yüzden var. Kurulumun tamamını biz yapıyoruz; size teslim ettiğimizde sistem çalışır durumda oluyor. Panel, teknik bilgisi olmayan satıcılar için tasarlandı ve teslimden önce birebir kullanım eğitimi veriyoruz.",
+          "Hayır — hizmetimiz tam da bu yüzden var. Kurulumun ve yönetimin tamamını biz yapıyoruz. Sizden yalnızca ilk gün yetkilendirmeleri onaylamanızı isteriz; sonrasında işiniz haftalık raporu okumaktan ibarettir.",
       },
       {
         question: "Meta Business hesabım yoksa?",
         answer:
-          "Sorun değil. Kurulum sürecinde Meta Business Manager hesabınızı sıfırdan biz oluşturuyoruz: reklam hesabı, ödeme yöntemi, sayfa bağlantıları dahil her şey kurulum hizmetine dahildir.",
+          "Sorun değil. Kurulum sürecinde Meta Business Manager hesabınızı sıfırdan biz oluşturuyoruz: reklam hesabı, ödeme yöntemi, sayfa bağlantıları dahil her şey pakete dahildir.",
       },
       {
-        question: "Trendyol'dan nasıl yetki alınıyor?",
+        question: "Pazaryerinden nasıl yetki alınıyor?",
         answer:
-          "Trendyol Satıcı Paneli üzerinden CPAS reklam yetkilendirme talebini birlikte başlatıyoruz. Onay süreci Trendyol tarafında genellikle birkaç iş günü sürer; biz süreci sizin adınıza takip ediyoruz.",
+          "Satıcı paneli üzerinden CPAS reklam yetkilendirme talebini birlikte başlatıyoruz. Onay süreci pazaryeri tarafında genellikle 2–5 iş günü sürer; biz süreci sizin adınıza takip ediyoruz ve gerekirse ek belge süreçlerini de yönetiyoruz.",
       },
       {
-        question: "Kurulum hizmetini abonelik almadan tek başına satın alabilir miyim?",
-        answer: `Evet. Kurulum hizmeti abonelikten bağımsız olarak tek başına satın alınabilir. ${formatTRY(PRICING.setupFee)} + KDV olan bu tek seferlik ücretle, Trendyol yetkilendirmesinden Meta Business Manager kurulumuna, CPAS katalog bağlantısından Jale entegrasyonuna kadar tüm teknik kurulum ${PRICING.setupDays} iş günü içinde tamamlanır. Kurulum sayfasından veya /satin-al?type=setup bağlantısıyla güvenli iyzico ödemesi yapabilirsiniz.`,
+        question: "Ödeme yaptıktan sonra ne oluyor?",
+        answer:
+          "Ödemenin ardından ekip arkadaşımız 24 saat içinde (iş günü) sizi arar. Bu görüşmede hedefler netleşir, yetkilendirmeler planlanır ve kurulum takviminiz çıkarılır. Ortalama 7 iş günü sonunda reklamlarınız yayındadır.",
       },
     ],
   },
   {
-    title: "Ücretlendirme ve Abonelik",
+    title: "Ücretlendirme",
     items: [
       {
-        question: "Aylık ücretin içinde neler var?",
-        answer:
-          "Abonelik; Jale paneline erişim, kampanya yönetimi, raporlama, otomatik katalog senkronizasyonu, AI önerileri, anomali uyarıları ve destek hizmetini kapsar. Meta'ya ödenen reklam bütçesi dahil değildir — o tamamen sizin kontrolünüzdedir.",
+        question: "Fiyatlandırma nasıl çalışıyor?",
+        answer: `İlk ay ${formatTRY(PRICING.setupFee)} + KDV ödersiniz — buna tüm teknik kurulum ve ilk ayın yönetimi dahildir. 2. aydan itibaren aylık yönetim bedeli ${formatTRY(PRICING.managementFee)} + KDV'dir. Kademeli plan, gizli kalem, kur farkı yok.`,
       },
       {
-        question: "Reklam bütçemi kim yönetiyor?",
+        question: "Aylık yönetim ücretinin içinde neler var?",
         answer:
-          "Bütçenin sahibi sizsiniz ve Meta'ya doğrudan kendi hesabınızdan ödersiniz. Jale, harcamanızı optimize etmenize yardım eder; AI önerileri ancak sizin onayınızla uygulanır. Sistem asla sizden habersiz harcama yapmaz.",
+          "Haftalık optimizasyon döngüsü (izleme, analiz, bütçe yönetimi, yeni testler), stok/fiyat senkron takibi, 7/24 anomali izleme, haftalık PDF rapor + WhatsApp özeti, aylık strateji görüşmesi ve öncelikli destek. Meta'ya ödenen reklam bütçesi dahil değildir.",
+      },
+      {
+        question: "Reklam bütçemi kim yönetiyor, para kimin hesabından çıkıyor?",
+        answer:
+          "Bütçenin sahibi sizsiniz ve Meta'ya doğrudan kendi reklam hesabınızdan ödersiniz — paranız bizim üzerimizden geçmez. Biz bütçenin nereye harcanacağını veriyle yönetiriz; harcamanın her kuruşunu kendi panelinizden de görebilirsiniz.",
       },
       {
         question: "Sözleşme veya taahhüt var mı?",
         answer:
-          "Aylık planlarda taahhüt yoktur; dilediğiniz dönem sonunda iptal edebilirsiniz. Yıllık planlarda %20 indirim karşılığında 12 aylık ödeme alınır. Detaylar İptal ve İade Politikamızda yer alır.",
+          "Taahhüt yoktur. Aylık yönetimi dilediğiniz ay sonunda durdurabilirsiniz; kurduğumuz altyapı (katalog bağlantısı, piksel, kampanya yapısı) sizin hesaplarınızda kalır. Detaylar İptal ve İade Politikamızda yer alır.",
       },
       {
-        question: "Ajans olarak müşterilerime nasıl fiyatlandırma yapmalıyım?",
+        question: "Ödeme nasıl yapılıyor?",
         answer:
-          "Agency planında mağaza başına ödersiniz ve white-label raporlarla hizmeti kendi markanız altında sunarsınız. Kendi müşterilerinize uygulayacağınız fiyat tamamen size aittir. 7+ mağaza için özel hacim indirimi sunuyoruz.",
+          "İlk ay paketi sitemizden iyzico güvencesiyle kredi kartıyla ödenir; 9'a kadar taksit imkânı vardır. Sonraki ayların yönetim bedeli fatura karşılığı tahsil edilir.",
       },
     ],
   },
@@ -108,17 +113,17 @@ const FAQ_SECTIONS: { title: string; items: FaqItem[] }[] = [
       {
         question: "Verilerim güvende mi?",
         answer:
-          "Evet. Tüm API erişim anahtarları veritabanında AES-256 ile şifrelenir, bağlantılar SSL üzerinden yapılır. Verileriniz üçüncü taraflarla paylaşılmaz. Detaylar Gizlilik Politikamız ve KVKK Aydınlatma Metnimizde yer alır.",
+          "Evet. Tüm erişimler resmi yetkilendirme akışlarıyla yapılır, bağlantılar SSL üzerinden gerçekleşir ve verileriniz üçüncü taraflarla paylaşılmaz. Detaylar Gizlilik Politikamız ve KVKK Aydınlatma Metnimizde yer alır.",
       },
       {
         question: "Mağaza şifremi paylaşmam gerekiyor mu?",
         answer:
-          "Hayır. Entegrasyonlar resmi yetkilendirme akışlarıyla (Trendyol yetki tanımı ve Meta Business izinleri) yapılır. Şifrenizi hiçbir zaman istemeyiz, görmeyiz, saklamayız.",
+          "Hayır. Entegrasyonlar resmi yetkilendirme akışlarıyla (pazaryeri yetki tanımı ve Meta Business izinleri) yapılır. Şifrenizi hiçbir zaman istemeyiz, görmeyiz, saklamayız.",
       },
       {
-        question: "Aboneliğimi iptal edersem verilerime ne olur?",
+        question: "Hizmeti bırakırsam hesaplarıma ne olur?",
         answer:
-          "İptal sonrası verileriniz 30 gün boyunca saklanır; bu sürede raporlarınızı dışa aktarabilirsiniz. Talep etmeniz halinde tüm verileriniz kalıcı olarak silinir.",
+          "Her şey sizde kalır: Meta Business Manager, reklam hesabı, katalog bağlantısı ve kampanya yapıları sizin mülkiyetinizdedir. Ayrılırken erişimlerimizi kaldırır, isterseniz devir dokümanı hazırlarız.",
       },
     ],
   },
@@ -152,7 +157,7 @@ export default function FaqPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
-      <section className="bg-gradient-to-b from-brand-50/60 to-white px-4 pb-12 pt-16 sm:px-6 lg:px-8">
+      <section className="bg-gradient-to-b from-ink-50 to-white px-4 pb-12 pt-16 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
           <h1 className="font-display text-4xl font-extrabold tracking-tight text-ink-900 sm:text-5xl">
             Sık sorulan sorular

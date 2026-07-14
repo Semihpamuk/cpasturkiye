@@ -23,14 +23,12 @@ interface Order {
   phone: string;
   email: string;
   storeUrl: string;
-  isAgency: boolean;
-  storeCount: number;
-  billing: string;
+  marketplaces?: string[];
   installment: string;
   discountCode: string | null;
   discountAmount: number;
-  includeSetup: boolean;
   setupNet: number;
+  managementMonthly?: number;
   total: number;
   status: "new" | "contacted" | "paid" | "cancelled";
   invoiceType: "individual" | "company";
@@ -57,12 +55,9 @@ interface Lead {
 type Tab = "orders" | "codes" | "leads" | "settings";
 
 interface SettingsForm {
-  starter: string;
-  extraStore: string;
-  agencyPerStore: string;
-  agencyContactThreshold: string;
   setupFee: string;
-  yearlyDiscountPercent: string;
+  managementFee: string;
+  setupDays: string;
 }
 
 interface RefRow {
@@ -113,12 +108,9 @@ export default function AdminClient() {
   const [codeError, setCodeError] = useState("");
 
   const [settingsForm, setSettingsForm] = useState<SettingsForm>({
-    starter: "",
-    extraStore: "",
-    agencyPerStore: "",
-    agencyContactThreshold: "",
     setupFee: "",
-    yearlyDiscountPercent: "",
+    managementFee: "",
+    setupDays: "",
   });
   const [referenceItems, setReferenceItems] = useState<RefRow[]>([]);
   const [settingsStatus, setSettingsStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
@@ -140,12 +132,9 @@ export default function AdminClient() {
     const settings = await settingsRes.json();
     if (settings?.pricing) {
       setSettingsForm({
-        starter: String(settings.pricing.starter),
-        extraStore: String(settings.pricing.extraStore),
-        agencyPerStore: String(settings.pricing.agencyPerStore),
-        agencyContactThreshold: String(settings.pricing.agencyContactThreshold),
         setupFee: String(settings.pricing.setupFee),
-        yearlyDiscountPercent: String(Math.round(settings.pricing.yearlyDiscount * 100)),
+        managementFee: String(settings.pricing.managementFee),
+        setupDays: String(settings.pricing.setupDays),
       });
       const rawRefs = settings.references || [];
       setReferenceItems(
@@ -235,12 +224,9 @@ export default function AdminClient() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           pricing: {
-            starter: Number(settingsForm.starter),
-            extraStore: Number(settingsForm.extraStore),
-            agencyPerStore: Number(settingsForm.agencyPerStore),
-            agencyContactThreshold: Number(settingsForm.agencyContactThreshold),
             setupFee: Number(settingsForm.setupFee),
-            yearlyDiscount: Number(settingsForm.yearlyDiscountPercent) / 100,
+            managementFee: Number(settingsForm.managementFee),
+            setupDays: Number(settingsForm.setupDays),
           },
           references: referenceItems
             .map((r) => ({ name: r.name.trim(), url: r.url.trim() }))
@@ -283,7 +269,7 @@ export default function AdminClient() {
               J
             </span>
             <span className="font-display text-lg font-bold text-white">
-              Jale Yönetim
+              CPAS Türkiye Yönetim
             </span>
           </div>
           <p className="mt-5 text-sm text-ink-300">Devam etmek için şifreni gir.</p>
@@ -328,7 +314,7 @@ export default function AdminClient() {
             </span>
             <div>
               <p className="font-display text-sm font-bold leading-none text-ink-900">
-                Jale Yönetim
+                CPAS Türkiye Yönetim
               </p>
               <p className="mt-0.5 text-[11px] text-ink-400">cpasturkiye.com</p>
             </div>
@@ -435,18 +421,12 @@ export default function AdminClient() {
                       {order.installment === "single"
                         ? "Tek çekim"
                         : `${order.installment} taksit`}{" "}
-                      · {order.billing === "yearly" ? "Yıllık" : "Aylık"}
+                      · Kurulum + İlk Ay
                     </p>
-                    {order.includeSetup ? (
-                      <p className="text-[11px] font-semibold text-green-600">
-                        ✓ Kurulum dahil
+                    {(order.managementMonthly ?? 0) > 0 && (
+                      <p className="text-[11px] text-ink-500">
+                        2. ay+ yönetim: {formatTRY(order.managementMonthly ?? 0)}/ay
                       </p>
-                    ) : (
-                      order.setupNet > 0 && (
-                        <p className="text-[11px] text-amber-600">
-                          + Kurulum {formatTRY(order.setupNet)} (ayrı)
-                        </p>
-                      )
                     )}
                   </div>
                 </div>
@@ -472,8 +452,10 @@ export default function AdminClient() {
 
                 <div className="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-ink-100 pt-3">
                   <p className="text-xs text-ink-500">
-                    {formatDateTime(order.createdAt)} · {order.storeCount} mağaza
-                    {order.isAgency ? " · Ajans" : ""}
+                    {formatDateTime(order.createdAt)}
+                    {order.marketplaces && order.marketplaces.length > 0
+                      ? ` · ${order.marketplaces.join(", ")}`
+                      : ""}
                     {order.discountCode
                       ? ` · Kod: ${order.discountCode} (−${formatTRY(order.discountAmount)})`
                       : ""}
@@ -725,12 +707,9 @@ export default function AdminClient() {
               <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {(
                   [
-                    ["starter", "Starter — ilk mağaza (₺/ay)"],
-                    ["extraStore", "Ek mağaza (₺/ay)"],
-                    ["agencyPerStore", "Ajans — mağaza başına (₺/ay)"],
-                    ["agencyContactThreshold", "Özel teklif eşiği (mağaza adedi)"],
-                    ["setupFee", "Kurulum bedeli (₺, tek seferlik)"],
-                    ["yearlyDiscountPercent", "Yıllık ödeme indirimi (%)"],
+                    ["setupFee", "Kurulum + ilk ay paketi (₺, KDV hariç)"],
+                    ["managementFee", "Aylık yönetim — 2. ay ve sonrası (₺, KDV hariç)"],
+                    ["setupDays", "Kurulum süresi (iş günü)"],
                   ] as [keyof SettingsForm, string][]
                 ).map(([key, label]) => (
                   <label key={key} className="block">

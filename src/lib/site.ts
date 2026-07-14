@@ -1,10 +1,10 @@
 export const SITE = {
-  name: "Jale",
+  name: "CPAS Türkiye",
   domain: "cpasturkiye.com",
   url: "https://cpasturkiye.com",
-  slogan: "Trendyol reklamlarını Meta'dan yönet.",
+  slogan: "Pazaryeri reklamlarınızı Meta'da biz yönetiyoruz.",
   description:
-    "Türkiye'nin ilk Trendyol–Meta CPAS reklam yönetim platformu. Trendyol mağazanı Meta'ya bağla, reklamlarını tek panelden yönet, gerçek satış verisiyle büyü.",
+    "Trendyol, Hepsiburada ve Amazon mağazanız için Meta CPAS reklamlarını uçtan uca kuruyor ve yönetiyoruz. Profesyonel kurulum, haftalık optimizasyon, gerçek satış verisiyle raporlama.",
   email: "info@cpasturkiye.com",
   // Gerçek telefon numarasını .env.local veya aşağıdan güncelleyin
   phone: process.env.NEXT_PUBLIC_SITE_PHONE ?? "+90 (212) 000 00 00",
@@ -19,13 +19,22 @@ export const SITE = {
   kep: process.env.NEXT_PUBLIC_SITE_KEP ?? "jale@hs01.kep.tr",
 };
 
+// Desteklenen pazaryerleri — sitede her yerde bu liste kullanılır.
+export const MARKETPLACES = [
+  { key: "trendyol", label: "Trendyol", color: "#f27a1a", status: "active" },
+  { key: "hepsiburada", label: "Hepsiburada", color: "#ff6000", status: "active" },
+  { key: "amazon", label: "Amazon", color: "#ff9900", status: "soon" },
+] as const;
+
+export type MarketplaceKey = (typeof MARKETPLACES)[number]["key"];
+
+// Tek paket hizmet modeli:
+// 1. ay  → kurulum + ilk ay yönetim (setupFee)
+// 2. ay+ → aylık yönetim (managementFee)
+// Tüm tutarlar KDV hariç net tutardır.
 export const PRICING = {
-  yearlyDiscount: 0.2,
-  starter: 5000,
-  extraStore: 3000,
-  agencyPerStore: 4000,
-  agencyContactThreshold: 7,
   setupFee: 25000,
+  managementFee: 17000,
   setupDays: 7,
 };
 
@@ -40,102 +49,47 @@ export function formatTRY(amount: number): string {
 }
 
 export interface OrderInput {
-  isAgency: boolean;
-  storeCount: number;
-  billing: "monthly" | "yearly";
   discount?: { type: "percent" | "fixed"; value: number } | null;
-  includeSetup?: boolean;
-  setupOnly?: boolean; // Yalnızca kurulum hizmeti satın alımı (abonelik olmadan)
 }
 
 export interface OrderQuote {
-  monthlySubscription: number;
-  subscriptionNet: number; // ilk ödeme dönemi (aylıkta 1 ay, yıllıkta 12 ay indirimli)
-  setupNet: number; // ayrıca tahsil edilen kurulum bedeli (toplama dahil değil)
+  setupNet: number; // 1. ay paketi (kurulum + ilk ay yönetim), KDV hariç
+  managementMonthly: number; // 2. aydan itibaren aylık yönetim (bilgi amaçlı)
   discountAmount: number;
   netAfterDiscount: number;
   vatAmount: number;
-  total: number;
-  requiresContact: boolean;
+  total: number; // online tahsil edilen tutar (1. ay paketi, KDV dahil)
 }
 
 export interface PricingValues {
-  starter: number;
-  extraStore: number;
-  agencyPerStore: number;
-  agencyContactThreshold: number;
   setupFee: number;
-  yearlyDiscount: number;
-}
-
-export function computeMonthlySubscription(
-  isAgency: boolean,
-  storeCount: number,
-  pricing: PricingValues = PRICING
-): number {
-  if (isAgency) return pricing.agencyPerStore * storeCount;
-  if (storeCount <= 1) return pricing.starter;
-  return pricing.starter + pricing.extraStore * (storeCount - 1);
+  managementFee: number;
+  setupDays: number;
 }
 
 export function computeOrderQuote(
   input: OrderInput,
   pricing: PricingValues = PRICING
 ): OrderQuote {
-  // Sadece kurulum satın alımı
-  if (input.setupOnly) {
-    const setupNet = pricing.setupFee;
-    const vatAmount = Math.round(setupNet * VAT_RATE);
-    return {
-      monthlySubscription: 0,
-      subscriptionNet: 0,
-      setupNet,
-      discountAmount: 0,
-      netAfterDiscount: setupNet,
-      vatAmount,
-      total: setupNet + vatAmount,
-      requiresContact: false,
-    };
-  }
-
-  const requiresContact =
-    input.isAgency && input.storeCount >= pricing.agencyContactThreshold;
-
-  const monthlySubscription = computeMonthlySubscription(
-    input.isAgency,
-    input.storeCount,
-    pricing
-  );
-
-  const subscriptionNet =
-    input.billing === "yearly"
-      ? Math.round(monthlySubscription * 12 * (1 - pricing.yearlyDiscount))
-      : monthlySubscription;
-
-  // Kurulum: müşteri isterse siparişe dahil edilir, istemezse ayrıca tahsil edilir.
   const setupNet = pricing.setupFee;
-  const includeSetup = input.includeSetup ?? false;
-  const subtotal = subscriptionNet + (includeSetup ? setupNet : 0);
 
   let discountAmount = 0;
   if (input.discount) {
     discountAmount =
       input.discount.type === "percent"
-        ? Math.round(subtotal * (input.discount.value / 100))
-        : Math.min(input.discount.value, subtotal);
+        ? Math.round(setupNet * (input.discount.value / 100))
+        : Math.min(input.discount.value, setupNet);
   }
 
-  const netAfterDiscount = subtotal - discountAmount;
+  const netAfterDiscount = setupNet - discountAmount;
   const vatAmount = Math.round(netAfterDiscount * VAT_RATE);
 
   return {
-    monthlySubscription,
-    subscriptionNet,
     setupNet,
+    managementMonthly: pricing.managementFee,
     discountAmount,
     netAfterDiscount,
     vatAmount,
     total: netAfterDiscount + vatAmount,
-    requiresContact,
   };
 }

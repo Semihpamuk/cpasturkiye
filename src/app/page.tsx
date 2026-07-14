@@ -1,727 +1,550 @@
 import Link from "next/link";
-import DashboardMockup from "@/components/DashboardMockup";
-import PricingCards from "@/components/PricingCards";
-import CtaSection from "@/components/CtaSection";
-import CpasFlowAnimation from "@/components/CpasFlowAnimation";
+import Hero from "@/components/Hero";
 import ReferencesBar from "@/components/ReferencesBar";
+import SetupTimeline, { type TimelineStep } from "@/components/SetupTimeline";
+import ManagementCycle from "@/components/ManagementCycle";
+import ReportPreview from "@/components/ReportPreview";
+import CaseStudies from "@/components/CaseStudies";
+import LiveStatsBand from "@/components/LiveStatsBand";
 import TestimonialsSpotlight from "@/components/TestimonialsSpotlight";
+import PricingSingle from "@/components/PricingSingle";
+import FaqAccordion, { type FaqItem } from "@/components/FaqAccordion";
+import CtaSection from "@/components/CtaSection";
 import Reveal from "@/components/Reveal";
 import CountUp from "@/components/CountUp";
-import LiveStatsBand from "@/components/LiveStatsBand";
+import JsonLd from "@/components/JsonLd";
 import { SITE, PRICING, formatTRY } from "@/lib/site";
 
-const STEPS = [
+/* ─────────────────────────── İçerik verileri ─────────────────────────── */
+
+const WHY_CPAS = [
   {
-    number: "1",
-    title: "Trendyol'u Bağla",
+    title: "Pazaryerinin dışına çık",
     description:
-      "Trendyol mağazanın reklam yetkisini Jale'ye tanımlıyoruz. Ürün kataloğun otomatik olarak sisteme akıyor.",
+      "Pazaryeri içi reklamlar yalnızca o an sitede gezinen kullanıcıya ulaşır. Meta CPAS ile ürünlerin Facebook ve Instagram'daki milyonlarca aktif kullanıcının karşısına çıkar.",
+    stat: "10x",
+    statLabel: "daha geniş erişilebilir kitle",
   },
   {
-    number: "2",
-    title: "Meta'yı Bağla",
+    title: "Rekabet hâlâ düşük",
     description:
-      "Meta Business hesabını CPAS ile Trendyol kataloğuna bağlıyoruz. Facebook ve Instagram reklamların satış verisiyle eşleşiyor.",
+      "Pazaryeri içinde aynı kategorideki tüm satıcılarla açık artırmadasın. CPAS kullanan satıcı sayısı Türkiye'de hâlâ çok az — alan erken davrananın.",
+    stat: "%3",
+    statLabel: "satıcının CPAS kullandığı tahmin ediliyor",
   },
   {
-    number: "3",
-    title: "Yönet ve Büyü",
+    title: "Tahmin değil, gerçek satış",
     description:
-      "Tek panelden kampanyalarını yönet, gerçek ROAS'ını gör, AI önerileriyle bütçeni en kârlı ürünlere yönlendir.",
+      "CPAS kampanyaları pazaryeri satış verisiyle eşleşir: hangi reklamın kaç sipariş getirdiğini kuruşu kuruşuna görürsün. Bütçe kararları veriyle alınır.",
+    stat: "%100",
+    statLabel: "satış bazlı ROAS ölçümü",
   },
 ];
 
-const FEATURES = [
+const SETUP_STEPS: TimelineStep[] = [
   {
-    title: "Tek Panelden CPAS Yönetimi",
+    day: "Gün 1",
+    title: "Tanışma ve yetkilendirme",
     description:
-      "Trendyol kataloğun ile Meta kampanyaların tek ekranda. Ads Manager karmaşası yok — sadece senin mağazan için tasarlanmış sade bir panel.",
-    icon: (
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"
-      />
-    ),
+      "Ekip arkadaşımız sizi arar, hedefleri netleştirir. Pazaryeri reklam yetkilendirmesi ve hesap erişimleri güvenli şekilde tanımlanır.",
+    deliverable: "Kurulum planı paylaşılır",
   },
   {
-    title: "Gerçek ROAS Takibi",
+    day: "Gün 2–3",
+    title: "Meta Business ve katalog bağlantısı",
     description:
-      "Tahmin değil, gerçek: Trendyol satış verisiyle eşleşen kampanya raporları. Hangi reklamın kaç sipariş getirdiğini net olarak gör.",
-    icon: (
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941"
-      />
-    ),
+      "Meta Business Manager yapılandırılır; Trendyol/Hepsiburada ürün kataloğunuz CPAS ile Meta'ya bağlanır. Ürünleriniz otomatik akmaya başlar.",
+    deliverable: "Katalog Meta'da canlı",
   },
   {
-    title: "AI Destekli Bütçe Optimizasyonu",
+    day: "Gün 3–4",
+    title: "Ölçümleme kurulumu",
     description:
-      "Yapay zeka, kazandıran ürünlere bütçeyi otomatik kaydırmayı önerir. Sen onayla, sistem uygulasın — zarar eden reklamlara para akmasın.",
-    icon: (
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456z"
-      />
-    ),
+      "Piksel ve dönüşüm event'leri kurulur, satış verisinin kampanyalarla doğru eşleştiği test edilir. Ölçemediğimiz şeyi yönetmeyiz.",
+    deliverable: "Dönüşüm testi raporu",
   },
   {
-    title: "Otomatik Katalog Senkronizasyonu",
+    day: "Gün 4–6",
+    title: "Kampanya mimarisi",
     description:
-      "Trendyol'da fiyat mı değişti, stok mu bitti? Meta kataloğun otomatik güncellenir. Stokta olmayan ürüne asla reklam harcamazsın.",
-    icon: (
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"
-      />
-    ),
+      "Katalog segmentlere ayrılır; retargeting ve prospecting katmanları, bütçe dağılımı ve teklif stratejisi mağazanıza özel kurgulanır.",
+    deliverable: "Mimari şeması onayınıza sunulur",
   },
   {
-    title: "Anomali Uyarıları ve Görevler",
+    day: "Gün 6–7",
+    title: "Test yayını ve canlıya alma",
     description:
-      "ROAS düştü, harcama fırladı, satış sıfırlandı? Sistem anında yakalar, bildirim gönderir ve çözüm görevi açar. Hiçbir sorun gözden kaçmaz.",
-    icon: (
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"
-      />
-    ),
-  },
-  {
-    title: "Ajans Modu ve Çoklu Mağaza",
-    description:
-      "Birden fazla mağazayı tek panelden yönet. White-label raporlar, müşteri portali ve ekip yetkilendirmesiyle ajansın için tam donanım.",
-    icon: (
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"
-      />
-    ),
+      "Kampanyalar düşük bütçeyle test edilir, veri akışı doğrulanır ve tam bütçeyle canlıya alınır. İlk haftalık rapor düzeniniz kurulur.",
+    deliverable: "Reklamlarınız yayında 🚀",
   },
 ];
 
-const COMPARISON = [
+const TECH_CARDS = [
   {
-    label: "Erişebildiğin kitle",
-    trendyol: "O an Trendyol'da gezinen kullanıcılar",
-    jale: "Facebook + Instagram'daki milyonlarca aktif kullanıcı",
+    title: "Katalog Segmentasyonu",
+    description:
+      "Tüm katalogla tek kampanya açmayız. Kâr marjı, stok derinliği ve satış hızına göre ürün setleri ayrıştırılır; her set kendi bütçe ve teklif stratejisini alır.",
+    wide: false,
   },
   {
-    label: "Rekabet",
-    trendyol: "Aynı kategorideki tüm satıcılarla aynı alanda açık artırma",
-    jale: "CPAS kullanan satıcı sayısı çok az — alan henüz boş",
+    title: "Retargeting + Prospecting Katmanları",
+    description:
+      "Ürününüzü görüp almayanlara dinamik hatırlatma (retargeting), benzer alışveriş davranışı gösteren yeni kitlelere keşif (prospecting). İki katman birbirini besler: keşfin getirdiği trafik, retargeting havuzunu büyütür.",
+    wide: true,
   },
   {
-    label: "Hedefleme",
-    trendyol: "Sınırlı — kategori ve anahtar kelime bazlı",
-    jale: "Meta'nın davranışsal hedeflemesi + yeniden pazarlama",
+    title: "Event ve Dönüşüm Ölçümleme",
+    description:
+      "Satış verisinin Meta'ya doğru dönmesi CPAS'ın kalbidir. Kurulumda her event tek tek test edilir; veri kopukluğu anında alarm üretir.",
+    wide: false,
   },
   {
-    label: "Ölçüm",
-    trendyol: "Platform içi tıklama ve dönüşüm",
-    jale: "Gerçek sipariş verisiyle birebir eşleşen ROAS",
+    title: "Bütçe Kaydırma Disiplini",
+    description:
+      "Bütçe kararları haftalık veriyle alınır: hedef ROAS'ın altında kalan setler küçülür, kazananlar ölçeklenir. Duyguyla değil, kuralla.",
+    wide: false,
   },
   {
-    label: "Marka görünürlüğü",
-    trendyol: "Ürün listede bir sıra yukarı çıkar",
-    jale: "Markan kullanıcının akışında görsel/video ile yer alır",
+    title: "Stok ve Fiyat Senkronu",
+    description:
+      "Pazaryerinde stok bitti mi, fiyat değişti mi? Meta kataloğu otomatik güncellenir — stokta olmayan ürüne tek kuruş reklam harcanmaz.",
+    wide: false,
+  },
+  {
+    title: "Anomali İzleme",
+    description:
+      "ROAS düşüşü, harcama sıçraması, satış sıfırlanması gibi durumlar aynı gün tespit edilir ve müdahale edilir. Sorunlar haftalık raporu beklemez.",
+    wide: false,
   },
 ];
 
 const TESTIMONIALS = [
   {
     quote:
-      "Trendyol'da aylık 800 sipariş alıyorduk ama Meta reklamlarına nasıl geçeceğimizi bilmiyorduk. CPAS Türkiye ekibi 1 haftada her şeyi kurdu. 3. ayın sonunda ciromuz %60 arttı.",
+      "Reklamları kendimiz yönetmeye çalışıyorduk, Ads Manager'da kayboluyorduk. Devrettiğimizden beri hem kafamız rahat hem ROAS iki katından fazla. Haftalık raporlar sayesinde ne olup bittiğini her zaman biliyorum.",
     name: "Emre K.",
-    role: "Tekstil Satıcısı — İstanbul",
+    role: "Trendyol satıcısı · Ev & Yaşam",
   },
   {
     quote:
-      "Ajans olarak 12 Trendyol satıcısının reklamını yönetiyoruz. Eskiden her hesap için ayrı ayrı Ads Manager açıyorduk. Şimdi hepsi tek panelde, raporlar otomatik gidiyor.",
+      "En çok güven veren şey şeffaflık oldu. Hangi ürüne ne harcanıyor, ne dönüyor — hepsi önümde. İkinci ayın sonunda reklam kaynaklı ciromuz üçe katlandı.",
     name: "Selin A.",
-    role: "Dijital Ajans Kurucusu — Ankara",
+    role: "Trendyol & Hepsiburada satıcısı · Kozmetik",
   },
   {
     quote:
-      "En çok korktuğum şey teknik kurulumdu. Meta Business, katalog, piksel... Hiçbiriyle uğraşmadım. ROAS'ım şu an 6'nın üzerinde ve her sabah AI raporumu okuyarak güne başlıyorum.",
-    name: "Mehmet T.",
-    role: "Ev Tekstili Satıcısı — Bursa",
+      "Daha önce iki ajansla çalıştık, ikisi de pazaryeri reklamcılığını bilmiyordu. Bu ekip işin CPAS tarafını gerçekten biliyor; kurulum bir haftada bitti, ilk ay hedefin üstünde kapandı.",
+    name: "Murat D.",
+    role: "Hepsiburada satıcısı · Züccaciye",
   },
 ];
 
-const homeFaqJsonLd = {
+const FAQ_ITEMS: FaqItem[] = [
+  {
+    question: "CPAS (Collaborative Ads) tam olarak nedir?",
+    answer:
+      "CPAS, Meta'nın pazaryeri satıcıları için geliştirdiği reklam çözümüdür: pazaryerindeki ürün kataloğunuz Meta'ya bağlanır ve Facebook/Instagram'da dinamik ürün reklamları yayınlanır. En kritik farkı, kampanya sonuçlarının pazaryerindeki gerçek satış verisiyle eşleşmesidir — hangi reklamın kaç sipariş getirdiğini net görürsünüz.",
+  },
+  {
+    question: "Hangi pazaryerlerinde çalışıyorsunuz?",
+    answer:
+      "Trendyol ve Hepsiburada mağazaları için kurulum ve yönetim hizmeti veriyoruz. Amazon entegrasyonumuz çok yakında başlıyor. Birden fazla pazaryerinde mağazanız varsa tek pakette birlikte yönetilir.",
+  },
+  {
+    question: "Reklam bütçesi fiyata dahil mi?",
+    answer:
+      "Hayır. Reklam bütçenizi doğrudan Meta'ya, kendi reklam hesabınızdan ödersiniz — paranız bizim üzerimizden geçmez, harcamanın her kuruşunu kendi panelinizden de görebilirsiniz. Bizim ücretimiz kurulum ve yönetim hizmetinin karşılığıdır.",
+  },
+  {
+    question: "Kurulum ne kadar sürer, süreçte ne yapmam gerekir?",
+    answer: `Kurulum ortalama ${PRICING.setupDays} iş günü sürer. Sizden yalnızca ilk gün yetkilendirmeleri onaylamanızı isteriz; teknik işlerin tamamını biz yürütürüz. Gün gün ilerleyişi size raporlarız.`,
+  },
+  {
+    question: "Taahhüt var mı? İstediğim zaman bırakabilir miyim?",
+    answer:
+      "Taahhüt yok. İlk ay kurulum + yönetim paketiyle başlarsınız; 2. aydan itibaren aylık yönetim ücretiyle devam eder, dilediğiniz ay sonunda durdurabilirsiniz. Kurduğumuz altyapı (katalog bağlantısı, piksel, kampanya yapısı) sizin hesabınızda kalır.",
+  },
+  {
+    question: "Sonuçları nasıl takip edeceğim?",
+    answer:
+      "Her hafta sade bir PDF rapor ve WhatsApp özeti alırsınız: harcama, ciro, ROAS, sipariş sayısı ve o hafta yapılan optimizasyonlar. Ayda bir de birlikte strateji görüşmesi yaparız. Ayrıca kendi Meta ve pazaryeri panellerinizden her şeyi anlık izleyebilirsiniz.",
+  },
+  {
+    question: "Ödeme nasıl yapılıyor?",
+    answer: `İlk ay paketi (${formatTRY(PRICING.setupFee)} + KDV) sitemizden iyzico güvencesiyle kredi kartıyla ödenir; 9'a kadar taksit imkânı vardır. Sonraki ayların yönetim bedeli (${formatTRY(PRICING.managementFee)} + KDV) fatura karşılığı tahsil edilir.`,
+  },
+];
+
+/* ─────────────────────────── Yapısal veri (SEO) ─────────────────────────── */
+
+const SERVICE_JSONLD = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  name: "Meta CPAS Kurulum ve Reklam Yönetimi",
+  serviceType: "Reklam yönetim hizmeti",
+  provider: {
+    "@type": "Organization",
+    name: SITE.name,
+    url: SITE.url,
+    email: SITE.email,
+  },
+  areaServed: "TR",
+  description: SITE.description,
+  offers: [
+    {
+      "@type": "Offer",
+      name: "Kurulum + İlk Ay Yönetim",
+      price: String(PRICING.setupFee),
+      priceCurrency: "TRY",
+    },
+    {
+      "@type": "Offer",
+      name: "Aylık Yönetim (2. ay ve sonrası)",
+      price: String(PRICING.managementFee),
+      priceCurrency: "TRY",
+    },
+  ],
+};
+
+const FAQ_JSONLD = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
-  mainEntity: [
-    {
-      "@type": "Question",
-      name: "CPAS nedir?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "CPAS (Collaborative Performance Advertising Solution), Meta'nın pazaryeri satıcıları için geliştirdiği iş ortağı reklam çözümüdür. Trendyol ürün kataloğunu Meta'ya bağlar; Facebook ve Instagram reklamları doğrudan Trendyol mağazasına satış olarak döner ve her sipariş gerçek veriyle ölçülür.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "Trendyol mağazam Meta'ya nasıl bağlanır?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "Trendyol'dan CPAS reklam yetkisi alınır, ardından Meta Business Manager'da katalog oluşturulup Trendyol ürün feed'iyle eşleştirilir. Jale bu teknik süreci ortalama 7 iş günü içinde uçtan uca yönetir.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "CPAS ile ne kadar ROAS (Reklam Harcama Getirisi) beklenebilir?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "Doğru kurulumda 4–8× ROAS tipik aralıktır; yeniden pazarlama kampanyaları 8–15× bandına çıkabilir. Jale'nin yönettiği kampanyaların %95'i Trendyol iç reklamlarını geride bıraktı, minimum 1.5× daha iyi sonuç verdi.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "Kurulumu abonelik almadan tek başına satın alabilir miyim?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "Evet. Kurulum hizmeti SaaS aboneliğinden bağımsız olarak tek başına satın alınabilir. Tek seferlik kurulum ücreti, Trendyol yetkilendirme, Meta Business Manager kurulumu, CPAS katalog bağlantısı ve Jale entegrasyonunu kapsar. Ödeme iyzico altyapısıyla güvenli şekilde yapılır.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "Trendyol CPAS reklam yetkisi almak için ne gerekir?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "Trendyol'da aktif ve onaylı bir mağaza, en az 3 ay satış geçmişi ve ürün listeleme kurallarına uyum gerekir. Onay süreci genellikle 2–5 iş günü sürer. Jale bu süreci sizin adınıza başlatıp takip eder.",
-      },
-    },
-  ],
-};
-
-const softwareAppJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "SoftwareApplication",
-  name: SITE.name,
-  applicationCategory: "BusinessApplication",
-  operatingSystem: "Web",
-  offers: {
-    "@type": "Offer",
-    price: String(PRICING.starter),
-    priceCurrency: "TRY",
-    availability: "https://schema.org/InStock",
-    url: `${SITE.url}/satin-al`,
-  },
-  // Sayfada görüntülenen müşteri yorumlarına dayanır (TESTIMONIALS).
-  aggregateRating: {
-    "@type": "AggregateRating",
-    ratingValue: "4.9",
-    reviewCount: String(TESTIMONIALS.length),
-    bestRating: "5",
-    worstRating: "1",
-  },
-  review: TESTIMONIALS.map((t) => ({
-    "@type": "Review",
-    reviewRating: { "@type": "Rating", ratingValue: "5", bestRating: "5" },
-    author: { "@type": "Person", name: t.name },
-    reviewBody: t.quote,
+  mainEntity: FAQ_ITEMS.map((item) => ({
+    "@type": "Question",
+    name: item.question,
+    acceptedAnswer: { "@type": "Answer", text: item.answer },
   })),
-  description: SITE.description,
-  url: SITE.url,
 };
 
-const organizationJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  name: SITE.name,
-  legalName: SITE.company,
-  url: SITE.url,
-  email: SITE.email,
-  // Yasal şirket kimliği (MERSIS / vergi no) — entity güveni ve doğrulama için.
-  identifier: [
-    { "@type": "PropertyValue", propertyID: "MERSIS", value: SITE.mersis },
-    { "@type": "PropertyValue", propertyID: "VKN", value: SITE.taxId },
-  ],
-  taxID: SITE.taxId,
-  vatID: SITE.taxId,
-  address: {
-    "@type": "PostalAddress",
-    streetAddress: SITE.address,
-    addressLocality: "Beşiktaş",
-    addressRegion: "İstanbul",
-    addressCountry: "TR",
-  },
-  description: SITE.description,
-  sameAs: [],
-};
-
-const websiteJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "WebSite",
-  name: SITE.name,
-  url: SITE.url,
-  description: SITE.description,
-};
+/* ─────────────────────────── Sayfa ─────────────────────────── */
 
 export default function HomePage() {
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(homeFaqJsonLd) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareAppJsonLd) }}
-      />
-      {/* ====== HERO ====== */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-brand-50/60 via-white to-white">
-        <div className="mx-auto grid max-w-7xl items-center gap-12 px-4 pb-20 pt-16 sm:px-6 lg:grid-cols-2 lg:px-8 lg:pb-28 lg:pt-24">
-          <div>
-            <Reveal>
-              <span className="inline-flex items-center gap-2 rounded-full border border-brand-200 bg-white px-4 py-1.5 text-xs font-semibold text-brand-700 shadow-sm">
-                <span className="relative flex h-2 w-2">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-400 opacity-75" />
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-brand-500" />
-                </span>
-                Türkiye&apos;nin ilk Trendyol–Meta CPAS platformu
-              </span>
-            </Reveal>
-            <Reveal delay={100}>
-              <h1 className="mt-6 font-display text-4xl font-extrabold leading-tight tracking-tight text-ink-900 sm:text-5xl lg:text-[3.4rem]">
-                Trendyol reklamlarını{" "}
-                <span className="bg-gradient-to-r from-brand-600 to-brand-500 bg-clip-text text-transparent">
-                  Meta&apos;dan yönet.
-                </span>
-              </h1>
-            </Reveal>
-            <Reveal delay={200}>
-              <p className="mt-6 max-w-xl text-lg leading-relaxed text-ink-600">
-                Trendyol reklamlarını <strong className="text-ink-900">ürün bazlı
-                optimize eden tek ekibiz.</strong> Yönettiğimiz kampanyaların{" "}
-                <strong className="text-ink-900">%95&apos;i Trendyol&apos;un iç reklamlarından
-                daha iyi sonuç aldı</strong> — en kötü senaryoda bile{" "}
-                <strong className="text-ink-900">1.5 kat</strong>.
-              </p>
-            </Reveal>
-            <Reveal delay={300}>
-              <div className="mt-8 flex flex-col gap-4 sm:flex-row">
-                <Link
-                  href="/satin-al"
-                  className="group relative overflow-hidden rounded-xl bg-brand-600 px-8 py-3.5 text-center text-sm font-bold text-white shadow-lg shadow-brand-200 transition-all hover:bg-brand-700 hover:shadow-xl"
-                >
-                  <span className="relative z-10">Hemen Başla</span>
-                  <span className="absolute inset-y-0 left-0 w-1/3 bg-white/20 opacity-0 transition-opacity group-hover:opacity-100" style={{ animation: "shine 1.2s ease-in-out infinite" }} />
-                </Link>
-                <Link
-                  href="/kurulum"
-                  className="rounded-xl border border-ink-300 px-8 py-3.5 text-center text-sm font-semibold text-ink-800 transition-colors hover:border-brand-400 hover:text-brand-700"
-                >
-                  Kurulum Sürecini İncele
-                </Link>
-              </div>
-            </Reveal>
-            <Reveal delay={400}>
-              <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-3 text-sm text-ink-500">
-                <span className="flex items-center gap-2">
-                  <CheckIcon /> Ortalama 7 iş günü kurulum
-                </span>
-                <span className="flex items-center gap-2">
-                  <CheckIcon /> Peşin fiyatına 3 taksit
-                </span>
-                <span className="flex items-center gap-2">
-                  <CheckIcon /> Türkçe destek
-                </span>
-              </div>
-            </Reveal>
-          </div>
+      <JsonLd data={SERVICE_JSONLD} />
+      <JsonLd data={FAQ_JSONLD} />
 
-          <div className="relative">
-            <div className="absolute -inset-8 rounded-full bg-brand-100/50 blur-3xl animate-pulse-glow" />
-            <Reveal delay={200} className="relative">
-              <DashboardMockup />
-            </Reveal>
+      {/* ═══ HERO ═══ */}
+      <Hero />
 
-            {/* Yüzen rozetler */}
-            <div className="absolute -left-4 top-10 hidden animate-float-slow rounded-2xl border border-ink-100 bg-white px-4 py-3 shadow-xl lg:block">
-              <p className="text-[10px] font-semibold uppercase tracking-wider text-ink-400">
-                Bu ay ROAS
-              </p>
-              <p className="font-display text-xl font-extrabold text-green-600">7.02x</p>
-            </div>
-            <div className="absolute -right-2 bottom-16 hidden animate-float-slower rounded-2xl border border-ink-100 bg-white px-4 py-3 shadow-xl lg:block">
-              <div className="flex items-center gap-2.5">
-                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100 text-green-600">
-                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                  </svg>
-                </span>
-                <div>
-                  <p className="text-xs font-bold text-ink-900">Yeni sipariş</p>
-                  <p className="text-[10px] text-ink-500">Instagram reklamından · az önce</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ====== REFERANS BARI ====== */}
+      {/* ═══ REFERANSLAR ═══ */}
       <ReferencesBar />
 
-      {/* ====== NEDEN NEREDEYSE KİMSE YAPAMIYOR ====== */}
-      <section className="px-4 py-20 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-6xl">
-          <div className="grid items-center gap-12 lg:grid-cols-2">
-            <Reveal>
-              <span className="inline-block rounded-full bg-brand-50 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-brand-700">
-                Neden herkes yapamıyor?
-              </span>
-              <h2 className="mt-4 font-display text-3xl font-bold tracking-tight text-ink-900 sm:text-4xl">
-                CPAS&apos;e erişim var.{" "}
-                <span className="text-brand-600">Ustalık yok.</span>
-              </h2>
-              <p className="mt-5 leading-relaxed text-ink-600">
-                Trendyol kataloğunu Meta&apos;ya bağlamak; pazaryeri yetkilendirmesi, Meta
-                Business mimarisi, katalog segmentasyonu ve CPAS&apos;e özgü kampanya
-                kurgusu gerektirir. Türkiye&apos;de bu zinciri uçtan uca kurabilen ajans
-                sayısı bir elin parmağını geçmez — <strong className="text-ink-900">ürün
-                bazlı optimizasyon yapabilen ise tek ekibiz.</strong>
-              </p>
-              <p className="mt-4 leading-relaxed text-ink-600">
-                CPAS Türkiye olarak yıllardır bu işi müşterilerimiz için elle yapıyorduk.
-                Şimdi tüm bilgi birikimimizi Jale&apos;ye kodladık: sen panelden yönetirsin,
-                sistem bizim deneyimimizle çalışır.
-              </p>
-            </Reveal>
-            <Reveal delay={150}>
-              <div className="space-y-4">
-                {[
-                  {
-                    title: "Trendyol yetkilendirme süreci",
-                    text: "Reklam yetkisinin doğru kapsamla alınması — çoğu ajansın takıldığı ilk adım.",
-                  },
-                  {
-                    title: "CPAS katalog mimarisi",
-                    text: "Katalog segmentleri ve ürün setlerinin satışa dönüşecek şekilde kurgulanması.",
-                  },
-                  {
-                    title: "Ürün bazlı performans verisi",
-                    text: "Hangi ürünün ne harcayıp ne kazandırdığını görmek — ürün bazlı optimizasyon yapan tek ekibiz.",
-                  },
-                  {
-                    title: "Sürekli optimizasyon",
-                    text: "Kurulum yetmez: bütçe, kitle ve kreatif her gün veriyle yönetilmeli. Jale'nin AI'ı bunu otomatikleştirir.",
-                  },
-                ].map((item, index) => (
-                  <div
-                    key={item.title}
-                    className="flex items-start gap-4 rounded-2xl border border-ink-200 bg-white p-5 shadow-sm"
-                  >
-                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 font-display text-sm font-bold text-white">
-                      {index + 1}
-                    </span>
-                    <div>
-                      <h3 className="font-display text-sm font-bold text-ink-900">
-                        {item.title}
-                      </h3>
-                      <p className="mt-1 text-sm leading-relaxed text-ink-600">{item.text}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </Reveal>
-          </div>
-        </div>
-      </section>
-
-      {/* ====== CANLI İSTATİSTİK BANDI (Jale verisi, client-side'da /api/live-stats'tan çekilir) ====== */}
-      <LiveStatsBand />
-
-      {/* ====== CANLI AKIŞ + NASIL ÇALIŞIR ====== */}
-      <section className="bg-ink-50 px-4 py-20 sm:px-6 lg:px-8">
+      {/* ═══ NEDEN META CPAS? ═══ */}
+      <section className="px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
         <div className="mx-auto max-w-7xl">
           <Reveal>
-            <div className="mx-auto max-w-2xl text-center">
-              <h2 className="font-display text-3xl font-bold tracking-tight text-ink-900 sm:text-4xl">
-                Nasıl çalışır?
-              </h2>
-              <p className="mt-4 text-lg text-ink-600">
-                Kataloğun Trendyol&apos;dan akar, reklamların Meta&apos;da döner, satışlar
-                gerçek veriyle ölçülür.
-              </p>
-            </div>
+            <p className="text-xs font-bold uppercase tracking-widest text-brand-600">
+              Neden Meta CPAS?
+            </p>
+            <h2 className="mt-3 max-w-2xl font-display text-3xl font-extrabold tracking-tight text-ink-900 sm:text-4xl">
+              Pazaryeri içinde herkes aynı kalabalıkta.
+              <span className="text-ink-400"> Kazanan, dışarıdan müşteri getiren.</span>
+            </h2>
           </Reveal>
-
-          <Reveal delay={100}>
-            <div className="mx-auto mt-12 max-w-4xl rounded-3xl border border-ink-200 bg-white p-6 shadow-sm sm:p-10">
-              <CpasFlowAnimation />
-            </div>
-          </Reveal>
-
-          <div className="mt-12 grid gap-8 md:grid-cols-3">
-            {STEPS.map((step, index) => (
-              <Reveal key={step.number} delay={index * 120}>
-                <div className="h-full rounded-2xl border border-ink-200 bg-white p-8 shadow-sm transition-shadow hover:shadow-md">
-                  <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 font-display text-xl font-bold text-white">
-                    {step.number}
-                  </span>
-                  <h3 className="mt-5 font-display text-lg font-bold text-ink-900">
-                    {step.title}
-                  </h3>
-                  <p className="mt-2.5 text-sm leading-relaxed text-ink-600">
-                    {step.description}
+          <div className="mt-12 grid gap-6 lg:grid-cols-3">
+            {WHY_CPAS.map((card, i) => (
+              <Reveal key={card.title} delay={i * 120}>
+                <div className="group flex h-full flex-col rounded-2xl border border-ink-200 bg-white p-7 transition-all duration-300 hover:-translate-y-1 hover:border-brand-200 hover:shadow-xl hover:shadow-brand-600/5">
+                  <p className="font-display text-4xl font-extrabold text-brand-600">
+                    {card.stat}
                   </p>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ====== İSTATİSTİK BANDI (BAŞARI) ====== */}
-      <section className="relative overflow-hidden bg-ink-900 px-4 py-16 sm:px-6 lg:px-8">
-        <div className="absolute -left-32 top-0 h-64 w-64 rounded-full bg-brand-600/20 blur-3xl" />
-        <div className="absolute -right-32 bottom-0 h-64 w-64 rounded-full bg-brand-600/20 blur-3xl" />
-        <div className="relative mx-auto grid max-w-6xl grid-cols-2 gap-10 text-center lg:grid-cols-4">
-          <Reveal>
-            <p className="font-display text-4xl font-extrabold text-white sm:text-5xl">
-              <CountUp end={95} suffix="%" />
-            </p>
-            <p className="mt-2 text-sm leading-snug text-ink-300">
-              kampanyamız Trendyol iç reklamlarından{" "}
-              <span className="font-semibold text-white">daha iyi</span> sonuç aldı
-            </p>
-          </Reveal>
-          <Reveal delay={100}>
-            <p className="font-display text-4xl font-extrabold text-white sm:text-5xl">
-              <CountUp end={1.5} decimals={1} suffix="x" />
-            </p>
-            <p className="mt-2 text-sm leading-snug text-ink-300">
-              <span className="font-semibold text-white">minimum</span> performans farkı —
-              en kötü senaryoda bile
-            </p>
-          </Reveal>
-          <Reveal delay={200}>
-            <p className="font-display text-4xl font-extrabold text-white sm:text-5xl">
-              <CountUp end={7} suffix=" iş günü" />
-            </p>
-            <p className="mt-2 text-sm leading-snug text-ink-300">
-              ortalamada kurulum tamamlanır, reklamların{" "}
-              <span className="font-semibold text-white">yayında olur</span>
-            </p>
-          </Reveal>
-          <Reveal delay={300}>
-            <p className="font-display text-4xl font-extrabold text-white sm:text-5xl">
-              Tek
-            </p>
-            <p className="mt-2 text-sm leading-snug text-ink-300">
-              Türkiye&apos;de Trendyol reklamlarını{" "}
-              <span className="font-semibold text-white">ürün bazlı optimize eden</span> ekip
-            </p>
-          </Reveal>
-        </div>
-      </section>
-
-      {/* ====== TRENDYOL İÇİ vs JALE KARŞILAŞTIRMA ====== */}
-      <section className="px-4 py-20 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-5xl">
-          <Reveal>
-            <div className="mx-auto max-w-2xl text-center">
-              <h2 className="font-display text-3xl font-bold tracking-tight text-ink-900 sm:text-4xl">
-                Trendyol iç reklamı mı, CPAS mi?
-              </h2>
-              <p className="mt-4 text-lg text-ink-600">
-                İkisi rakip değil — ama büyüme tavanın Trendyol&apos;un içinde değil,
-                dışında.
-              </p>
-            </div>
-          </Reveal>
-
-          <Reveal delay={100}>
-            <div className="mt-12 overflow-hidden rounded-2xl border border-ink-200 shadow-sm">
-              <div className="grid grid-cols-[1fr_1.2fr_1.2fr] bg-ink-900 text-xs font-bold uppercase tracking-wider sm:text-sm">
-                <div className="px-4 py-4 text-ink-300 sm:px-6" />
-                <div className="border-l border-ink-700 px-4 py-4 text-ink-300 sm:px-6">Trendyol İç Reklam</div>
-                <div className="bg-brand-600 px-4 py-4 text-white sm:px-6">
-                  Jale ile CPAS
-                </div>
-              </div>
-              {COMPARISON.map((row, index) => (
-                <div
-                  key={row.label}
-                  className={`grid grid-cols-[1fr_1.2fr_1.2fr] text-xs sm:text-sm ${
-                    index % 2 === 0 ? "bg-white" : "bg-ink-50"
-                  }`}
-                >
-                  <div className="px-4 py-4 font-semibold text-ink-900 sm:px-6">
-                    {row.label}
-                  </div>
-                  <div className="border-l border-ink-200 px-4 py-4 text-ink-600 sm:px-6">{row.trendyol}</div>
-                  <div className="border-l-2 border-brand-200 bg-brand-50/40 px-4 py-4 font-medium text-ink-800 sm:px-6">
-                    {row.jale}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </Reveal>
-
-          <Reveal delay={150}>
-            <p className="mx-auto mt-8 max-w-2xl text-center text-sm leading-relaxed text-ink-500">
-              Trendyol içi reklam ürününü listede bir sıra yukarı taşır; CPAS ise markanı
-              Facebook ve Instagram&apos;daki milyonlarca yeni kullanıcının akışına sokar.
-              İkisi rakip değil — birlikte en iyi sonucu verir.
-            </p>
-          </Reveal>
-        </div>
-      </section>
-
-      {/* ====== ÖZELLİKLER ====== */}
-      <section className="bg-ink-50 px-4 py-20 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl">
-          <Reveal>
-            <div className="mx-auto max-w-2xl text-center">
-              <h2 className="font-display text-3xl font-bold tracking-tight text-ink-900 sm:text-4xl">
-                Reklam yönetimi için ihtiyacın olan her şey
-              </h2>
-              <p className="mt-4 text-lg text-ink-600">
-                Ads Manager&apos;ın karmaşası olmadan, mağazan için tasarlanmış araçlar.
-              </p>
-            </div>
-          </Reveal>
-
-          <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {FEATURES.map((feature, index) => (
-              <Reveal key={feature.title} delay={(index % 3) * 100}>
-                <div className="group h-full rounded-2xl border border-ink-200 bg-white p-7 shadow-sm transition-all hover:-translate-y-1 hover:border-brand-200 hover:shadow-lg">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-50 text-brand-600 transition-colors group-hover:bg-brand-600 group-hover:text-white">
-                    <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.7}>
-                      {feature.icon}
-                    </svg>
-                  </div>
-                  <h3 className="mt-4 font-display text-base font-bold text-ink-900">
-                    {feature.title}
+                  <p className="mt-1 text-xs font-semibold uppercase tracking-wider text-ink-400">
+                    {card.statLabel}
+                  </p>
+                  <h3 className="mt-5 font-display text-lg font-bold text-ink-900">
+                    {card.title}
                   </h3>
                   <p className="mt-2 text-sm leading-relaxed text-ink-600">
-                    {feature.description}
+                    {card.description}
+                  </p>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ KİM İÇİN? ═══ */}
+      <section className="bg-ink-50/70 px-4 py-20 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-5xl">
+          <Reveal className="text-center">
+            <p className="text-xs font-bold uppercase tracking-widest text-brand-600">
+              Doğru eşleşme
+            </p>
+            <h2 className="mt-3 font-display text-3xl font-extrabold tracking-tight text-ink-900 sm:text-4xl">
+              Her mağazayla çalışmıyoruz
+            </h2>
+            <p className="mx-auto mt-4 max-w-2xl text-ink-600">
+              Operasyon kalitemizi korumak için her ay sınırlı sayıda yeni mağaza kabul
+              ediyoruz. Sonuç alacağımıza inanmadığımız mağazayı almayız — bu iki taraf
+              için de zaman kaybı.
+            </p>
+          </Reveal>
+          <div className="mt-12 grid gap-6 md:grid-cols-2">
+            <Reveal>
+              <div className="h-full rounded-2xl border border-green-200 bg-white p-7">
+                <p className="flex items-center gap-2 font-display text-base font-bold text-green-700">
+                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                  Size göreyiz, eğer:
+                </p>
+                <ul className="mt-4 space-y-3 text-sm leading-relaxed text-ink-700">
+                  <li>• Trendyol veya Hepsiburada&apos;da <strong>aktif satış yapan</strong> bir mağazanız varsa</li>
+                  <li>• Ürün kataloğunuz oturmuş, siparişleriniz düzenliyse</li>
+                  <li>• Reklama aylık <strong>düzenli bütçe</strong> ayırabiliyorsanız</li>
+                  <li>• Reklam yönetimini uzmana bırakıp işinize odaklanmak istiyorsanız</li>
+                </ul>
+              </div>
+            </Reveal>
+            <Reveal delay={120}>
+              <div className="h-full rounded-2xl border border-ink-200 bg-white p-7">
+                <p className="flex items-center gap-2 font-display text-base font-bold text-ink-500">
+                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                  Size göre değiliz, eğer:
+                </p>
+                <ul className="mt-4 space-y-3 text-sm leading-relaxed text-ink-600">
+                  <li>• Mağazanız yeni açıldıysa ve henüz satış geçmişi yoksa</li>
+                  <li>• Reklam bütçesi ayırmadan sonuç bekliyorsanız</li>
+                  <li>• &ldquo;Bir haftada 10 kat satış&rdquo; tarzı mucize arıyorsanız — biz veriyle, adım adım büyütürüz</li>
+                </ul>
+                <p className="mt-5 rounded-xl bg-ink-50 p-4 text-xs leading-relaxed text-ink-500">
+                  Emin değil misiniz?{" "}
+                  <Link href="/iletisim" className="font-semibold text-brand-700 underline">
+                    Ücretsiz ön analiz
+                  </Link>{" "}
+                  isteyin — mağazanıza bakıp dürüstçe söyleyelim.
+                </p>
+              </div>
+            </Reveal>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ 1. AY: KURULUM TIMELINE ═══ */}
+      <section id="surec" className="px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
+        <div className="mx-auto max-w-5xl">
+          <Reveal className="text-center">
+            <p className="text-xs font-bold uppercase tracking-widest text-brand-600">
+              1. Ay — Kurulum + İlk Ay Yönetim · {formatTRY(PRICING.setupFee)} + KDV
+            </p>
+            <h2 className="mt-3 font-display text-3xl font-extrabold tracking-tight text-ink-900 sm:text-4xl">
+              İlk {PRICING.setupDays} günde neler oluyor?
+            </h2>
+            <p className="mx-auto mt-4 max-w-2xl text-ink-600">
+              Kurulum bir kara kutu değil. Hangi gün ne yapılıyor, elinize ne geçiyor —
+              adım adım önünüzde.
+            </p>
+          </Reveal>
+          <div className="mt-16">
+            <SetupTimeline steps={SETUP_STEPS} />
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ 2. AY+: YÖNETİM ═══ */}
+      <section className="bg-ink-50/70 px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
+        <div className="mx-auto max-w-7xl">
+          <Reveal className="text-center">
+            <p className="text-xs font-bold uppercase tracking-widest text-brand-600">
+              2. Ay ve Sonrası — Aylık Yönetim · {formatTRY(PRICING.managementFee)} + KDV/ay
+            </p>
+            <h2 className="mt-3 font-display text-3xl font-extrabold tracking-tight text-ink-900 sm:text-4xl">
+              Her hafta dönen bir optimizasyon çarkı
+            </h2>
+            <p className="mx-auto mt-4 max-w-2xl text-ink-600">
+              Kurulum bitince iş asıl şimdi başlar. Kampanyalarınız her hafta bu döngüden
+              geçer — ve her adımı raporda görürsünüz.
+            </p>
+          </Reveal>
+
+          <div className="mt-12">
+            <ManagementCycle />
+          </div>
+
+          <div className="mt-16 grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
+            <Reveal>
+              <h3 className="font-display text-2xl font-extrabold tracking-tight text-ink-900 sm:text-3xl">
+                &ldquo;Param nereye gidiyor?&rdquo; sorusu
+                <span className="text-brand-600"> bizde sorulmaz.</span>
+              </h3>
+              <p className="mt-4 leading-relaxed text-ink-600">
+                Her Pazartesi kutunuza düşen rapor; harcamayı, reklam kaynaklı ciroyu,
+                ROAS&apos;ı ve o hafta yaptığımız her optimizasyonu tek sayfada özetler.
+                Teknik bilgi gerekmez — okuyan herkes anlasın diye tasarlandı.
+              </p>
+              <ul className="mt-6 space-y-3">
+                {[
+                  "Haftalık PDF rapor + WhatsApp özeti",
+                  "Yapılan her optimizasyonun gerekçesiyle listesi",
+                  "Aylık birebir strateji görüşmesi",
+                  "Dilediğiniz an ulaşabileceğiniz destek hattı",
+                ].map((itemText) => (
+                  <li key={itemText} className="flex items-start gap-3 text-sm font-medium text-ink-700">
+                    <svg className="mt-0.5 h-5 w-5 shrink-0 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    {itemText}
+                  </li>
+                ))}
+              </ul>
+            </Reveal>
+            <Reveal delay={150}>
+              <ReportPreview />
+            </Reveal>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ TEKNİK DERİNLİK (KOYU) ═══ */}
+      <section className="section-dark relative overflow-hidden px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
+        <div className="bg-dot-grid-dark absolute inset-0" aria-hidden="true" />
+        <div className="relative mx-auto max-w-7xl">
+          <Reveal>
+            <p className="text-xs font-bold uppercase tracking-widest text-brand-400">
+              İşin mutfağı
+            </p>
+            <h2 className="mt-3 max-w-2xl font-display text-3xl font-extrabold tracking-tight sm:text-4xl">
+              &ldquo;Reklam yönetiyoruz&rdquo; demek kolay.
+              <span className="text-ink-400"> Nasıl yönettiğimizi gösterelim.</span>
+            </h2>
+          </Reveal>
+          <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+            {TECH_CARDS.map((card, i) => (
+              <Reveal
+                key={card.title}
+                delay={i * 90}
+                className={card.wide ? "md:col-span-2" : ""}
+              >
+                <div className="group h-full rounded-2xl border border-white/10 bg-white/[0.04] p-6 transition-all duration-300 hover:border-brand-500/30 hover:bg-white/[0.07]">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-600/15 font-display text-sm font-extrabold text-brand-400 ring-1 ring-brand-500/20">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <h3 className="mt-4 font-display text-base font-bold text-white">
+                    {card.title}
+                  </h3>
+                  <p className="mt-2 text-sm leading-relaxed text-ink-400">
+                    {card.description}
                   </p>
                 </div>
               </Reveal>
             ))}
           </div>
 
-          <div className="mt-10 text-center">
-            <Link
-              href="/ozellikler"
-              className="text-sm font-semibold text-brand-700 underline underline-offset-4 hover:text-brand-800"
-            >
-              Tüm özellikleri detaylı incele →
-            </Link>
+          {/* ═══ VAKALAR ═══ */}
+          <div className="mt-24 lg:mt-32">
+            <Reveal className="text-center">
+              <p className="text-xs font-bold uppercase tracking-widest text-brand-400">
+                Vaka çalışmaları
+              </p>
+              <h2 className="mt-3 font-display text-3xl font-extrabold tracking-tight sm:text-4xl">
+                Rakamlar bizden iyi anlatıyor
+              </h2>
+              <p className="mx-auto mt-4 max-w-2xl text-ink-400">
+                Onlarca mağazadan üç örnek. Marka adları gizli, sonuçlar gerçek —
+                görüşmede sektörünüze benzer vakaları detaylı paylaşırız.
+              </p>
+            </Reveal>
+
+            <div className="mt-12">
+              <CaseStudies />
+            </div>
+
+            <Reveal className="mt-12">
+              <div className="grid grid-cols-3 divide-x divide-white/10 rounded-2xl border border-white/10 bg-white/[0.03] py-8 text-center">
+                <div>
+                  <p className="font-display text-3xl font-extrabold text-white sm:text-4xl">
+                    <CountUp end={40} suffix="+" />
+                  </p>
+                  <p className="mt-1 text-xs font-medium text-ink-400">yönetilen mağaza</p>
+                </div>
+                <div>
+                  <p className="font-display text-3xl font-extrabold text-white sm:text-4xl">
+                    <CountUp end={9.2} decimals={1} suffix="x" />
+                  </p>
+                  <p className="mt-1 text-xs font-medium text-ink-400">ortalama ROAS</p>
+                </div>
+                <div>
+                  <p className="font-display text-3xl font-extrabold text-white sm:text-4xl">
+                    <CountUp end={250} prefix="₺" suffix="M+" />
+                  </p>
+                  <p className="mt-1 text-xs font-medium text-ink-400">reklam kaynaklı ciro</p>
+                </div>
+              </div>
+            </Reveal>
           </div>
         </div>
       </section>
 
-      {/* ====== SOSYAL KANIT ====== */}
-      <section className="overflow-hidden px-4 py-20 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl">
-          <Reveal>
-            <div className="mx-auto max-w-2xl text-center">
-              <h2 className="font-display text-3xl font-bold tracking-tight text-ink-900 sm:text-4xl">
-                Müşterilerimiz ne diyor?
-              </h2>
-              <p className="mt-3 text-sm text-ink-500">
-                Bir yoruma tıklayarak odağı değiştirebilirsin.
-              </p>
-            </div>
-          </Reveal>
+      {/* ═══ CANLI İSTATİSTİK BANDI ═══ */}
+      <LiveStatsBand />
 
+      {/* ═══ MÜŞTERİ YORUMLARI ═══ */}
+      <section className="px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
+        <div className="mx-auto max-w-6xl">
+          <Reveal className="text-center">
+            <p className="text-xs font-bold uppercase tracking-widest text-brand-600">
+              Müşterilerimiz
+            </p>
+            <h2 className="mt-3 font-display text-3xl font-extrabold tracking-tight text-ink-900 sm:text-4xl">
+              Bizimle çalışanlar ne diyor?
+            </h2>
+          </Reveal>
           <TestimonialsSpotlight testimonials={TESTIMONIALS} />
         </div>
       </section>
 
-      {/* ====== FİYATLANDIRMA ÖZETİ ====== */}
-      <section className="flex min-h-screen items-center bg-ink-50 px-4 py-16 sm:px-6 lg:px-8">
-        <div className="mx-auto w-full max-w-7xl">
-          <Reveal>
-            <div className="mx-auto max-w-2xl text-center">
-              <h2 className="font-display text-3xl font-bold tracking-tight text-ink-900 sm:text-4xl">
-                Şeffaf fiyatlandırma
-              </h2>
-              <p className="mt-4 text-lg text-ink-600">
-                Gizli ücret yok. Mağaza sayına göre öde, peşin fiyatına 3 taksit imkânıyla.
-              </p>
-            </div>
+      {/* ═══ FİYATLANDIRMA ═══ */}
+      <section id="fiyat" className="bg-ink-50/70 px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
+        <div className="mx-auto max-w-7xl">
+          <Reveal className="text-center">
+            <p className="text-xs font-bold uppercase tracking-widest text-brand-600">
+              Fiyatlandırma
+            </p>
+            <h2 className="mt-3 font-display text-3xl font-extrabold tracking-tight text-ink-900 sm:text-4xl">
+              Tek paket. Sürpriz yok.
+            </h2>
+            <p className="mx-auto mt-4 max-w-2xl text-ink-600">
+              Kademeli planlar, gizli kalemler, kur farkı yok. İlk ay kurulum + yönetim,
+              sonrası aylık yönetim — hepsi bu.
+            </p>
+          </Reveal>
+          <div className="mt-12">
+            <PricingSingle />
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ SSS ═══ */}
+      <section className="px-4 py-20 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-3xl">
+          <Reveal className="text-center">
+            <h2 className="font-display text-3xl font-extrabold tracking-tight text-ink-900 sm:text-4xl">
+              Aklınıza takılanlar
+            </h2>
+            <p className="mt-4 text-ink-600">
+              Cevabını bulamadığınız soru için{" "}
+              <Link href="/sss" className="font-semibold text-brand-700 underline">
+                SSS sayfamıza
+              </Link>{" "}
+              bakın ya da{" "}
+              <Link href="/iletisim" className="font-semibold text-brand-700 underline">
+                bize yazın
+              </Link>
+              .
+            </p>
           </Reveal>
           <div className="mt-10">
-            <PricingCards compact />
+            <FaqAccordion items={FAQ_ITEMS} />
           </div>
         </div>
       </section>
 
-      {/* ====== CPAS HIZLI CEVAPLAR (SEO + AI arama) ====== */}
-      <section className="border-t border-ink-100 px-4 py-20 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-4xl">
-          <Reveal>
-            <h2 className="font-display text-2xl font-bold tracking-tight text-ink-900 sm:text-3xl text-center mb-10">
-              CPAS hakkında en çok sorulanlar
-            </h2>
-          </Reveal>
-          <div className="grid gap-6 sm:grid-cols-2">
-            {[
-              {
-                q: "CPAS nedir?",
-                a: "Meta'nın pazaryeri satıcıları için geliştirdiği iş ortağı reklam çözümüdür. Trendyol kataloğunuzu Meta'ya bağlar; Facebook/Instagram reklamları doğrudan Trendyol'da satışa dönüşür ve her sipariş gerçek veriyle ölçülür.",
-              },
-              {
-                q: "Trendyol mağazam Meta'ya nasıl bağlanır?",
-                a: "Trendyol'dan CPAS reklam yetkisi alınır, ardından Meta Business Manager'da katalog oluşturulup eşleştirilir. Jale bu teknik süreci ortalama 7 iş günü içinde sizin adınıza tamamlar.",
-              },
-              {
-                q: "CPAS ile ne kadar ROAS beklenebilir?",
-                a: "Doğru kurulumda 4–8× ROAS tipik aralıktır; yeniden pazarlama kampanyaları 8–15× bandına çıkabilir. Sonuç kategori, kâr marjı ve bütçeye göre değişir.",
-              },
-              {
-                q: "Kurulumu abonelik almadan satın alabilir miyim?",
-                a: `Evet. ${formatTRY(PRICING.setupFee)} + KDV tek seferlik kurulum hizmeti, abonelikten bağımsız olarak satın alınabilir. Güvenli iyzico ödemesiyle anında başlayın.`,
-              },
-            ].map((item) => (
-              <Reveal key={item.q}>
-                <div className="rounded-2xl border border-ink-200 bg-white p-6 shadow-sm">
-                  <h3 className="font-display text-sm font-bold text-ink-900">{item.q}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-ink-600">{item.a}</p>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-          <div className="mt-8 text-center">
-            <Link href="/sss" className="text-sm font-semibold text-brand-700 underline underline-offset-4 hover:text-brand-800">
-              Tüm soruları gör →
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* ====== CTA ====== */}
+      {/* ═══ SON CTA ═══ */}
       <CtaSection />
     </>
-  );
-}
-
-function CheckIcon() {
-  return (
-    <svg className="h-4 w-4 text-brand-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-    </svg>
   );
 }

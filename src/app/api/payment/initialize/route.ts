@@ -1,24 +1,25 @@
 import { NextResponse } from "next/server";
 import { findValidCode, getSettings, savePendingOrder } from "@/lib/db";
-import { computeOrderQuote, VAT_RATE } from "@/lib/site";
+import { computeOrderQuote } from "@/lib/site";
 import { initializeCheckoutForm, type IyzicoBasketItem } from "@/lib/iyzico";
-import { SITE } from "@/lib/site";
+import { SITE, MARKETPLACES } from "@/lib/site";
+
+const VALID_MARKETPLACES = new Set<string>(MARKETPLACES.map((m) => m.key));
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
 
-    // Sipariş parametrelerini doğrula (orders/route.ts ile aynı mantık)
     const name = String(body.name || "").trim();
     const phone = String(body.phone || "").trim();
     const email = String(body.email || "").trim();
     const storeUrl = String(body.storeUrl || "").trim();
-    const isAgency = Boolean(body.isAgency);
-    const storeCount = Math.min(Math.max(Number(body.storeCount) || 1, 1), 50);
-    const billing = body.billing === "yearly" ? "yearly" : "monthly";
+    const marketplaces: string[] = Array.isArray(body.marketplaces)
+      ? body.marketplaces
+          .map((m: unknown) => String(m).toLowerCase().trim())
+          .filter((m: string) => VALID_MARKETPLACES.has(m))
+      : [];
     const discountCodeInput = typeof body.discountCode === "string" ? body.discountCode.trim() : "";
-    const includeSetup = Boolean(body.includeSetup);
-    const setupOnly = Boolean(body.setupOnly);
     const invoiceType = body.invoiceType === "company" ? "company" : "individual";
     const identityNo = String(body.identityNo || "").trim();
     const companyName = String(body.companyName || "").trim();
@@ -30,30 +31,24 @@ export async function POST(req: Request) {
     if (!name || !phone || !email) {
       return NextResponse.json({ error: "Ad, telefon ve e-posta zorunludur" }, { status: 400 });
     }
+    if (marketplaces.length === 0) {
+      return NextResponse.json({ error: "En az bir pazaryeri seçmelisiniz" }, { status: 400 });
+    }
     if (!address || !city) {
       return NextResponse.json({ error: "Fatura adresi ve şehir zorunludur" }, { status: 400 });
     }
     if (invoiceType === "company" && (!companyName || !taxOffice || !taxNumber)) {
       return NextResponse.json({ error: "Şirket faturası için unvan, vergi dairesi ve vergi no zorunludur" }, { status: 400 });
     }
-    if (storeUrl && !/^https?:\/\/(www\.)?trendyol\.com\//i.test(storeUrl)) {
-      return NextResponse.json({ error: "Mağaza URL'si geçerli bir Trendyol mağaza adresi olmalıdır" }, { status: 400 });
+    if (storeUrl && !/^https?:\/\/.+\..+/i.test(storeUrl)) {
+      return NextResponse.json({ error: "Mağaza linki geçerli bir web adresi olmalıdır" }, { status: 400 });
     }
 
     const settings = await getSettings();
 
-    if (isAgency && storeCount >= settings.pricing.agencyContactThreshold) {
-      return NextResponse.json({ error: "Bu mağaza sayısı için lütfen iletişime geçin" }, { status: 400 });
-    }
-
     const validCode = discountCodeInput ? await findValidCode(discountCodeInput) : null;
     const quote = computeOrderQuote(
       {
-        isAgency,
-        storeCount,
-        billing,
-        includeSetup,
-        setupOnly,
         discount: validCode ? { type: validCode.type, value: validCode.value } : null,
       },
       settings.pricing
@@ -67,75 +62,15 @@ export async function POST(req: Request) {
     // conversationId: sonraki aşamada sipariş kimliği olarak kullanılır
     const conversationId = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
 
-    // Sepet kalemleri
-    let basketItems: IyzicoBasketItem[];
-
-    if (setupOnly) {
-      basketItems = [
-        {
-          id: "setup",
-          name: "Trendyol–Meta CPAS Kurulum Hizmeti",
-          category1: "Profesyonel Hizmet",
-          itemType: "VIRTUAL",
-          price: quote.total.toFixed(2),
-        },
-      ];
-    } else {
-      const planLabel = isAgency
-        ? `Ajans Planı — ${storeCount} Mağaza — ${billing === "yearly" ? "Yıllık" : "Aylık"}`
-        : `Standart Plan — ${storeCount} Mağaza — ${billing === "yearly" ? "Yıllık" : "Aylık"}`;
-
-      // İndirim ve KDV dahil toplam (quote.total), kalemler arasında brüt
-      // (KDV dahil) ağırlıklarına göre orantılı paylaştırılır. Böylece kalem
-      // toplamı her zaman quote.total'a birebir eşit olur (iyzico bunu zorunlu
-      // kılar) ve hiçbir kalem indirim nedeniyle negatife/sıfıra düşmez.
-      const grossSubscription = Math.round(quote.subscriptionNet * (1 + VAT_RATE));
-      const grossSetup = includeSetup
-        ? Math.round(quote.setupNet * (1 + VAT_RATE))
-        : 0;
-      const grossTotal = grossSubscription + grossSetup;
-
-      // Kurulum kaleminin toplam içindeki payı (yuvarlama farkı abonelikte toplanır)
-      const setupItemPrice =
-        includeSetup && grossTotal > 0
-          ? Math.round((quote.total * grossSetup) / grossTotal)
-          : 0;
-      const subscriptionItemPrice = quote.total - setupItemPrice;
-
-      // Güvenlik ağı: orantılama sonucu bir kalem geçersiz (≤0) olursa, tek
-      // birleşik kalem kullan — iyzico sıfır/negatif kalemi reddeder.
-      if (subscriptionItemPrice <= 0 || (includeSetup && setupItemPrice <= 0)) {
-        basketItems = [
-          {
-            id: "order",
-            name: includeSetup ? `${planLabel} + Kurulum` : planLabel,
-            category1: "SaaS Abonelik",
-            itemType: "VIRTUAL",
-            price: quote.total.toFixed(2),
-          },
-        ];
-      } else {
-        basketItems = [
-          {
-            id: "subscription",
-            name: planLabel,
-            category1: "SaaS Abonelik",
-            itemType: "VIRTUAL",
-            price: subscriptionItemPrice.toFixed(2),
-          },
-        ];
-
-        if (includeSetup) {
-          basketItems.push({
-            id: "setup",
-            name: "Kurulum Hizmeti (tek seferlik)",
-            category1: "Profesyonel Hizmet",
-            itemType: "VIRTUAL",
-            price: setupItemPrice.toFixed(2),
-          });
-        }
-      }
-    }
+    const basketItems: IyzicoBasketItem[] = [
+      {
+        id: "setup-package",
+        name: "CPAS Kurulum + İlk Ay Yönetim Paketi",
+        category1: "Profesyonel Hizmet",
+        itemType: "VIRTUAL",
+        price: quote.total.toFixed(2),
+      },
+    ];
 
     const totalStr = quote.total.toFixed(2);
 
@@ -153,7 +88,7 @@ export async function POST(req: Request) {
       paidPrice: totalStr,
       currency: "TRY",
       basketId: conversationId,
-      paymentGroup: "SUBSCRIPTION",
+      paymentGroup: "PRODUCT",
       callbackUrl,
       enabledInstallments: [1, 2, 3, 6, 9],
       buyer: {
@@ -195,11 +130,10 @@ export async function POST(req: Request) {
       conversationId,
       createdAt: new Date().toISOString(),
       name, phone, email, storeUrl,
-      isAgency, storeCount, billing,
-      includeSetup: setupOnly ? true : includeSetup,
+      marketplaces,
       discountCode: validCode?.code ?? null,
-      subscriptionNet: quote.subscriptionNet,
       setupNet: quote.setupNet,
+      managementMonthly: quote.managementMonthly,
       discountAmount: quote.discountAmount,
       vatAmount: quote.vatAmount,
       total: quote.total,

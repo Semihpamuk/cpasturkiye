@@ -5,9 +5,9 @@ import Link from "next/link";
 import Logo from "./Logo";
 
 const NAV_LINKS = [
-  { href: "/ozellikler", label: "Özellikler" },
+  { href: "/ozellikler", label: "Hizmet" },
+  { href: "/kurulum", label: "Süreç" },
   { href: "/fiyatlandirma", label: "Fiyatlandırma" },
-  { href: "/kurulum", label: "Kurulum" },
   { href: "/sss", label: "SSS" },
   { href: "/blog", label: "Blog" },
   { href: "/hakkimizda", label: "Hakkımızda" },
@@ -46,7 +46,7 @@ export default function Navbar() {
             href="/satin-al"
             className="rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all hover:bg-brand-700 hover:shadow-md"
           >
-            Satın Al
+            Hemen Başla
           </Link>
         </div>
 
@@ -99,7 +99,7 @@ export default function Navbar() {
                 className="rounded-lg bg-brand-600 px-4 py-2.5 text-center text-sm font-semibold text-white"
                 onClick={() => setIsOpen(false)}
               >
-                Satın Al
+                Hemen Başla
               </Link>
             </div>
           </div>

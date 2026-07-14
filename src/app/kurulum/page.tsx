@@ -10,8 +10,8 @@ import { breadcrumbJsonLd } from "@/lib/seo";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Kurulum Hizmeti",
-  description: `Trendyol–Meta CPAS kurulumunu uzman ekibimiz yapar: Trendyol yetkilendirme, Meta Business kurulumu, katalog bağlantısı. ${DEFAULTS.setupDays} iş günü içinde teslim.`,
+  title: "Kurulum Süreci",
+  description: `Meta CPAS kurulumunu uzman ekibimiz yapar: pazaryeri yetkilendirme, Meta Business kurulumu, katalog bağlantısı, ölçümleme ve kampanya mimarisi. ${DEFAULTS.setupDays} iş günü içinde reklamlarınız yayında.`,
   alternates: { canonical: "/kurulum" },
 };
 
@@ -20,43 +20,43 @@ const TIMELINE = [
     day: "1. Gün",
     title: "Başlangıç görüşmesi ve yetkilendirme",
     description:
-      "Sizinle online bir başlangıç toplantısı yapıyoruz. Trendyol Satıcı Paneli üzerinden reklam yetkilendirme sürecini birlikte başlatıyoruz ve gerekli erişimleri tanımlıyoruz.",
+      "Ekip arkadaşımız sizi arar; hedefleri, ürün gruplarını ve bütçe çerçevesini netleştiririz. Pazaryeri satıcı paneli üzerinden reklam yetkilendirme sürecini birlikte başlatır, gerekli erişimleri güvenli şekilde tanımlarız.",
   },
   {
     day: "2-3. Gün",
-    title: "Trendyol reklam yetkisi onayı",
+    title: "Reklam yetkisi onayı ve Meta Business kurulumu",
     description:
-      "Trendyol tarafında mağazanız için CPAS reklam yetkisi onay sürecini takip ediyoruz. Bu aşamada mağaza kataloğunuzun reklamlara uygunluğunu da kontrol ediyoruz.",
+      "Pazaryeri tarafında CPAS reklam yetkisi onay sürecini biz takip ederiz. Eşzamanlı olarak Meta Business Manager hesabınızı kurar veya mevcut hesabınızı düzenleriz: reklam hesabı, ödeme yöntemi, sayfa bağlantıları ve izinler.",
   },
   {
-    day: "4-5. Gün",
-    title: "Meta Business Manager kurulumu",
+    day: "3-4. Gün",
+    title: "Katalog bağlantısı ve ölçümleme",
     description:
-      "Meta Business Manager hesabınızı kuruyor veya mevcut hesabınızı düzenliyoruz: reklam hesabı, ödeme yöntemi, sayfa bağlantıları ve gerekli izinler. Trendyol kataloğunuzu Meta'ya bağlıyoruz.",
+      "Ürün kataloğunuz CPAS ile Meta'ya bağlanır. Piksel ve dönüşüm event'leri kurulur; satış verisinin kampanyalarla doğru eşleştiği tek tek test edilir. Ölçemediğimiz şeyi yönetmeyiz.",
   },
   {
-    day: "6. Gün",
-    title: "CPAS bağlantısı ve Jale entegrasyonu",
+    day: "4-6. Gün",
+    title: "Kampanya mimarisi",
     description:
-      "CPAS katalog segmentinizi oluşturup reklam hesabınızla eşleştiriyoruz. Mağazanızı Jale paneline bağlıyor, veri akışını ve satış eşleştirmesini test ediyoruz.",
+      "Katalog; kâr marjı, stok derinliği ve satış hızına göre segmentlere ayrılır. Retargeting ve prospecting katmanları, bütçe dağılımı ve teklif stratejisi mağazanıza özel kurgulanır ve onayınıza sunulur.",
   },
   {
-    day: "7. Gün",
-    title: "Test, eğitim ve teslim",
+    day: "6-7. Gün",
+    title: "Test yayını ve canlıya alma",
     description:
-      "İlk test kampanyasını birlikte kuruyoruz. Size panelin kullanımını anlatan birebir eğitim veriyoruz. Sistem teslim — artık reklamlarınızı yönetmeye hazırsınız.",
+      "Kampanyalar düşük bütçeyle test edilir, veri akışı doğrulanır ve tam bütçeyle canlıya alınır. Haftalık rapor düzeniniz kurulur — artık her Pazartesi performansınız kutunuzda.",
   },
 ];
 
 const INCLUDED = [
-  "Trendyol Satıcı Paneli reklam yetkilendirme süreci yönetimi",
+  "Pazaryeri reklam yetkilendirme sürecinin uçtan uca yönetimi",
   "Meta Business Manager kurulumu veya mevcut hesap düzenlemesi",
   "Reklam hesabı, sayfa ve ödeme yapılandırması",
-  "CPAS katalog bağlantısı ve segment oluşturma",
-  "Jale paneline mağaza entegrasyonu ve veri doğrulama",
-  "İlk test kampanyasının birlikte kurulması",
-  "Birebir panel kullanım eğitimi (online)",
-  "Kurulum sonrası 14 gün öncelikli destek",
+  "CPAS katalog bağlantısı ve segment mimarisi",
+  "Piksel, event ve dönüşüm ölçümleme kurulumu + testleri",
+  "Retargeting + prospecting kampanya katmanlarının kurulması",
+  "Test yayını, doğrulama ve canlıya alma",
+  "İlk ayın tam yönetimi ve haftalık raporlama",
 ];
 
 export default async function SetupPage() {
@@ -67,20 +67,21 @@ export default async function SetupPage() {
       <JsonLd
         data={breadcrumbJsonLd([
           { name: "Ana Sayfa", path: "" },
-          { name: "Kurulum Hizmeti", path: "/kurulum" },
+          { name: "Kurulum Süreci", path: "/kurulum" },
         ])}
       />
-      <section className="bg-gradient-to-b from-brand-50/60 to-white px-4 pb-12 pt-16 sm:px-6 lg:px-8">
+      <section className="bg-gradient-to-b from-ink-50 to-white px-4 pb-12 pt-16 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
           <span className="inline-block rounded-full border border-brand-200 bg-white px-4 py-1.5 text-xs font-semibold text-brand-700 shadow-sm">
-            Tek seferlik profesyonel kurulum
+            1. Ay — Kurulum + İlk Ay Yönetim
           </span>
           <h1 className="mt-6 font-display text-4xl font-extrabold tracking-tight text-ink-900 sm:text-5xl">
-            Teknik kurulumu biz yapıyoruz, sen satışa odaklan
+            Teknik kurulumu biz yapıyoruz, siz satışa odaklanın
           </h1>
           <p className="mt-5 text-lg leading-relaxed text-ink-600">
-            Trendyol yetkilendirmesinden Meta bağlantısına kadar tüm süreci uzman
-            ekibimiz yönetir. {PRICING.setupDays} iş günü sonunda sistemin tamamen hazır.
+            Pazaryeri yetkilendirmesinden kampanyaların canlıya alınmasına kadar tüm
+            süreci uzman ekibimiz yönetir. {PRICING.setupDays} iş günü sonunda
+            reklamlarınız yayında.
           </p>
           <div className="mt-8 inline-flex flex-col items-center gap-1 rounded-2xl border border-brand-200 bg-white px-10 py-6 shadow-md">
             <span className="font-display text-4xl font-extrabold text-ink-900">
@@ -88,15 +89,18 @@ export default async function SetupPage() {
               <span className="text-lg font-semibold text-ink-500"> + KDV</span>
             </span>
             <span className="text-sm text-ink-500">
-              tek seferlik · ortalama {PRICING.setupDays} iş günü
+              kurulum + ilk ay yönetim · ortalama {PRICING.setupDays} iş günü
+            </span>
+            <span className="mt-1 text-xs text-ink-400">
+              2. aydan itibaren {formatTRY(PRICING.managementFee)} + KDV/ay
             </span>
           </div>
           <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
             <Link
-              href="/satin-al?type=setup"
+              href="/satin-al"
               className="rounded-xl bg-brand-600 px-8 py-3.5 text-sm font-bold text-white shadow-md hover:bg-brand-700 transition-colors"
             >
-              Kurulumu Hemen Satın Al →
+              Hemen Başla →
             </Link>
             <Link
               href="/iletisim"
@@ -106,7 +110,7 @@ export default async function SetupPage() {
             </Link>
           </div>
           <p className="mt-3 text-xs text-ink-400">
-            Abonelik zorunlu değildir · Güvenli iyzico ödemesi
+            Taahhüt yok · Güvenli iyzico ödemesi · 9&apos;a kadar taksit
           </p>
         </div>
       </section>
@@ -114,10 +118,10 @@ export default async function SetupPage() {
       <section className="px-4 py-16 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl">
           <h2 className="text-center font-display text-3xl font-bold tracking-tight text-ink-900">
-            Ortalama 7 iş günlük kurulum süreci
+            Ortalama {PRICING.setupDays} iş günlük kurulum süreci
           </h2>
           <p className="mt-3 text-center text-ink-600">
-            Adım adım ne olacağını bil — sürpriz yok.
+            Adım adım ne olacağını bilin — kurulum bir kara kutu değil.
           </p>
 
           <ol className="relative mt-12 space-y-10 border-l-2 border-brand-200 pl-8">
@@ -144,7 +148,7 @@ export default async function SetupPage() {
       <section className="bg-ink-50 px-4 py-16 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl">
           <h2 className="text-center font-display text-3xl font-bold tracking-tight text-ink-900">
-            Kuruluma neler dahil?
+            İlk ay paketine neler dahil?
           </h2>
           <ul className="mt-10 grid gap-4 sm:grid-cols-2">
             {INCLUDED.map((item) => (
@@ -172,10 +176,9 @@ export default async function SetupPage() {
 
           <div className="mt-10 rounded-2xl border border-brand-200 bg-brand-50 p-6 text-center text-sm text-ink-700">
             <strong className="text-ink-900">Önemli not:</strong> Kurulum süresi,
-            Trendyol ve Meta tarafındaki onay süreçlerine bağlı olarak değişebilir.
+            pazaryeri ve Meta tarafındaki onay süreçlerine bağlı olarak değişebilir.
             Ortalama süre {PRICING.setupDays} iş günüdür; süreç boyunca her aşamada
-            bilgilendirilirsiniz. Kurulum ücreti aboneliklerden bağımsız, tek seferlik
-            tahsil edilir. Detaylar için{" "}
+            bilgilendirilirsiniz. Detaylar için{" "}
             <Link
               href="/hizmet-sozlesmesi"
               className="font-semibold text-brand-700 underline underline-offset-2"

@@ -5,9 +5,9 @@ import JsonLd from "@/components/JsonLd";
 import { breadcrumbJsonLd } from "@/lib/seo";
 
 export const metadata: Metadata = {
-  title: "Satın Al",
+  title: "Hemen Başla — Kurulum + Yönetim Paketi",
   description:
-    "Jale CPAS platformuna hemen başla: planını seç, güvenli iyzico ödeme altyapısıyla kredi kartıyla öde. İndirim kodun varsa kullan.",
+    "CPAS Türkiye kurulum + ilk ay yönetim paketini güvenli iyzico ödemesiyle satın alın. Ödeme sonrası ekibimiz 24 saat içinde sizi arar, kurulum 7 iş gününde tamamlanır.",
   alternates: { canonical: "/satin-al" },
 };
 

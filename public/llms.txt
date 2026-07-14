@@ -1,33 +1,42 @@
-# Jale — CPAS Türkiye
+# CPAS Türkiye
 
-> Türkiye'nin Trendyol–Meta CPAS reklam yönetim platformu. Trendyol mağazanı Meta'ya (Facebook & Instagram) bağla, reklamlarını tek panelden yönet, gerçek satış verisiyle büyü. Site: https://cpasturkiye.com
+> Trendyol, Hepsiburada ve Amazon satıcıları için Meta CPAS (Collaborative Ads) kurulum ve reklam yönetim hizmeti. Pazaryeri kataloğunuzu Meta'ya bağlıyor, Facebook ve Instagram reklamlarınızı gerçek satış verisiyle uçtan uca yönetiyoruz. Site: https://cpasturkiye.com
 
 ## Tanım
 
-CPAS (Collaborative Performance Advertising Solution), Meta'nın pazaryeri satıcıları için geliştirdiği iş birliğine dayalı performans reklam çözümüdür. Trendyol'daki ürün kataloğunu Meta reklam sistemine bağlar; Facebook ve Instagram reklamlarının doğrudan Trendyol siparişi olarak ölçülmesini sağlar. Normal Meta reklamlarından farkı: dönüşüm tahmini değil, Trendyol'un paylaştığı gerçek sipariş verisiyle birebir eşleştirilir.
+CPAS (Collaborative Performance Advertising Solution / Collaborative Ads), Meta'nın pazaryeri satıcıları için geliştirdiği iş birliğine dayalı performans reklam çözümüdür. Pazaryerindeki ürün kataloğu Meta reklam sistemine bağlanır; Facebook ve Instagram reklamları doğrudan pazaryeri siparişi olarak ölçülür. Normal Meta reklamlarından farkı: dönüşüm tahmini değil, pazaryerinin paylaştığı gerçek sipariş verisiyle birebir eşleştirilir.
 
-## Kimler kullanabilir
+## Hizmet Modeli
 
-- Trendyol'da aktif ve onaylı mağazası olan satıcılar
-- Son 30 günde en az ~100 sipariş alan mağazalar (Meta optimizasyon algoritması için yeterli veri sinyali)
-- Reklam matematiğine uygun kâr marjına sahip ürünler
-- En az 10–20 aktif ürünlü katalog (dinamik katalog reklamları için ideal)
-- Trendyol'dan CPAS reklam yetkisi alınması gerekir
+CPAS Türkiye bir yazılım (SaaS) değil, uçtan uca yönetilen bir hizmettir:
 
-## Hizmet
+- **1. Ay — Kurulum + İlk Ay Yönetim (25.000 TL + KDV, tek seferlik):** Pazaryeri reklam yetkilendirmesi, Meta Business Manager kurulumu, CPAS katalog bağlantısı, piksel/event ölçümleme, kampanya mimarisi (retargeting + prospecting katmanları), test yayını ve canlıya alma. Ortalama 7 iş günü.
+- **2. Ay ve Sonrası — Aylık Yönetim (17.000 TL + KDV/ay):** Haftalık optimizasyon döngüsü (izle → analiz et → optimize et → raporla), bütçe yönetimi, haftalık PDF rapor + WhatsApp özeti, aylık strateji görüşmesi. Taahhüt yoktur.
+- Reklam bütçesi bu tutarlara dahil değildir; satıcı doğrudan Meta'ya kendi hesabından öder.
 
-Jale, CPAS kurulumunun tamamını (Trendyol yetkilendirme, Meta Business Manager, katalog eşleştirme, kampanya kurulumu) satıcı adına yönetir ve sistemi 7 iş gününde teslim eder. Platform; günlük katalog senkronizasyonu, ürün bazında ROAS analizi, AI bütçe önerileri ve 7/24 anomali izleme sunar.
+## Desteklenen Pazaryerleri
+
+- Trendyol (aktif)
+- Hepsiburada (aktif)
+- Amazon (çok yakında)
+
+## Kimler için uygun
+
+- Pazaryerinde aktif satış yapan, kataloğu oturmuş mağazalar
+- Son 30 günde anlamlı sipariş hacmi olan satıcılar (Meta optimizasyonu için veri sinyali)
+- Reklama düzenli aylık bütçe ayırabilen, reklam matematiğine uygun kâr marjlı ürünler
+- Operasyon kalitesi için her ay sınırlı sayıda yeni mağaza kabul edilir
 
 ## Ana Sayfalar
 
-- [Ana Sayfa](https://cpasturkiye.com): Platform tanıtımı ve genel bakış
-- [Özellikler](https://cpasturkiye.com/ozellikler): Platform yetenekleri
-- [Fiyatlandırma](https://cpasturkiye.com/fiyatlandirma): Abonelik ve kurulum paketleri
-- [Kurulum](https://cpasturkiye.com/kurulum): 7 günlük kurulum süreci
-- [Satın Al](https://cpasturkiye.com/satin-al): Sipariş ve ödeme
+- [Ana Sayfa](https://cpasturkiye.com): Hizmet tanıtımı, süreç, vaka çalışmaları ve fiyatlandırma
+- [Hizmet Kapsamı](https://cpasturkiye.com/ozellikler): Kurulum ve yönetimde neler yapıldığı
+- [Kurulum Süreci](https://cpasturkiye.com/kurulum): 7 iş günlük kurulumun gün gün akışı
+- [Fiyatlandırma](https://cpasturkiye.com/fiyatlandirma): Tek paket fiyat modeli
+- [Hemen Başla](https://cpasturkiye.com/satin-al): Güvenli iyzico ödemesiyle sipariş
 - [SSS](https://cpasturkiye.com/sss): Sık sorulan sorular
-- [Hakkımızda](https://cpasturkiye.com/hakkimizda): Şirket bilgisi
-- [İletişim](https://cpasturkiye.com/iletisim): İletişim ve ön değerlendirme talebi
+- [Hakkımızda](https://cpasturkiye.com/hakkimizda): Ekip ve deneyim
+- [İletişim](https://cpasturkiye.com/iletisim): Ücretsiz ön analiz talebi
 
 ## Blog (Rehber İçerikler)
 
