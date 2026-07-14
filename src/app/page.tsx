@@ -444,8 +444,9 @@ export default function HomePage() {
                 Rakamlar bizden iyi anlatıyor
               </h2>
               <p className="mx-auto mt-4 max-w-2xl text-ink-400">
-                Onlarca mağazadan üç örnek. Marka adları gizli, sonuçlar gerçek —
-                görüşmede sektörünüze benzer vakaları detaylı paylaşırız.
+                Sektör bazında, yönettiğimiz mağazaların gerçek toplam performansı —
+                marka adları gizli, rakamlar canlı panelden. Görüşmede sektörünüze
+                benzer vakaları detaylı paylaşırız.
               </p>
             </Reveal>
 

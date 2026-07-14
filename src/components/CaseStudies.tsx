@@ -2,63 +2,132 @@
 
 import { useEffect, useRef, useState } from "react";
 import CountUp from "./CountUp";
+import type { CategoryStat } from "@/types/categoryStats";
 
 /**
- * Vaka çalışmaları: scroll'a girince "çizilen" ROAS eğrileri ve
- * önce/sonra metrikleri. Veriler gerçek müşteri sonuçlarından
- * derlenmiş, marka adları gizlenmiştir.
+ * Vaka çalışmaları — Jale panelinden KATEGORİ BAZLI canlı veri çeker.
+ * Firma adı hiçbir zaman gösterilmez; yalnızca sektör kategorisi + "N mağaza".
+ * "0 çeken" firmalar Jale tarafında zaten ayıklanmıştır.
+ *
+ * Canlı veri yoksa (API kapalı / Jale henüz redeploy edilmemiş) statik
+ * örneklere düşer — bölüm asla boş kalmaz.
  */
 
-interface CaseStudy {
-  sector: string;
-  marketplace: string;
-  marketplaceColor: string;
-  period: string;
-  roasBefore: number;
-  roasAfter: number;
-  revenueMultiplier: string;
-  note: string;
-  /** 0-100 aralığında normalize edilmiş aylık eğri noktaları */
-  curve: number[];
+interface Metric {
+  label: string;
+  value: React.ReactNode;
+  accent?: boolean;
 }
 
-const CASES: CaseStudy[] = [
+interface CaseCard {
+  key: string;
+  badge: string;
+  badgeColor: string;
+  subLabel: string;
+  curve: number[]; // 0-100 normalize
+  color: string;
+  metrics: Metric[];
+  note: string;
+}
+
+const PALETTE = ["#f27a1a", "#0866ff", "#16a34a", "#9333ea", "#ea580c", "#0891b2"];
+
+// ── Statik fallback (Jale verisi yokken) ──────────────────────────────────
+const FALLBACK: CaseCard[] = [
   {
-    sector: "Ev Tekstili Markası",
-    marketplace: "Trendyol",
-    marketplaceColor: "#f27a1a",
-    period: "4 aylık yönetim",
-    roasBefore: 3.8,
-    roasAfter: 11.2,
-    revenueMultiplier: "3,1x",
-    note: "Katalog segmentasyonu + retargeting katmanı sonrası reklam kaynaklı ciro 3 kattan fazla arttı.",
+    key: "ev-tekstili",
+    badge: "Ev Tekstili",
+    badgeColor: "#f27a1a",
+    color: "#f27a1a",
+    subLabel: "temsili örnek",
     curve: [18, 22, 30, 46, 58, 74, 88],
+    metrics: [
+      { label: "Önce", value: "3.8x" },
+      { label: "Sonra", value: <CountUp end={11.2} decimals={1} suffix="x" />, accent: true },
+      { label: "Ciro", value: "3,1x", accent: true },
+    ],
+    note: "Katalog segmentasyonu + retargeting katmanı sonrası reklam kaynaklı ciro 3 kattan fazla arttı.",
   },
   {
-    sector: "Kozmetik Satıcısı",
-    marketplace: "Trendyol",
-    marketplaceColor: "#f27a1a",
-    period: "3 aylık yönetim",
-    roasBefore: 5.1,
-    roasAfter: 14.6,
-    revenueMultiplier: "2,7x",
-    note: "Zarar eden geniş hedeflemeler kapatıldı; bütçe kazanan ürün setlerine kaydırıldı.",
+    key: "kozmetik",
+    badge: "Kozmetik",
+    badgeColor: "#0866ff",
+    color: "#0866ff",
+    subLabel: "temsili örnek",
     curve: [26, 24, 38, 52, 70, 82, 92],
+    metrics: [
+      { label: "Önce", value: "5.1x" },
+      { label: "Sonra", value: <CountUp end={14.6} decimals={1} suffix="x" />, accent: true },
+      { label: "Ciro", value: "2,7x", accent: true },
+    ],
+    note: "Zarar eden geniş hedeflemeler kapatıldı; bütçe kazanan ürün setlerine kaydırıldı.",
   },
   {
-    sector: "Züccaciye Mağazası",
-    marketplace: "Hepsiburada",
-    marketplaceColor: "#ff6000",
-    period: "2 aylık yönetim",
-    roasBefore: 2.9,
-    roasAfter: 8.4,
-    revenueMultiplier: "2,2x",
-    note: "Hepsiburada kataloğu Meta'ya bağlandı; ilk 60 günde ROAS yaklaşık 3 katına çıktı.",
+    key: "zuccaciye",
+    badge: "Züccaciye",
+    badgeColor: "#16a34a",
+    color: "#16a34a",
+    subLabel: "temsili örnek",
     curve: [14, 20, 34, 44, 60, 71, 80],
+    metrics: [
+      { label: "Önce", value: "2.9x" },
+      { label: "Sonra", value: <CountUp end={8.4} decimals={1} suffix="x" />, accent: true },
+      { label: "Ciro", value: "2,2x", accent: true },
+    ],
+    note: "İlk 60 günde ROAS yaklaşık 3 katına çıktı.",
   },
 ];
 
+function formatRevenue(rev: number): React.ReactNode {
+  if (rev >= 1_000_000) return <CountUp end={rev / 1_000_000} decimals={1} prefix="₺" suffix="M" />;
+  if (rev >= 1_000) return <CountUp end={rev / 1_000} decimals={0} prefix="₺" suffix="K" />;
+  return <CountUp end={rev} decimals={0} prefix="₺" />;
+}
+
+/** Aylık ciro serisini 0-100 aralığına normalize eder (kendi maksimumuna göre). */
+function normalizeCurve(values: number[]): number[] {
+  const max = Math.max(...values, 0);
+  if (max <= 0) return values.map(() => 8); // düz taban
+  return values.map((v) => Math.max(6, Math.round((v / max) * 100)));
+}
+
+function toCard(cat: CategoryStat, index: number): CaseCard {
+  const color = cat.color || PALETTE[index % PALETTE.length];
+  const revenueCurve = cat.monthly.map((m) => m.revenue);
+
+  // Önce/Sonra: ilk ve son "harcama olan" ayın ROAS'ı
+  const spentMonths = cat.monthly.filter((m) => m.spend > 0);
+  const hasBeforeAfter = spentMonths.length >= 2;
+  const firstRoas = hasBeforeAfter ? spentMonths[0].roas : 0;
+  const lastRoas = hasBeforeAfter ? spentMonths[spentMonths.length - 1].roas : 0;
+  const improved = hasBeforeAfter && lastRoas > firstRoas && firstRoas > 0;
+
+  const metrics: Metric[] = improved
+    ? [
+        { label: "Önce", value: `${firstRoas.toLocaleString("tr-TR", { minimumFractionDigits: 1, maximumFractionDigits: 1 })}x` },
+        { label: "Sonra", value: <CountUp end={lastRoas} decimals={1} suffix="x" />, accent: true },
+        { label: "Ciro", value: formatRevenue(cat.revenue), accent: true },
+      ]
+    : [
+        { label: "ROAS", value: <CountUp end={cat.roas} decimals={1} suffix="x" />, accent: true },
+        { label: "Mağaza", value: <CountUp end={cat.firmCount} /> },
+        { label: "Ciro", value: formatRevenue(cat.revenue), accent: true },
+      ];
+
+  return {
+    key: cat.name,
+    badge: cat.name,
+    badgeColor: color,
+    color,
+    subLabel: `${cat.firmCount} mağaza`,
+    curve: normalizeCurve(revenueCurve),
+    metrics,
+    note: `${cat.firmCount} aktif mağazanın son ${cat.monthly.length} aydaki toplam Meta CPAS performansı.`,
+  };
+}
+
 function buildPath(curve: number[], width: number, height: number): string {
+  if (curve.length < 2) return "";
   const stepX = width / (curve.length - 1);
   return curve
     .map((v, i) => {
@@ -92,7 +161,7 @@ function CaseChart({ curve, color }: { curve: number[]; color: string }) {
   const W = 280;
   const H = 110;
   const linePath = buildPath(curve, W, H);
-  const areaPath = `${linePath} L ${W} ${H} L 0 ${H} Z`;
+  const areaPath = linePath ? `${linePath} L ${W} ${H} L 0 ${H} Z` : "";
   const gradientId = `case-area-${color.replace("#", "")}`;
 
   return (
@@ -103,25 +172,17 @@ function CaseChart({ curve, color }: { curve: number[]; color: string }) {
           <stop offset="100%" stopColor={color} stopOpacity="0" />
         </linearGradient>
       </defs>
-      {/* Izgara çizgileri */}
       {[0.25, 0.5, 0.75].map((f) => (
-        <line
-          key={f}
-          x1="0"
-          x2={W}
-          y1={H * f}
-          y2={H * f}
-          stroke="currentColor"
-          strokeOpacity="0.08"
-          strokeWidth="1"
-        />
+        <line key={f} x1="0" x2={W} y1={H * f} y2={H * f} stroke="currentColor" strokeOpacity="0.08" strokeWidth="1" />
       ))}
-      <path
-        d={areaPath}
-        fill={`url(#${gradientId})`}
-        className="transition-opacity duration-1000"
-        style={{ opacity: drawn ? 1 : 0, transitionDelay: "0.9s" }}
-      />
+      {areaPath && (
+        <path
+          d={areaPath}
+          fill={`url(#${gradientId})`}
+          className="transition-opacity duration-1000"
+          style={{ opacity: drawn ? 1 : 0, transitionDelay: "0.9s" }}
+        />
+      )}
       <path
         d={linePath}
         fill="none"
@@ -135,59 +196,68 @@ function CaseChart({ curve, color }: { curve: number[]; color: string }) {
   );
 }
 
+interface ApiResponse {
+  success: boolean;
+  data?: { categories: CategoryStat[] };
+}
+
 export default function CaseStudies() {
+  const [cards, setCards] = useState<CaseCard[]>(FALLBACK);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/category-stats")
+      .then((res) => res.json())
+      .then((json: ApiResponse) => {
+        if (cancelled || !json.success || !json.data) return;
+        const live = json.data.categories.slice(0, 3).map(toCard);
+        if (live.length > 0) setCards(live);
+      })
+      .catch(() => {
+        // Sessizce yut — statik fallback kalır.
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   return (
     <div className="grid gap-6 lg:grid-cols-3">
-      {CASES.map((c) => (
+      {cards.map((c) => (
         <article
-          key={c.sector}
+          key={c.key}
           className="group flex flex-col rounded-2xl border border-white/10 bg-white/[0.04] p-6 backdrop-blur-sm transition-all duration-300 hover:border-white/20 hover:bg-white/[0.07]"
         >
           <div className="flex items-center justify-between">
             <span
               className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold"
-              style={{ backgroundColor: `${c.marketplaceColor}1f`, color: c.marketplaceColor }}
+              style={{ backgroundColor: `${c.badgeColor}1f`, color: c.badgeColor }}
             >
-              <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: c.marketplaceColor }} />
-              {c.marketplace}
+              <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: c.badgeColor }} />
+              {c.badge}
             </span>
-            <span className="text-xs font-medium text-ink-400">{c.period}</span>
+            <span className="text-xs font-medium text-ink-400">{c.subLabel}</span>
           </div>
 
-          <h3 className="mt-4 font-display text-lg font-bold text-white">{c.sector}</h3>
-
           <div className="mt-4 text-ink-400">
-            <CaseChart curve={c.curve} color={c.marketplaceColor} />
+            <CaseChart curve={c.curve} color={c.color} />
           </div>
 
           <div className="mt-5 grid grid-cols-3 gap-3 border-t border-white/10 pt-5">
-            <div>
-              <p className="text-[11px] font-semibold uppercase tracking-wider text-ink-500">
-                Önce
-              </p>
-              <p className="mt-1 font-display text-xl font-bold text-ink-300">
-                {c.roasBefore.toLocaleString("tr-TR", { minimumFractionDigits: 1 })}x
-              </p>
-              <p className="text-[10px] text-ink-500">ROAS</p>
-            </div>
-            <div>
-              <p className="text-[11px] font-semibold uppercase tracking-wider text-ink-500">
-                Sonra
-              </p>
-              <p className="mt-1 font-display text-xl font-extrabold text-white">
-                <CountUp end={c.roasAfter} decimals={1} suffix="x" />
-              </p>
-              <p className="text-[10px] text-ink-500">ROAS</p>
-            </div>
-            <div>
-              <p className="text-[11px] font-semibold uppercase tracking-wider text-ink-500">
-                Ciro
-              </p>
-              <p className="mt-1 font-display text-xl font-extrabold text-green-400">
-                {c.revenueMultiplier}
-              </p>
-              <p className="text-[10px] text-ink-500">artış</p>
-            </div>
+            {c.metrics.map((m) => (
+              <div key={m.label}>
+                <p className="text-[11px] font-semibold uppercase tracking-wider text-ink-500">
+                  {m.label}
+                </p>
+                <p
+                  className={`mt-1 font-display text-xl font-extrabold ${
+                    m.accent ? "text-white" : "text-ink-300"
+                  }`}
+                >
+                  {m.value}
+                </p>
+              </div>
+            ))}
           </div>
 
           <p className="mt-4 text-sm leading-relaxed text-ink-400">{c.note}</p>
