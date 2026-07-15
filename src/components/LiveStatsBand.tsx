@@ -154,7 +154,7 @@ export default function LiveStatsBand() {
   return (
     <section
       ref={sectionRef}
-      className="relative overflow-hidden bg-ink-900 px-4 py-16 sm:px-6 lg:px-8"
+      className="relative overflow-hidden bg-ink-950 px-4 py-16 sm:px-6 lg:px-8"
     >
       <div className="absolute -left-32 top-0 h-64 w-64 rounded-full bg-brand-600/20 blur-3xl" />
       <div className="absolute -right-32 bottom-0 h-64 w-64 rounded-full bg-brand-600/20 blur-3xl" />

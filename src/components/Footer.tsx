@@ -38,7 +38,9 @@ export default function Footer() {
               reklam yönetim hizmeti. {SITE.slogan}
             </p>
             <p className="mt-4 text-sm text-ink-500">{SITE.email}</p>
-            <p className="mt-1 text-sm text-ink-500">{SITE.phone}</p>
+            {SITE.phone && !SITE.phone.includes("000 00 00") && (
+              <p className="mt-1 text-sm text-ink-500">{SITE.phone}</p>
+            )}
             {/* iyzico ödeme güveni */}
             <div className="mt-5 flex items-center gap-2">
               <span className="flex items-center gap-1 rounded-md border border-[#1A1A2E]/20 bg-[#1A1A2E] px-2 py-0.5">
@@ -109,7 +111,7 @@ export default function Footer() {
         <div className="mt-12 space-y-3 border-t border-ink-200 pt-8">
           <div className="flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
             <p className="text-xs text-ink-400">
-              © {new Date().getFullYear()} {SITE.company}. Tüm hakları saklıdır.
+              © {new Date().getFullYear()} {SITE.company} Tüm hakları saklıdır.
             </p>
             <p className="text-xs text-ink-400">
               CPAS Türkiye; Meta, Trendyol, Hepsiburada veya Amazon ile resmi bir

@@ -26,7 +26,7 @@ export default function PricingSingle() {
     <div className="mx-auto max-w-4xl">
       <div className="relative overflow-hidden rounded-3xl border border-ink-200 bg-white shadow-xl shadow-ink-900/5">
         {/* Üst vurgu şeridi */}
-        <div className="h-1.5 bg-gradient-to-r from-brand-500 via-brand-600 to-meta" />
+        <div className="h-1.5 bg-gradient-to-r from-brand-400 via-brand-500 to-brand-600" />
 
         <div className="grid gap-0 lg:grid-cols-2">
           {/* 1. Ay */}
