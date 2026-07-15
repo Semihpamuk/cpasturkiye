@@ -43,9 +43,15 @@ body {
   @apply bg-white text-ink-700 antialiased;
 }
 
-h1, h2, h3, h4 {
-  font-family: var(--font-display);
-  @apply text-ink-900;
+/* Taban başlık stilleri @layer base içinde tanımlanır; böylece bölüm
+   bazlı text-white gibi utility sınıfları (koyu zeminlerde) bu kuralı
+   ezebilir. Katmansız yazıldığında utility'leri ezip başlıkları
+   koyu zeminde görünmez yapıyordu. */
+@layer base {
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    @apply text-ink-900;
+  }
 }
 
 ::selection {

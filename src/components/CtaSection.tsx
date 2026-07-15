@@ -4,7 +4,7 @@ import { PRICING } from "@/lib/site";
 export default function CtaSection() {
   return (
     <section className="px-4 py-20 sm:px-6 lg:px-8">
-      <div className="relative mx-auto max-w-4xl overflow-hidden rounded-3xl bg-ink-950 px-8 py-20 text-center shadow-2xl sm:px-16">
+      <div className="section-dark relative mx-auto max-w-4xl overflow-hidden rounded-3xl bg-ink-950 px-8 py-20 text-center shadow-2xl sm:px-16">
         <div className="bg-dot-grid-dark absolute inset-0" aria-hidden="true" />
         <div
           className="pointer-events-none absolute -top-24 left-1/2 h-64 w-[32rem] -translate-x-1/2 rounded-full bg-brand-600/20 blur-3xl"
