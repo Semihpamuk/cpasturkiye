@@ -60,7 +60,7 @@ export default function ReportPreview() {
           {[
             { label: "Harcama", value: <CountUp end={48350} prefix="₺" />, delta: null },
             { label: "Reklam Cirosu", value: <CountUp end={512400} prefix="₺" />, delta: "+%18" },
-            { label: "ROAS", value: <CountUp end={10.6} decimals={1} suffix="x" />, delta: "+0.9" },
+            { label: "ROAS", value: <CountUp end={10.6} decimals={1} suffix="x" />, delta: "+0,9" },
             { label: "Siparişler", value: <CountUp end={1284} />, delta: "+%12" },
           ].map((kpi) => (
             <div key={kpi.label} className="rounded-xl border border-ink-100 bg-ink-50/50 p-3">
@@ -82,10 +82,10 @@ export default function ReportPreview() {
           <p className="text-[10px] font-semibold uppercase tracking-wider text-ink-500">
             Günlük Reklam Cirosu
           </p>
-          <div className="mt-3 flex h-28 items-end gap-2">
+          <div className="mt-3 flex h-28 gap-2">
             {DAILY_BARS.map((h, i) => (
               <div key={i} className="flex flex-1 flex-col items-center gap-1.5">
-                <div className="flex h-full w-full items-end overflow-hidden rounded-md bg-ink-100">
+                <div className="flex w-full flex-1 items-end overflow-hidden rounded-md bg-ink-100">
                   <div
                     className="w-full rounded-md bg-gradient-to-t from-brand-600 to-brand-400 transition-all duration-1000 ease-out"
                     style={{
