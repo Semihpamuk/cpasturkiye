@@ -20,6 +20,7 @@ export async function POST(req: Request) {
           .filter((m: string) => VALID_MARKETPLACES.has(m))
       : [];
     const discountCodeInput = typeof body.discountCode === "string" ? body.discountCode.trim() : "";
+    const addManagement = body.addManagement === true;
     const invoiceType = body.invoiceType === "company" ? "company" : "individual";
     const identityNo = String(body.identityNo || "").trim();
     const companyName = String(body.companyName || "").trim();
@@ -49,6 +50,9 @@ export async function POST(req: Request) {
     const validCode = discountCodeInput ? await findValidCode(discountCodeInput) : null;
     const quote = computeOrderQuote(
       {
+        marketplaceCount: marketplaces.length,
+        addManagement,
+        paymentMethod: "card",
         discount: validCode ? { type: validCode.type, value: validCode.value } : null,
       },
       settings.pricing
@@ -65,7 +69,9 @@ export async function POST(req: Request) {
     const basketItems: IyzicoBasketItem[] = [
       {
         id: "setup-package",
-        name: "CPAS Kurulum + İlk Ay Yönetim Paketi",
+        name: addManagement
+          ? "CPAS Kurulum + İlk Ay Yönetim + Devam Ayı Paketi"
+          : "CPAS Kurulum + İlk Ay Yönetim Paketi",
         category1: "Profesyonel Hizmet",
         itemType: "VIRTUAL",
         price: quote.total.toFixed(2),
@@ -131,9 +137,11 @@ export async function POST(req: Request) {
       createdAt: new Date().toISOString(),
       name, phone, email, storeUrl,
       marketplaces,
+      addManagement,
       discountCode: validCode?.code ?? null,
       setupNet: quote.setupNet,
       managementMonthly: quote.managementMonthly,
+      managementAddon: quote.managementAddon,
       discountAmount: quote.discountAmount,
       vatAmount: quote.vatAmount,
       total: quote.total,

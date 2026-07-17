@@ -41,7 +41,7 @@ export default function DistanceSalesPage() {
         {
           heading: "Ödeme ve Faturalandırma",
           paragraphs: [
-            "Kurulum + İlk Ay Yönetim Paketi bedeli; kredi kartı, banka kartı veya havale/EFT yoluyla, kurulum sürecinin başlamasından önce peşin tahsil edilir. Aylık yönetim bedeli, 2. aydan itibaren her ay fatura karşılığı tahsil edilir. Faturalar elektronik ortamda Alıcının bildirdiği e-posta adresine iletilir.",
+            "Kurulum + İlk Ay Yönetim Paketi bedeli; kredi kartı, banka kartı veya havale/EFT yoluyla, kurulum sürecinin başlamasından önce peşin tahsil edilir. Havale/EFT ile ödemede dekont ibrazı ve teyidi sonrası sipariş onaylanır. Aylık yönetim isteğe bağlıdır; Alıcının devam etmeyi tercih etmesi halinde 2. aydan itibaren her ay fatura karşılığı tahsil edilir. Faturalar elektronik ortamda Alıcının bildirdiği e-posta adresine iletilir.",
           ],
         },
         {

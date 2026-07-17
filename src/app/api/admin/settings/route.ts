@@ -24,6 +24,11 @@ export async function PUT(req: Request) {
 
     const updated: SiteSettings = {
       pricing: {
+        listSetupFee: num(
+          body?.pricing?.listSetupFee,
+          current.pricing.listSetupFee,
+          0
+        ),
         setupFee: num(body?.pricing?.setupFee, current.pricing.setupFee, 0),
         managementFee: num(
           body?.pricing?.managementFee,

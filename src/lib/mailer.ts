@@ -85,3 +85,72 @@ export async function sendOrderConfirmation(order: {
     `,
   });
 }
+
+/**
+ * Havale/EFT siparişi: müşteri dekont yükledi, ödeme doğrulanmayı bekliyor.
+ * Müşteriye "dekont alındı" bilgisi, ekibe dekont ekli doğrulama bildirimi gider.
+ */
+export async function sendTransferReceived(order: {
+  id: string;
+  name: string;
+  email: string;
+  total: number;
+  marketplaces: string[];
+  managementMonthly: number;
+  receipt?: { filename: string; content: Buffer };
+}): Promise<void> {
+  const transporter = getTransporter();
+  if (!transporter) return;
+
+  const formatTRY = (amount: number) =>
+    new Intl.NumberFormat("tr-TR", {
+      style: "currency", currency: "TRY", maximumFractionDigits: 2,
+    }).format(amount);
+
+  const marketplacesLabel =
+    order.marketplaces.length > 0 ? order.marketplaces.join(", ") : "Belirtilmedi";
+  const totalFormatted = formatTRY(order.total);
+
+  // Müşteriye "dekont alındı" bilgisi
+  await transporter.sendMail({
+    from: `"${SITE.name}" <${SITE.email}>`,
+    to: order.email,
+    subject: `Dekontunuz Alındı — ${SITE.name} #${order.id}`,
+    html: `
+      <div style="font-family:sans-serif;max-width:600px;margin:0 auto">
+        <h2 style="color:#5850EC">Merhaba ${order.name},</h2>
+        <p>Havale/EFT dekontunuz alındı. Ödemeniz hesabımıza ulaştığı doğrulanınca
+        siparişiniz onaylanacak ve ekip arkadaşımız 24 saat içinde (iş günü) sizi arayacak.</p>
+        <table style="width:100%;border-collapse:collapse;margin:20px 0">
+          <tr><td style="padding:8px;border:1px solid #e5e7eb;background:#f9fafb"><strong>Sipariş No</strong></td><td style="padding:8px;border:1px solid #e5e7eb">${order.id}</td></tr>
+          <tr><td style="padding:8px;border:1px solid #e5e7eb;background:#f9fafb"><strong>Pazaryerleri</strong></td><td style="padding:8px;border:1px solid #e5e7eb">${marketplacesLabel}</td></tr>
+          <tr><td style="padding:8px;border:1px solid #e5e7eb;background:#f9fafb"><strong>Havale Tutarı</strong></td><td style="padding:8px;border:1px solid #e5e7eb">${totalFormatted} (KDV dahil, %5 havale indirimi uygulandı)</td></tr>
+        </table>
+        <p>Sorularınız için: <a href="mailto:${SITE.email}">${SITE.email}</a></p>
+        <hr style="border:none;border-top:1px solid #e5e7eb;margin:30px 0">
+        <p style="color:#9ca3af;font-size:12px">${SITE.company}</p>
+      </div>
+    `,
+  });
+
+  // Ekibe doğrulama bildirimi + dekont eki
+  await transporter.sendMail({
+    from: `"${SITE.name}" <${SITE.email}>`,
+    to: SITE.email,
+    subject: `🏦 Havale Siparişi — DOĞRULA — ${order.name} — ${totalFormatted}`,
+    html: `
+      <div style="font-family:sans-serif">
+        <h2>Havale/EFT siparişi — ödeme doğrulanmayı bekliyor</h2>
+        <p><strong>Müşteri:</strong> ${order.name} (${order.email})</p>
+        <p><strong>Sipariş No:</strong> ${order.id}</p>
+        <p><strong>Pazaryerleri:</strong> ${marketplacesLabel}</p>
+        <p><strong>Beklenen Tutar:</strong> ${totalFormatted}</p>
+        <p><strong>⚠️ Aksiyon:</strong> Dekontu kontrol et, ödeme geldiyse admin panelinden siparişi "Ödendi" yap.</p>
+        <p>Dekont ektedir.</p>
+      </div>
+    `,
+    attachments: order.receipt
+      ? [{ filename: order.receipt.filename, content: order.receipt.content }]
+      : undefined,
+  });
+}

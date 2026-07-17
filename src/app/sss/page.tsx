@@ -30,7 +30,7 @@ const FAQ_SECTIONS: { title: string; items: FaqItem[] }[] = [
       {
         question: "Hangi pazaryerlerinde çalışıyorsunuz?",
         answer:
-          "Trendyol ve Hepsiburada aktif olarak destekleniyor; Amazon entegrasyonumuz çok yakında başlıyor. Birden fazla pazaryerinde mağazanız varsa hepsi aynı paket kapsamında birlikte yönetilir.",
+          "Trendyol ve Hepsiburada aktif olarak destekleniyor; Amazon entegrasyonumuz çok yakında başlıyor. Birden fazla pazaryerinde mağazanız varsa hepsi tek pakette birlikte yönetilir — ikinci pazaryeri kurulum ve yönetimde %50 indirimli eklenir.",
       },
       {
         question: "Normal Meta reklamından farkı ne?",
@@ -83,7 +83,7 @@ const FAQ_SECTIONS: { title: string; items: FaqItem[] }[] = [
     items: [
       {
         question: "Fiyatlandırma nasıl çalışıyor?",
-        answer: `İlk ay ${formatTRY(PRICING.setupFee)} + KDV ödersiniz — buna tüm teknik kurulum ve ilk ayın yönetimi dahildir. 2. aydan itibaren aylık yönetim bedeli ${formatTRY(PRICING.managementFee)} + KDV'dir. Kademeli plan, gizli kalem, kur farkı yok.`,
+        answer: `Tek seferlik kurulum paketi ${formatTRY(PRICING.setupFee)} + KDV'dir — buna tüm teknik kurulum ve ilk ayın yönetimi dahildir. Devam etmek isterseniz aylık yönetim ${formatTRY(PRICING.managementFee)} + KDV/ay'dır ve tamamen isteğe bağlıdır (taahhüt yok). İkinci pazaryeri %50 indirimli eklenir; havale/EFT ile öderseniz %5 indirim uygulanır. Gizli kalem, kur farkı yok.`,
       },
       {
         question: "Aylık yönetim ücretinin içinde neler var?",
@@ -103,7 +103,7 @@ const FAQ_SECTIONS: { title: string; items: FaqItem[] }[] = [
       {
         question: "Ödeme nasıl yapılıyor?",
         answer:
-          "İlk ay paketi sitemizden iyzico güvencesiyle kredi kartıyla ödenir; 9'a kadar taksit imkânı vardır. Sonraki ayların yönetim bedeli fatura karşılığı tahsil edilir.",
+          "Kurulum paketini kredi/banka kartıyla iyzico güvencesinde 9'a kadar taksitle ya da havale/EFT ile %5 indirimli ödeyebilirsiniz. Havalede ödeme sonrası dekontunuzu yükler, doğrulama sonrası siparişiniz onaylanır. Devam ederseniz aylık yönetim bedeli fatura karşılığı tahsil edilir.",
       },
     ],
   },

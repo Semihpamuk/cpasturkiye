@@ -1,91 +1,19 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { formatTRY } from "@/lib/site";
-
-interface DiscountCode {
-  id: string;
-  code: string;
-  type: "percent" | "fixed";
-  value: number;
-  maxUses: number | null;
-  usedCount: number;
-  expiresAt: string | null;
-  active: boolean;
-  note: string;
-  createdAt: string;
-}
-
-interface Order {
-  id: string;
-  createdAt: string;
-  name: string;
-  phone: string;
-  email: string;
-  storeUrl: string;
-  marketplaces?: string[];
-  installment: string;
-  discountCode: string | null;
-  discountAmount: number;
-  setupNet: number;
-  managementMonthly?: number;
-  total: number;
-  status: "new" | "contacted" | "paid" | "cancelled";
-  invoiceType: "individual" | "company";
-  identityNo: string;
-  companyName: string;
-  taxOffice: string;
-  taxNumber: string;
-  address: string;
-  city: string;
-}
-
-interface Lead {
-  id: string;
-  createdAt: string;
-  name: string;
-  phone: string;
-  email: string;
-  storeUrl: string;
-  monthlyOrders: string;
-  message: string;
-  status: "new" | "contacted" | "closed";
-}
+import Logo from "@/components/Logo";
+import {
+  type DiscountCode,
+  type Order,
+  type Lead,
+  type OrderStatus,
+} from "./adminTypes";
+import OrdersPanel from "./OrdersPanel";
+import LeadsPanel from "./LeadsPanel";
+import CodesPanel, { type NewCodeInput } from "./CodesPanel";
+import SettingsPanel from "./SettingsPanel";
 
 type Tab = "orders" | "codes" | "leads" | "settings";
-
-interface SettingsForm {
-  setupFee: string;
-  managementFee: string;
-  setupDays: string;
-}
-
-interface RefRow {
-  name: string;
-  url: string;
-}
-
-const ORDER_STATUS_LABELS: Record<Order["status"], { label: string; cls: string }> = {
-  new: { label: "Yeni", cls: "bg-blue-100 text-blue-700" },
-  contacted: { label: "Arandı", cls: "bg-amber-100 text-amber-700" },
-  paid: { label: "Ödendi", cls: "bg-green-100 text-green-700" },
-  cancelled: { label: "İptal", cls: "bg-ink-100 text-ink-500" },
-};
-
-const LEAD_STATUS_LABELS: Record<Lead["status"], { label: string; cls: string }> = {
-  new: { label: "Yeni", cls: "bg-blue-100 text-blue-700" },
-  contacted: { label: "Arandı", cls: "bg-amber-100 text-amber-700" },
-  closed: { label: "Kapandı", cls: "bg-ink-100 text-ink-500" },
-};
-
-function formatDateTime(iso: string): string {
-  return new Date(iso).toLocaleString("tr-TR", {
-    day: "2-digit",
-    month: "short",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
 
 export default function AdminClient() {
   const [authed, setAuthed] = useState<boolean | null>(null);
@@ -97,30 +25,11 @@ export default function AdminClient() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [leads, setLeads] = useState<Lead[]>([]);
 
-  const [newCode, setNewCode] = useState({
-    code: "",
-    type: "percent" as "percent" | "fixed",
-    value: "",
-    maxUses: "",
-    expiresAt: "",
-    note: "",
-  });
-  const [codeError, setCodeError] = useState("");
-
-  const [settingsForm, setSettingsForm] = useState<SettingsForm>({
-    setupFee: "",
-    managementFee: "",
-    setupDays: "",
-  });
-  const [referenceItems, setReferenceItems] = useState<RefRow[]>([]);
-  const [settingsStatus, setSettingsStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
-
   const loadAll = useCallback(async () => {
-    const [codesRes, ordersRes, leadsRes, settingsRes] = await Promise.all([
+    const [codesRes, ordersRes, leadsRes] = await Promise.all([
       fetch("/api/admin/codes"),
       fetch("/api/admin/orders"),
       fetch("/api/admin/leads"),
-      fetch("/api/admin/settings"),
     ]);
     if (codesRes.status === 401) {
       setAuthed(false);
@@ -129,22 +38,6 @@ export default function AdminClient() {
     setCodes(await codesRes.json());
     setOrders(await ordersRes.json());
     setLeads(await leadsRes.json());
-    const settings = await settingsRes.json();
-    if (settings?.pricing) {
-      setSettingsForm({
-        setupFee: String(settings.pricing.setupFee),
-        managementFee: String(settings.pricing.managementFee),
-        setupDays: String(settings.pricing.setupDays),
-      });
-      const rawRefs = settings.references || [];
-      setReferenceItems(
-        rawRefs.map((r: { name?: string; url?: string } | string) =>
-          typeof r === "string"
-            ? { name: r, url: "" }
-            : { name: String(r.name ?? ""), url: String(r.url ?? "") }
-        )
-      );
-    }
     setAuthed(true);
   }, []);
 
@@ -174,80 +67,65 @@ export default function AdminClient() {
     setAuthed(false);
   }
 
-  async function createCode(event: React.FormEvent) {
-    event.preventDefault();
-    setCodeError("");
-    const res = await fetch("/api/admin/codes", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(newCode),
-    });
-    const data = await res.json();
-    if (!res.ok) {
-      setCodeError(data.error || "Kod oluşturulamadı");
-      return;
-    }
-    setNewCode({ code: "", type: "percent", value: "", maxUses: "", expiresAt: "", note: "" });
-    await loadAll();
-  }
-
-  async function toggleCode(id: string) {
-    await fetch("/api/admin/codes", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id }),
-    });
-    await loadAll();
-  }
-
-  async function deleteCode(id: string) {
-    if (!confirm("Bu kodu silmek istediğine emin misin?")) return;
-    await fetch(`/api/admin/codes?id=${id}`, { method: "DELETE" });
-    await loadAll();
-  }
-
-  async function setOrderStatus(id: string, status: Order["status"]) {
-    await fetch("/api/admin/orders", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id, status }),
-    });
-    await loadAll();
-  }
-
-  async function saveSettings(event: React.FormEvent) {
-    event.preventDefault();
-    setSettingsStatus("saving");
-    try {
-      const res = await fetch("/api/admin/settings", {
-        method: "PUT",
+  const createCode = useCallback(
+    async (input: NewCodeInput): Promise<string | null> => {
+      const res = await fetch("/api/admin/codes", {
+        method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          pricing: {
-            setupFee: Number(settingsForm.setupFee),
-            managementFee: Number(settingsForm.managementFee),
-            setupDays: Number(settingsForm.setupDays),
-          },
-          references: referenceItems
-            .map((r) => ({ name: r.name.trim(), url: r.url.trim() }))
-            .filter((r) => r.name.length > 0),
-        }),
+        body: JSON.stringify(input),
       });
-      setSettingsStatus(res.ok ? "saved" : "error");
-      if (res.ok) setTimeout(() => setSettingsStatus("idle"), 2500);
-    } catch {
-      setSettingsStatus("error");
-    }
-  }
+      const data = await res.json();
+      if (!res.ok) return data.error || "Kod oluşturulamadı";
+      await loadAll();
+      return null;
+    },
+    [loadAll]
+  );
 
-  async function setLeadStatus(id: string, status: Lead["status"]) {
-    await fetch("/api/admin/leads", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id, status }),
-    });
-    await loadAll();
-  }
+  const toggleCode = useCallback(
+    async (id: string) => {
+      await fetch("/api/admin/codes", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id }),
+      });
+      await loadAll();
+    },
+    [loadAll]
+  );
+
+  const deleteCode = useCallback(
+    async (id: string) => {
+      if (!confirm("Bu kodu silmek istediğine emin misin?")) return;
+      await fetch(`/api/admin/codes?id=${id}`, { method: "DELETE" });
+      await loadAll();
+    },
+    [loadAll]
+  );
+
+  const setOrderStatus = useCallback(
+    async (id: string, status: OrderStatus) => {
+      await fetch("/api/admin/orders", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, status }),
+      });
+      await loadAll();
+    },
+    [loadAll]
+  );
+
+  const setLeadStatus = useCallback(
+    async (id: string, status: Lead["status"]) => {
+      await fetch("/api/admin/leads", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, status }),
+      });
+      await loadAll();
+    },
+    [loadAll]
+  );
 
   if (authed === null) {
     return (
@@ -264,14 +142,8 @@ export default function AdminClient() {
           onSubmit={handleLogin}
           className="w-full max-w-sm rounded-2xl border border-ink-700 bg-ink-800/80 p-8 shadow-2xl backdrop-blur"
         >
-          <div className="flex items-center gap-2.5">
-            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-brand-500 to-brand-700 font-display text-lg font-bold text-white">
-              J
-            </span>
-            <span className="font-display text-lg font-bold text-white">
-              CPAS Türkiye Yönetim
-            </span>
-          </div>
+          <Logo className="text-2xl" onLight={false} />
+          <p className="mt-1 text-xs font-semibold uppercase tracking-wider text-ink-400">Yönetim Paneli</p>
           <p className="mt-5 text-sm text-ink-300">Devam etmek için şifreni gir.</p>
           <input
             type="password"
@@ -281,9 +153,7 @@ export default function AdminClient() {
             autoFocus
             className="mt-3 w-full rounded-lg border border-ink-600 bg-ink-900 px-4 py-2.5 text-sm text-white placeholder:text-ink-500 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-500/30"
           />
-          {loginError && (
-            <p className="mt-2 text-sm font-medium text-red-400">{loginError}</p>
-          )}
+          {loginError && <p className="mt-2 text-sm font-medium text-red-400">{loginError}</p>}
           <button
             type="submit"
             className="mt-4 w-full rounded-xl bg-brand-600 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-brand-500"
@@ -296,28 +166,31 @@ export default function AdminClient() {
   }
 
   const newOrders = orders.filter((o) => o.status === "new").length;
+  const awaitingTransfer = orders.filter((o) => o.status === "awaiting_transfer").length;
   const STAT_CARDS = [
     { label: "Toplam Sipariş", value: orders.length, accent: "text-ink-900" },
     { label: "Yeni Sipariş", value: newOrders, accent: "text-brand-600" },
+    { label: "Havale Bekleyen", value: awaitingTransfer, accent: "text-purple-600" },
     { label: "Form Başvurusu", value: leads.length, accent: "text-ink-900" },
     { label: "Aktif Kod", value: codes.filter((c) => c.active).length, accent: "text-ink-900" },
   ];
 
+  const TABS: [Tab, string][] = [
+    ["orders", `Siparişler (${orders.length})`],
+    ["codes", `İndirim Kodları (${codes.length})`],
+    ["leads", `Form Başvuruları (${leads.length})`],
+    ["settings", "⚙ Ayarlar"],
+  ];
+
   return (
     <div className="min-h-screen bg-ink-50">
-      {/* Üst çubuk */}
       <header className="sticky top-0 z-10 border-b border-ink-200 bg-white">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-2.5">
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-brand-500 to-brand-700 font-display text-base font-bold text-white">
-              J
+            <Logo className="text-xl" />
+            <span className="hidden rounded-full bg-ink-100 px-2 py-0.5 text-[11px] font-semibold text-ink-500 sm:inline">
+              Yönetim
             </span>
-            <div>
-              <p className="font-display text-sm font-bold leading-none text-ink-900">
-                CPAS Türkiye Yönetim
-              </p>
-              <p className="mt-0.5 text-[11px] text-ink-400">cpasturkiye.com</p>
-            </div>
           </div>
           <div className="flex items-center gap-3">
             <button
@@ -337,38 +210,22 @@ export default function AdminClient() {
       </header>
 
       <section className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
-        {/* Özet kartları */}
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
           {STAT_CARDS.map((card) => (
-            <div
-              key={card.label}
-              className="rounded-2xl border border-ink-200 bg-white p-5 shadow-sm"
-            >
+            <div key={card.label} className="rounded-2xl border border-ink-200 bg-white p-5 shadow-sm">
               <p className="text-xs font-medium text-ink-500">{card.label}</p>
-              <p className={`mt-1 font-display text-3xl font-extrabold ${card.accent}`}>
-                {card.value}
-              </p>
+              <p className={`mt-1 font-display text-3xl font-extrabold ${card.accent}`}>{card.value}</p>
             </div>
           ))}
         </div>
 
-        {/* Sekmeler */}
         <div className="mt-8 flex gap-1 rounded-xl border border-ink-200 bg-white p-1 shadow-sm sm:inline-flex">
-          {(
-            [
-              ["orders", `Siparişler (${orders.length})`],
-              ["codes", `İndirim Kodları (${codes.length})`],
-              ["leads", `Form Başvuruları (${leads.length})`],
-              ["settings", "⚙ Ayarlar"],
-            ] as [Tab, string][]
-          ).map(([id, label]) => (
+          {TABS.map(([id, label]) => (
             <button
               key={id}
               onClick={() => setTab(id)}
               className={`flex-1 whitespace-nowrap rounded-lg px-4 py-2 text-sm font-semibold transition-colors sm:flex-none ${
-                tab === id
-                  ? "bg-brand-600 text-white shadow-sm"
-                  : "text-ink-500 hover:bg-ink-50 hover:text-ink-800"
+                tab === id ? "bg-brand-600 text-white shadow-sm" : "text-ink-500 hover:bg-ink-50 hover:text-ink-800"
               }`}
             >
               {label}
@@ -376,446 +233,12 @@ export default function AdminClient() {
           ))}
         </div>
 
-        {/* ===== SİPARİŞLER ===== */}
-        {tab === "orders" && (
-          <div className="mt-6 space-y-4">
-            {orders.length === 0 && (
-              <p className="py-10 text-center text-sm text-ink-400">Henüz sipariş yok.</p>
-            )}
-            {orders.map((order) => (
-              <div
-                key={order.id}
-                className="rounded-2xl border border-ink-200 bg-white p-5 shadow-sm"
-              >
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div>
-                    <div className="flex items-center gap-3">
-                      <p className="font-display text-base font-bold text-ink-900">
-                        {order.name}
-                      </p>
-                      <span
-                        className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${ORDER_STATUS_LABELS[order.status].cls}`}
-                      >
-                        {ORDER_STATUS_LABELS[order.status].label}
-                      </span>
-                    </div>
-                    <p className="mt-1 text-sm text-ink-600">
-                      📞 {order.phone} · ✉️ {order.email}
-                    </p>
-                    {order.storeUrl && (
-                      <a
-                        href={order.storeUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-xs text-brand-700 underline"
-                      >
-                        {order.storeUrl}
-                      </a>
-                    )}
-                  </div>
-                  <div className="text-right">
-                    <p className="font-display text-xl font-extrabold text-ink-900">
-                      {formatTRY(order.total)}
-                    </p>
-                    <p className="text-xs text-ink-500">
-                      {order.installment === "single"
-                        ? "Tek çekim"
-                        : `${order.installment} taksit`}{" "}
-                      · Kurulum + İlk Ay
-                    </p>
-                    {(order.managementMonthly ?? 0) > 0 && (
-                      <p className="text-[11px] text-ink-500">
-                        2. ay+ yönetim: {formatTRY(order.managementMonthly ?? 0)}/ay
-                      </p>
-                    )}
-                  </div>
-                </div>
-
-                {/* Fatura bilgileri */}
-                <div className="mt-3 rounded-xl bg-ink-50 p-3 text-xs text-ink-600">
-                  <span className="font-semibold text-ink-800">
-                    {order.invoiceType === "company" ? "🏢 Kurumsal" : "👤 Bireysel"} fatura:
-                  </span>{" "}
-                  {order.invoiceType === "company"
-                    ? `${order.companyName} · VD: ${order.taxOffice} · VKN: ${order.taxNumber}`
-                    : order.identityNo
-                      ? `TCKN: ${order.identityNo}`
-                      : "TCKN belirtilmedi"}
-                  {(order.address || order.city) && (
-                    <span>
-                      {" "}
-                      · {order.address}
-                      {order.city ? `, ${order.city}` : ""}
-                    </span>
-                  )}
-                </div>
-
-                <div className="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-ink-100 pt-3">
-                  <p className="text-xs text-ink-500">
-                    {formatDateTime(order.createdAt)}
-                    {order.marketplaces && order.marketplaces.length > 0
-                      ? ` · ${order.marketplaces.join(", ")}`
-                      : ""}
-                    {order.discountCode
-                      ? ` · Kod: ${order.discountCode} (−${formatTRY(order.discountAmount)})`
-                      : ""}
-                  </p>
-                  <div className="flex gap-2">
-                    {(Object.keys(ORDER_STATUS_LABELS) as Order["status"][]).map(
-                      (status) =>
-                        status !== order.status && (
-                          <button
-                            key={status}
-                            onClick={() => setOrderStatus(order.id, status)}
-                            className="rounded-lg border border-ink-200 px-3 py-1 text-xs font-semibold text-ink-600 hover:border-brand-300 hover:text-brand-700"
-                          >
-                            {ORDER_STATUS_LABELS[status].label} yap
-                          </button>
-                        )
-                    )}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* ===== KODLAR ===== */}
+        {tab === "orders" && <OrdersPanel orders={orders} onStatusChange={setOrderStatus} />}
         {tab === "codes" && (
-          <div className="mt-6">
-            <form
-              onSubmit={createCode}
-              className="rounded-2xl border border-ink-200 bg-white p-5 shadow-sm"
-            >
-              <h2 className="font-display text-sm font-bold text-ink-900">
-                Yeni indirim kodu
-              </h2>
-              <div className="mt-4 grid gap-3 sm:grid-cols-3 lg:grid-cols-6">
-                <input
-                  required
-                  type="text"
-                  placeholder="KOD (örn: KASIM20)"
-                  value={newCode.code}
-                  onChange={(e) =>
-                    setNewCode({ ...newCode, code: e.target.value.toUpperCase() })
-                  }
-                  className="rounded-lg border border-ink-300 px-3 py-2 text-sm uppercase focus:border-brand-500 focus:outline-none lg:col-span-2"
-                />
-                <select
-                  value={newCode.type}
-                  onChange={(e) =>
-                    setNewCode({ ...newCode, type: e.target.value as "percent" | "fixed" })
-                  }
-                  className="rounded-lg border border-ink-300 bg-white px-3 py-2 text-sm focus:border-brand-500 focus:outline-none"
-                >
-                  <option value="percent">% Yüzde</option>
-                  <option value="fixed">₺ Sabit</option>
-                </select>
-                <input
-                  required
-                  type="number"
-                  min={1}
-                  placeholder={newCode.type === "percent" ? "% değer" : "₺ tutar"}
-                  value={newCode.value}
-                  onChange={(e) => setNewCode({ ...newCode, value: e.target.value })}
-                  className="rounded-lg border border-ink-300 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none"
-                />
-                <input
-                  type="number"
-                  min={1}
-                  placeholder="Maks. kullanım"
-                  value={newCode.maxUses}
-                  onChange={(e) => setNewCode({ ...newCode, maxUses: e.target.value })}
-                  className="rounded-lg border border-ink-300 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none"
-                />
-                <input
-                  type="date"
-                  value={newCode.expiresAt}
-                  onChange={(e) => setNewCode({ ...newCode, expiresAt: e.target.value })}
-                  className="rounded-lg border border-ink-300 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none"
-                />
-              </div>
-              <div className="mt-3 flex gap-3">
-                <input
-                  type="text"
-                  placeholder="Not (örn: Instagram kampanyası)"
-                  value={newCode.note}
-                  onChange={(e) => setNewCode({ ...newCode, note: e.target.value })}
-                  className="flex-1 rounded-lg border border-ink-300 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none"
-                />
-                <button
-                  type="submit"
-                  className="rounded-lg bg-brand-600 px-6 py-2 text-sm font-semibold text-white hover:bg-brand-700"
-                >
-                  Oluştur
-                </button>
-              </div>
-              {codeError && (
-                <p className="mt-2 text-sm font-medium text-red-600">{codeError}</p>
-              )}
-            </form>
-
-            <div className="mt-6 space-y-3">
-              {codes.length === 0 && (
-                <p className="py-10 text-center text-sm text-ink-400">
-                  Henüz kod oluşturmadın.
-                </p>
-              )}
-              {codes.map((code) => {
-                const isExpired =
-                  code.expiresAt && new Date(code.expiresAt) < new Date();
-                const isExhausted =
-                  code.maxUses !== null && code.usedCount >= code.maxUses;
-                return (
-                  <div
-                    key={code.id}
-                    className={`flex flex-wrap items-center justify-between gap-3 rounded-xl border bg-white p-4 ${
-                      code.active && !isExpired && !isExhausted
-                        ? "border-ink-200"
-                        : "border-ink-100 opacity-60"
-                    }`}
-                  >
-                    <div>
-                      <div className="flex items-center gap-3">
-                        <code className="rounded-lg bg-ink-900 px-3 py-1 font-mono text-sm font-bold tracking-wider text-white">
-                          {code.code}
-                        </code>
-                        <span className="font-display text-sm font-bold text-brand-700">
-                          {code.type === "percent"
-                            ? `%${code.value}`
-                            : formatTRY(code.value)}{" "}
-                          indirim
-                        </span>
-                        {isExpired && (
-                          <span className="text-xs font-semibold text-red-500">
-                            Süresi doldu
-                          </span>
-                        )}
-                        {isExhausted && (
-                          <span className="text-xs font-semibold text-red-500">
-                            Limit doldu
-                          </span>
-                        )}
-                      </div>
-                      <p className="mt-1 text-xs text-ink-500">
-                        Kullanım: {code.usedCount}
-                        {code.maxUses !== null ? ` / ${code.maxUses}` : " (sınırsız)"}
-                        {code.expiresAt
-                          ? ` · Son: ${new Date(code.expiresAt).toLocaleDateString("tr-TR")}`
-                          : ""}
-                        {code.note ? ` · ${code.note}` : ""}
-                      </p>
-                    </div>
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => toggleCode(code.id)}
-                        className="rounded-lg border border-ink-200 px-3 py-1.5 text-xs font-semibold text-ink-600 hover:border-brand-300 hover:text-brand-700"
-                      >
-                        {code.active ? "Pasifleştir" : "Aktifleştir"}
-                      </button>
-                      <button
-                        onClick={() => deleteCode(code.id)}
-                        className="rounded-lg border border-ink-200 px-3 py-1.5 text-xs font-semibold text-red-500 hover:border-red-300"
-                      >
-                        Sil
-                      </button>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
+          <CodesPanel codes={codes} onCreate={createCode} onToggle={toggleCode} onDelete={deleteCode} />
         )}
-
-        {/* ===== BAŞVURULAR ===== */}
-        {tab === "leads" && (
-          <div className="mt-6 space-y-4">
-            {leads.length === 0 && (
-              <p className="py-10 text-center text-sm text-ink-400">
-                Henüz form başvurusu yok.
-              </p>
-            )}
-            {leads.map((lead) => (
-              <div
-                key={lead.id}
-                className="rounded-2xl border border-ink-200 bg-white p-5 shadow-sm"
-              >
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div>
-                    <div className="flex items-center gap-3">
-                      <p className="font-display text-base font-bold text-ink-900">
-                        {lead.name}
-                      </p>
-                      <span
-                        className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${LEAD_STATUS_LABELS[lead.status].cls}`}
-                      >
-                        {LEAD_STATUS_LABELS[lead.status].label}
-                      </span>
-                    </div>
-                    <p className="mt-1 text-sm text-ink-600">
-                      📞 {lead.phone} · ✉️ {lead.email}
-                      {lead.monthlyOrders ? ` · Sipariş: ${lead.monthlyOrders}` : ""}
-                    </p>
-                    {lead.storeUrl && (
-                      <a
-                        href={lead.storeUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-xs text-brand-700 underline"
-                      >
-                        {lead.storeUrl}
-                      </a>
-                    )}
-                    {lead.message && (
-                      <p className="mt-2 rounded-lg bg-ink-50 p-3 text-sm text-ink-700">
-                        {lead.message}
-                      </p>
-                    )}
-                  </div>
-                  <p className="text-xs text-ink-400">{formatDateTime(lead.createdAt)}</p>
-                </div>
-                <div className="mt-3 flex gap-2 border-t border-ink-100 pt-3">
-                  {(Object.keys(LEAD_STATUS_LABELS) as Lead["status"][]).map(
-                    (status) =>
-                      status !== lead.status && (
-                        <button
-                          key={status}
-                          onClick={() => setLeadStatus(lead.id, status)}
-                          className="rounded-lg border border-ink-200 px-3 py-1 text-xs font-semibold text-ink-600 hover:border-brand-300 hover:text-brand-700"
-                        >
-                          {LEAD_STATUS_LABELS[status].label} yap
-                        </button>
-                      )
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* ===== AYARLAR ===== */}
-        {tab === "settings" && (
-          <form onSubmit={saveSettings} className="mt-6 space-y-6">
-            <div className="rounded-2xl border border-ink-200 bg-white p-6 shadow-sm">
-              <h2 className="font-display text-base font-bold text-ink-900">
-                💰 Fiyatlandırma
-              </h2>
-              <p className="mt-1 text-xs text-ink-500">
-                Buradaki değerler anasayfa, fiyatlandırma ve satın alma sayfalarına anında
-                yansır. Tutarlar KDV hariç TL&apos;dir.
-              </p>
-              <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {(
-                  [
-                    ["setupFee", "Kurulum + ilk ay paketi (₺, KDV hariç)"],
-                    ["managementFee", "Aylık yönetim — 2. ay ve sonrası (₺, KDV hariç)"],
-                    ["setupDays", "Kurulum süresi (iş günü)"],
-                  ] as [keyof SettingsForm, string][]
-                ).map(([key, label]) => (
-                  <label key={key} className="block">
-                    <span className="mb-1.5 block text-xs font-semibold text-ink-700">
-                      {label}
-                    </span>
-                    <input
-                      required
-                      type="number"
-                      min={0}
-                      value={settingsForm[key]}
-                      onChange={(e) =>
-                        setSettingsForm({ ...settingsForm, [key]: e.target.value })
-                      }
-                      className="w-full rounded-lg border border-ink-300 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
-                    />
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            <div className="rounded-2xl border border-ink-200 bg-white p-6 shadow-sm">
-              <h2 className="font-display text-base font-bold text-ink-900">
-                🏪 Referans Mağazalar
-              </h2>
-              <p className="mt-1 text-xs text-ink-500">
-                Anasayfadaki kayan referans barında gösterilir. Link eklersen mağaza adına
-                tıklayanlar Trendyol sayfasına yönlendirilir (isteğe bağlı).
-              </p>
-
-              <div className="mt-4 space-y-2">
-                {/* başlık satırı */}
-                <div className="grid grid-cols-[1fr_1.4fr_auto] gap-2 px-1">
-                  <span className="text-xs font-semibold text-ink-500">Mağaza adı</span>
-                  <span className="text-xs font-semibold text-ink-500">Trendyol linki (isteğe bağlı)</span>
-                  <span />
-                </div>
-
-                {referenceItems.map((row, i) => (
-                  <div key={i} className="grid grid-cols-[1fr_1.4fr_auto] items-center gap-2">
-                    <input
-                      type="text"
-                      placeholder="Mağaza adı"
-                      value={row.name}
-                      onChange={(e) => {
-                        const updated = referenceItems.map((r, idx) =>
-                          idx === i ? { ...r, name: e.target.value } : r
-                        );
-                        setReferenceItems(updated);
-                      }}
-                      className="rounded-lg border border-ink-300 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
-                    />
-                    <input
-                      type="url"
-                      placeholder="https://www.trendyol.com/..."
-                      value={row.url}
-                      onChange={(e) => {
-                        const updated = referenceItems.map((r, idx) =>
-                          idx === i ? { ...r, url: e.target.value } : r
-                        );
-                        setReferenceItems(updated);
-                      }}
-                      className="rounded-lg border border-ink-300 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setReferenceItems(referenceItems.filter((_, idx) => idx !== i))}
-                      className="flex h-9 w-9 items-center justify-center rounded-lg border border-ink-200 text-ink-400 transition-colors hover:border-red-300 hover:bg-red-50 hover:text-red-500"
-                      title="Kaldır"
-                    >
-                      ×
-                    </button>
-                  </div>
-                ))}
-
-                <button
-                  type="button"
-                  onClick={() => setReferenceItems([...referenceItems, { name: "", url: "" }])}
-                  className="mt-2 flex items-center gap-1.5 rounded-lg border border-dashed border-brand-300 px-4 py-2 text-xs font-semibold text-brand-600 transition-colors hover:border-brand-500 hover:bg-brand-50"
-                >
-                  + Referans Ekle
-                </button>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-4">
-              <button
-                type="submit"
-                disabled={settingsStatus === "saving"}
-                className="rounded-xl bg-brand-600 px-8 py-3 text-sm font-bold text-white shadow-md transition-colors hover:bg-brand-700 disabled:opacity-60"
-              >
-                {settingsStatus === "saving" ? "Kaydediliyor..." : "Ayarları Kaydet"}
-              </button>
-              {settingsStatus === "saved" && (
-                <span className="text-sm font-semibold text-green-600">
-                  ✓ Kaydedildi — site anında güncellendi
-                </span>
-              )}
-              {settingsStatus === "error" && (
-                <span className="text-sm font-semibold text-red-600">
-                  Kaydedilemedi, tekrar dene
-                </span>
-              )}
-            </div>
-          </form>
-        )}
+        {tab === "leads" && <LeadsPanel leads={leads} onStatusChange={setLeadStatus} />}
+        {tab === "settings" && <SettingsPanel />}
       </section>
     </div>
   );

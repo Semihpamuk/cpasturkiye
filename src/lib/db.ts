@@ -5,6 +5,7 @@ import path from "path";
 // İleride Prisma + PostgreSQL'e geçilecekse bu modülün arayüzü korunabilir.
 
 const DATA_DIR = path.join(process.cwd(), "data");
+const RECEIPTS_DIR = path.join(DATA_DIR, "receipts");
 
 export interface DiscountCode {
   id: string;
@@ -19,6 +20,15 @@ export interface DiscountCode {
   createdAt: string;
 }
 
+export type OrderStatus =
+  | "new"
+  | "contacted"
+  | "awaiting_transfer"
+  | "paid"
+  | "cancelled";
+
+export type PaymentMethod = "card" | "transfer";
+
 export interface Order {
   id: string;
   createdAt: string;
@@ -28,16 +38,22 @@ export interface Order {
   storeUrl: string;
   /** Müşterinin satış yaptığı pazaryerleri (trendyol/hepsiburada/amazon) */
   marketplaces: string[];
+  /** Ödeme yöntemi: kart (iyzico) veya havale/EFT */
+  paymentMethod: PaymentMethod;
   installment: "single" | "3" | "6" | "9";
+  /** Devam ödemesi (bir sonraki ay yönetim) eklendi mi */
+  addManagement: boolean;
   discountCode: string | null;
-  /** 1. ay paketi (kurulum + ilk ay yönetim), KDV hariç net */
+  /** Kurulum paketi (kurulum + ilk ay yönetim), 2. pazaryeri %50 dahil, KDV hariç net */
   setupNet: number;
-  /** 2. aydan itibaren aylık yönetim bedeli (bilgi amaçlı, KDV hariç) */
+  /** Devam edilirse aylık yönetim bedeli (bilgi amaçlı, KDV hariç) */
   managementMonthly: number;
+  /** Devam ödemesi eklentisi (%10 indirimli peşin), eklenmediyse 0 */
+  managementAddon: number;
   discountAmount: number;
   vatAmount: number;
   total: number;
-  status: "new" | "contacted" | "paid" | "cancelled";
+  status: OrderStatus;
   // Fatura bilgileri
   invoiceType: "individual" | "company";
   identityNo: string;
@@ -49,6 +65,8 @@ export interface Order {
   // iyzico ödeme bilgileri (opsiyonel)
   paymentId?: string;
   conversationId?: string;
+  // Havale dekontu (opsiyonel) — data/receipts/ altındaki dosya adı
+  receiptFile?: string;
 }
 
 export interface PendingOrder {
@@ -59,9 +77,11 @@ export interface PendingOrder {
   email: string;
   storeUrl: string;
   marketplaces: string[];
+  addManagement: boolean;
   discountCode: string | null;
   setupNet: number;
   managementMonthly: number;
+  managementAddon: number;
   discountAmount: number;
   vatAmount: number;
   total: number;
@@ -87,9 +107,11 @@ export interface Lead {
 }
 
 export interface PricingSettings {
-  /** 1. ay paketi: kurulum + ilk ay yönetim (KDV hariç) */
+  /** Kurulum paketi liste (çapa) fiyatı — üstü çizili gösterim (KDV hariç) */
+  listSetupFee: number;
+  /** Kurulum paketi kampanyalı fiyatı: kurulum + ilk ay yönetim (KDV hariç) */
   setupFee: number;
-  /** 2. aydan itibaren aylık yönetim (KDV hariç) */
+  /** Aylık yönetim (devam) bedeli — pazaryeri başına (KDV hariç) */
   managementFee: number;
   /** Kurulumun tamamlandığı ortalama iş günü */
   setupDays: number;
@@ -107,8 +129,9 @@ export interface SiteSettings {
 
 export const DEFAULT_SETTINGS: SiteSettings = {
   pricing: {
+    listSetupFee: 39000,
     setupFee: 25000,
-    managementFee: 17000,
+    managementFee: 16000,
     setupDays: 7,
   },
   references: [
@@ -249,6 +272,24 @@ export async function updateLeadStatus(
     "leads",
     leads.map((l) => (l.id === id ? { ...l, status } : l))
   );
+}
+
+// --- Havale dekontları (data/receipts/ altında dosya olarak saklanır) ---
+
+export async function saveReceipt(storedName: string, data: Buffer): Promise<void> {
+  await fs.mkdir(RECEIPTS_DIR, { recursive: true });
+  // path traversal koruması: yalnızca dosya adı kullan.
+  await fs.writeFile(path.join(RECEIPTS_DIR, path.basename(storedName)), data);
+}
+
+export async function readReceipt(
+  storedName: string
+): Promise<Buffer | null> {
+  try {
+    return await fs.readFile(path.join(RECEIPTS_DIR, path.basename(storedName)));
+  } catch {
+    return null;
+  }
 }
 
 // --- Bekleyen ödemeler (iyzico callback'ten önce geçici olarak saklanır) ---

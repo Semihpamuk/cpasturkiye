@@ -2,7 +2,13 @@ import { NextResponse } from "next/server";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { getOrders, updateOrderStatus, type Order } from "@/lib/db";
 
-const STATUSES: Order["status"][] = ["new", "contacted", "paid", "cancelled"];
+const STATUSES: Order["status"][] = [
+  "new",
+  "contacted",
+  "awaiting_transfer",
+  "paid",
+  "cancelled",
+];
 
 export async function GET() {
   if (!(await isAdminAuthenticated())) {

@@ -14,14 +14,18 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Fiyatlandırma",
   description:
-    "CPAS Türkiye fiyatlandırması: 1. ay kurulum + yönetim paketi, 2. aydan itibaren aylık yönetim. Tek paket, şeffaf fiyat, gizli ücret yok, taahhüt yok.",
+    "CPAS Türkiye fiyatlandırması: tek seferlik kurulum + ilk ay yönetim paketi, isteğe bağlı aylık yönetim. Havale/EFT'te %5 indirim, ikinci pazaryerinde %50 indirim, taahhüt yok.",
   alternates: { canonical: "/fiyatlandirma" },
 };
 
 const buildFaq = (setupFee: number, managementFee: number, setupDays: number) => [
   {
-    question: "İlk ay neden daha yüksek?",
-    answer: `İlk ay ücretine (${formatTRY(setupFee)} + KDV) tüm teknik kurulum dahildir: pazaryeri reklam yetkilendirmesi, Meta Business Manager kurulumu, CPAS katalog bağlantısı, piksel/event ölçümleme, kampanya mimarisinin sıfırdan kurulması ve ilk ayın tam yönetimi. Bu, ortalama ${setupDays} iş günü süren yoğun bir mühendislik ve strateji çalışmasıdır. 2. aydan itibaren yalnızca aylık yönetim bedeli (${formatTRY(managementFee)} + KDV) ödersiniz.`,
+    question: "Kurulum paketine neler dahil?",
+    answer: `Kurulum paketine (${formatTRY(setupFee)} + KDV) tüm teknik kurulum ve ilk ayın yönetimi dahildir: pazaryeri reklam yetkilendirmesi, Meta Business Manager kurulumu, CPAS katalog bağlantısı, piksel/event ölçümleme, kampanya mimarisinin sıfırdan kurulması ve ilk ayın tam yönetimi. Bu, ortalama ${setupDays} iş günü süren yoğun bir mühendislik ve strateji çalışmasıdır.`,
+  },
+  {
+    question: "Kurulumdan sonra devam etmek zorunda mıyım?",
+    answer: `Hayır. Aylık yönetim tamamen isteğe bağlıdır — taahhüt yoktur. İlk ay pakete zaten dahil olduğu için sadece kurulumu alıp bırakabilirsiniz. Devam etmek isterseniz aylık yönetim bedeli (${formatTRY(managementFee)} + KDV/ay) fatura karşılığı tahsil edilir. Dilerseniz satın alırken bir sonraki ayı %10 indirimle peşin de ekleyebilirsiniz.`,
   },
   {
     question: "Reklam bütçesi fiyata dahil mi?",
@@ -29,24 +33,19 @@ const buildFaq = (setupFee: number, managementFee: number, setupDays: number) =>
       "Hayır. Meta'ya ödediğiniz reklam harcaması size aittir ve doğrudan kendi Meta reklam hesabınızdan tahsil edilir. Paranız bizim üzerimizden geçmez; harcamanın her kuruşunu kendi panelinizden görebilirsiniz. Bizim ücretimiz kurulum ve yönetim hizmetinin karşılığıdır.",
   },
   {
-    question: "Birden fazla pazaryerinde mağazam var — fiyat değişir mi?",
+    question: "Birden fazla pazaryerinde mağazam var — fiyat nasıl?",
     answer:
-      "Hayır. Trendyol ve Hepsiburada mağazalarınız aynı paket kapsamında birlikte yönetilir. Amazon entegrasyonumuz da yakında aynı pakete dahil olacak.",
+      "İlk pazaryeriniz tam fiyat, ikinci pazaryeriniz (örn. Trendyol + Hepsiburada) hem kurulumda hem aylık yönetimde %50 indirimlidir. Hepsi tek pakette birlikte yönetilir. Amazon entegrasyonumuz da yakında aynı yapıya dahil olacak.",
+  },
+  {
+    question: "Nasıl ödeme yapabilirim?",
+    answer:
+      "İki seçenek var: (1) Kredi/banka kartı ile iyzico güvencesinde 9'a kadar taksit; (2) Havale/EFT ile %5 indirimli — ödeme sonrası dekontunuzu yükler, doğrulama sonrası siparişiniz onaylanır. İndirim kodları kart ödemesinde geçerlidir.",
   },
   {
     question: "Taahhüt var mı? İstediğim zaman iptal edebilir miyim?",
     answer:
-      "Taahhüt yok. Aylık yönetimi dilediğiniz ay sonunda durdurabilirsiniz. Kurduğumuz altyapı (katalog bağlantısı, piksel, kampanya yapısı) sizin hesaplarınızda kalır. Detaylar İptal ve İade Politikası sayfamızdadır.",
-  },
-  {
-    question: "Aylık yönetim ödemesi nasıl yapılıyor?",
-    answer:
-      "İlk ay paketi sitemizden iyzico güvencesiyle kredi kartıyla ödenir (9'a kadar taksit). 2. aydan itibaren aylık yönetim bedeli her ay fatura karşılığı tahsil edilir.",
-  },
-  {
-    question: "Neden kademeli plan yok?",
-    answer:
-      "Çünkü verdiğimiz emek mağaza büyüklüğüne göre azalmıyor. Her mağaza aynı kurulum titizliğini, aynı haftalık optimizasyon döngüsünü ve aynı raporlamayı alır. Tek fiyat, tek standart — sürpriz yok.",
+      "Taahhüt yok. Devam ettiyseniz aylık yönetimi dilediğiniz ay sonunda durdurabilirsiniz. Kurduğumuz altyapı (katalog bağlantısı, piksel, kampanya yapısı) sizin hesaplarınızda kalır. Detaylar İptal ve İade Politikası sayfamızdadır.",
   },
 ];
 
@@ -71,8 +70,8 @@ export default async function PricingPage() {
             Tek paket. Sürpriz yok.
           </h1>
           <p className="mt-5 text-lg leading-relaxed text-ink-600">
-            Kademeli planlar, gizli kalemler, kur farkı yok. İlk ay kurulum + yönetim,
-            sonrası aylık yönetim — hepsi bu.
+            Gizli kalem, kur farkı yok. Tek seferlik kurulum paketi (ilk ay yönetim
+            dahil); devam etmek tamamen size kalmış — taahhüt yok.
           </p>
         </div>
       </section>

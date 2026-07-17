@@ -29,41 +29,54 @@ export default function PricingSingle() {
         <div className="h-1.5 bg-gradient-to-r from-brand-400 via-brand-500 to-brand-600" />
 
         <div className="grid gap-0 lg:grid-cols-2">
-          {/* 1. Ay */}
+          {/* Kurulum paketi */}
           <div className="relative border-b border-ink-100 p-8 lg:border-b-0 lg:border-r sm:p-10">
             <span className="inline-flex rounded-full bg-brand-50 px-3 py-1 text-xs font-bold uppercase tracking-wider text-brand-700 ring-1 ring-brand-200">
-              1. Ay
+              Başlangıç · Tek seferlik
             </span>
             <h3 className="mt-4 font-display text-xl font-bold text-ink-900">
               Kurulum + İlk Ay Yönetim
             </h3>
             <p className="mt-2 text-sm leading-relaxed text-ink-600">
               Yetkilendirmeden kampanyaların yayına alınmasına kadar tüm teknik
-              kurulum ve ilk ayın yönetimi.
+              kurulum ve <strong className="text-ink-800">ilk ayın yönetimi dahildir.</strong>
             </p>
-            <p className="mt-6 flex items-baseline gap-2">
-              <span className="font-display text-4xl font-extrabold tracking-tight text-ink-900 sm:text-5xl">
-                {formatTRY(pricing.setupFee)}
-              </span>
-              <span className="text-sm font-semibold text-ink-500">+ KDV</span>
-            </p>
+            <div className="mt-6">
+              {pricing.listSetupFee > pricing.setupFee && (
+                <p className="flex items-center gap-2">
+                  <span className="text-lg font-semibold text-ink-400 line-through">
+                    {formatTRY(pricing.listSetupFee)}
+                  </span>
+                  <span className="rounded-full bg-green-100 px-2 py-0.5 text-[11px] font-bold text-green-700">
+                    Kampanya
+                  </span>
+                </p>
+              )}
+              <p className="flex items-baseline gap-2">
+                <span className="font-display text-4xl font-extrabold tracking-tight text-ink-900 sm:text-5xl">
+                  {formatTRY(pricing.setupFee)}
+                </span>
+                <span className="text-sm font-semibold text-ink-500">+ KDV</span>
+              </p>
+            </div>
             <p className="mt-2 text-xs text-ink-500">
-              Tek seferlik · Karta {""}
-              <strong className="text-ink-700">9&apos;a kadar taksit</strong> imkânı
+              Kartla <strong className="text-ink-700">9&apos;a kadar taksit</strong> ·
+              Havale/EFT&apos;te <strong className="text-green-700">%5 indirim</strong>
             </p>
           </div>
 
-          {/* 2. Ay+ */}
+          {/* İsteğe bağlı devam */}
           <div className="p-8 sm:p-10">
             <span className="inline-flex rounded-full bg-ink-100 px-3 py-1 text-xs font-bold uppercase tracking-wider text-ink-600 ring-1 ring-ink-200">
-              2. Ay ve Sonrası
+              İsteğe bağlı · Devam
             </span>
             <h3 className="mt-4 font-display text-xl font-bold text-ink-900">
               Aylık Yönetim
             </h3>
             <p className="mt-2 text-sm leading-relaxed text-ink-600">
-              Haftalık optimizasyon döngüsü, raporlama ve strateji —
-              taahhüt yok, istediğiniz ay durdurabilirsiniz.
+              İlk ay pakete dahil. Sonrasında <strong className="text-ink-800">dilerseniz</strong>{" "}
+              aylık yönetimle devam edersiniz — <strong className="text-ink-800">taahhüt yok</strong>,
+              istediğiniz ay durdurabilirsiniz.
             </p>
             <p className="mt-6 flex items-baseline gap-2">
               <span className="font-display text-4xl font-extrabold tracking-tight text-ink-900 sm:text-5xl">
@@ -72,9 +85,18 @@ export default function PricingSingle() {
               <span className="text-sm font-semibold text-ink-500">+ KDV / ay</span>
             </p>
             <p className="mt-2 text-xs text-ink-500">
-              İlk ödeme 2. ayın başında · Fatura karşılığı
+              Yalnızca devam ederseniz · Fatura karşılığı ·{" "}
+              <strong className="text-brand-700">satın alırken %10 indirimle peşin eklenebilir</strong>
             </p>
           </div>
+        </div>
+
+        {/* İkili alım şeridi */}
+        <div className="border-t border-ink-100 bg-brand-50/60 px-8 py-4 sm:px-10">
+          <p className="text-center text-sm font-medium text-brand-800">
+            🎉 <strong>İkili alım avantajı:</strong> İkinci pazaryerinizi (Trendyol +
+            Hepsiburada) kurulum ve yönetimde <strong>%50 indirimle</strong> ekleyin.
+          </p>
         </div>
 
         {/* Dahil olanlar */}

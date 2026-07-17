@@ -171,7 +171,7 @@ const FAQ_ITEMS: FaqItem[] = [
   },
   {
     question: "Ödeme nasıl yapılıyor?",
-    answer: `İlk ay paketi (${formatTRY(PRICING.setupFee)} + KDV) sitemizden iyzico güvencesiyle kredi kartıyla ödenir; 9'a kadar taksit imkânı vardır. Sonraki ayların yönetim bedeli (${formatTRY(PRICING.managementFee)} + KDV) fatura karşılığı tahsil edilir.`,
+    answer: `Kurulum paketini (${formatTRY(PRICING.setupFee)} + KDV) iki şekilde ödeyebilirsiniz: kredi/banka kartıyla iyzico güvencesinde 9'a kadar taksitle, ya da havale/EFT ile %5 indirimli (dekont yükleyerek). Aylık yönetim isteğe bağlıdır; devam ederseniz (${formatTRY(PRICING.managementFee)} + KDV/ay) fatura karşılığı tahsil edilir.`,
   },
 ];
 
