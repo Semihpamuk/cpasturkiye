@@ -186,6 +186,11 @@ export default function OrdersPanel({ orders, onStatusChange }: Props) {
                     >
                       🧾 Dekontu Gör
                     </a>
+                  ) : order.receiptAccountName ? (
+                    <span className="text-purple-700">
+                      🏦 Ödeme yapılan hesap:{" "}
+                      <strong className="text-purple-900">{order.receiptAccountName}</strong>
+                    </span>
                   ) : (
                     <span className="text-purple-700">Dekont yüklenmedi.</span>
                   )}

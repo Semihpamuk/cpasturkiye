@@ -235,7 +235,8 @@ export default function CheckoutClient() {
   });
 
   const [receipt, setReceipt] = useState<File | null>(null);
-  const [copiedIban, setCopiedIban] = useState<string | null>(null);
+  const [receiptAccountName, setReceiptAccountName] = useState("");
+  const [copiedKey, setCopiedKey] = useState<string | null>(null);
 
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
@@ -304,11 +305,11 @@ export default function CheckoutClient() {
     }
   }
 
-  async function copyIban(iban: string) {
+  async function copyText(value: string, key: string) {
     try {
-      await navigator.clipboard.writeText(iban.replace(/\s/g, ""));
-      setCopiedIban(iban);
-      setTimeout(() => setCopiedIban(null), 2000);
+      await navigator.clipboard.writeText(value);
+      setCopiedKey(key);
+      setTimeout(() => setCopiedKey(null), 2000);
     } catch {
       /* pano erişimi yoksa sessiz geç */
     }
@@ -380,11 +381,11 @@ export default function CheckoutClient() {
   }
 
   async function submitTransfer() {
-    if (!receipt) {
-      setSubmitError("Lütfen havale/EFT dekontunuzu yükleyin.");
+    if (!receipt && !receiptAccountName.trim()) {
+      setSubmitError("Dekont yükleyin veya ödeme yapılan hesabın resmi ismini yazın.");
       return;
     }
-    if (receipt.size > MAX_RECEIPT_MB * 1024 * 1024) {
+    if (receipt && receipt.size > MAX_RECEIPT_MB * 1024 * 1024) {
       setSubmitError(`Dekont dosyası ${MAX_RECEIPT_MB} MB'den küçük olmalıdır.`);
       return;
     }
@@ -392,10 +393,17 @@ export default function CheckoutClient() {
     setSubmitError("");
     try {
       const fd = new FormData();
-      fd.append("receipt", receipt);
+      if (receipt) fd.append("receipt", receipt);
       fd.append(
         "payload",
-        JSON.stringify({ ...form, marketplaces, addManagement, invoiceType, ...invoice })
+        JSON.stringify({
+          ...form,
+          marketplaces,
+          addManagement,
+          invoiceType,
+          ...invoice,
+          receiptAccountName: receiptAccountName.trim(),
+        })
       );
       const res = await fetch("/api/payment/transfer", { method: "POST", body: fd });
       const data = await res.json();
@@ -620,24 +628,41 @@ export default function CheckoutClient() {
                     <p className="mt-1 text-[11px] text-ink-500">
                       Açıklama kısmına ad-soyad ve telefonunuzu yazın. Tutar KDV dahildir.
                     </p>
-                    <div className="mt-3 space-y-2">
+                    <div className="mt-3 space-y-2.5">
                       {BANK_ACCOUNTS.map((acc) => (
                         <div
                           key={acc.iban}
-                          className="flex items-center justify-between gap-3 rounded-lg border border-ink-200 bg-white px-3 py-2.5"
+                          className="rounded-lg border border-ink-200 bg-white px-3 py-3"
                         >
-                          <div className="min-w-0">
-                            <p className="text-xs font-bold text-ink-900">{acc.bank}</p>
-                            <p className="truncate font-mono text-xs text-ink-600">{acc.iban}</p>
-                            <p className="truncate text-[10px] text-ink-400">{acc.holder}</p>
+                          <p className="text-xs font-bold text-ink-900">{acc.bank}</p>
+
+                          {/* IBAN + kopyala */}
+                          <div className="mt-2 flex items-center gap-2">
+                            <p className="min-w-0 flex-1 break-all font-mono text-xs text-ink-700">
+                              {acc.iban}
+                            </p>
+                            <button
+                              type="button"
+                              onClick={() => copyText(acc.iban.replace(/\s/g, ""), `iban-${acc.iban}`)}
+                              className="shrink-0 rounded-md border border-ink-300 px-2.5 py-1 text-[11px] font-semibold text-ink-700 transition-colors hover:border-brand-400 hover:text-brand-700"
+                            >
+                              {copiedKey === `iban-${acc.iban}` ? "✓ Kopyalandı" : "IBAN Kopyala"}
+                            </button>
                           </div>
-                          <button
-                            type="button"
-                            onClick={() => copyIban(acc.iban)}
-                            className="shrink-0 rounded-md border border-ink-300 px-2.5 py-1 text-[11px] font-semibold text-ink-700 transition-colors hover:border-brand-400 hover:text-brand-700"
-                          >
-                            {copiedIban === acc.iban ? "✓ Kopyalandı" : "Kopyala"}
-                          </button>
+
+                          {/* Hesap sahibi ismi + kopyala */}
+                          <div className="mt-1.5 flex items-center gap-2">
+                            <p className="min-w-0 flex-1 break-words text-[11px] text-ink-500">
+                              {acc.holder}
+                            </p>
+                            <button
+                              type="button"
+                              onClick={() => copyText(acc.holder, `holder-${acc.iban}`)}
+                              className="shrink-0 rounded-md border border-ink-300 px-2.5 py-1 text-[11px] font-semibold text-ink-700 transition-colors hover:border-brand-400 hover:text-brand-700"
+                            >
+                              {copiedKey === `holder-${acc.iban}` ? "✓ Kopyalandı" : "İsmi Kopyala"}
+                            </button>
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -645,11 +670,15 @@ export default function CheckoutClient() {
 
                   <div>
                     <label className="block text-sm font-semibold text-ink-800">
-                      Havale/EFT dekontu <span className="text-red-500">*</span>
+                      Havale/EFT dekontu
                     </label>
                     <p className="mt-1 text-xs text-ink-500">
                       Ödemeyi yaptıktan sonra dekontun ekran görüntüsünü veya PDF&apos;ini yükleyin
-                      (JPG/PNG/PDF, en fazla {MAX_RECEIPT_MB} MB).
+                      (JPG/PNG/PDF, en fazla {MAX_RECEIPT_MB} MB).{" "}
+                      <strong className="text-ink-700">
+                        Dekont yükleyemiyorsanız aşağıya ödeme yaptığınız hesabın resmi ismini yazın —
+                        biri yeterli.
+                      </strong>
                     </p>
                     <input
                       type="file"
@@ -662,6 +691,30 @@ export default function CheckoutClient() {
                         ✓ {receipt.name} ({(receipt.size / 1024 / 1024).toFixed(1)} MB)
                       </p>
                     )}
+
+                    {/* VEYA ayıracı */}
+                    <div className="my-3 flex items-center gap-3">
+                      <span className="h-px flex-1 bg-ink-200" />
+                      <span className="text-[11px] font-semibold uppercase tracking-wider text-ink-400">
+                        veya
+                      </span>
+                      <span className="h-px flex-1 bg-ink-200" />
+                    </div>
+
+                    <label className="block text-sm font-semibold text-ink-800">
+                      Ödeme yapılan hesabın resmi ismi
+                    </label>
+                    <p className="mt-1 text-xs text-ink-500">
+                      Havaleyi/EFT&apos;yi gönderdiğiniz banka hesabının tam resmi adı (ad-soyad veya
+                      şirket unvanı). Ödemenizi eşleştirebilmemiz için gereklidir.
+                    </p>
+                    <input
+                      type="text"
+                      placeholder="Örn: Ahmet Yılmaz / Örnek Ltd. Şti."
+                      value={receiptAccountName}
+                      onChange={(e) => setReceiptAccountName(e.target.value)}
+                      className="mt-2 w-full rounded-lg border border-ink-300 px-4 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
+                    />
                   </div>
                 </div>
               )}
@@ -710,7 +763,13 @@ export default function CheckoutClient() {
 
             {/* 5. Fatura bilgileri */}
             <div className="rounded-2xl border border-ink-200 bg-white p-6 shadow-sm">
-              <h2 className="font-display text-base font-bold text-ink-900">5. Fatura bilgileriniz</h2>
+              <h2 className="font-display text-base font-bold text-ink-900">
+                5. Fatura bilgileriniz{" "}
+                <span className="font-sans text-xs font-normal text-ink-400">(opsiyonel)</span>
+              </h2>
+              <p className="mt-1 text-xs text-ink-500">
+                Fatura kesilmesini isterseniz doldurun — dilerseniz sonradan da iletebilirsiniz.
+              </p>
               <div className="mt-4 flex gap-2">
                 <button
                   type="button"
@@ -749,26 +808,23 @@ export default function CheckoutClient() {
                 ) : (
                   <>
                     <input
-                      required
                       type="text"
-                      placeholder="Şirket / Ticari Unvan *"
+                      placeholder="Şirket / Ticari Unvan"
                       value={invoice.companyName}
                       onChange={(e) => setInvoice({ ...invoice, companyName: e.target.value })}
                       className="rounded-lg border border-ink-300 px-4 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100 sm:col-span-2"
                     />
                     <input
-                      required
                       type="text"
-                      placeholder="Vergi Dairesi *"
+                      placeholder="Vergi Dairesi"
                       value={invoice.taxOffice}
                       onChange={(e) => setInvoice({ ...invoice, taxOffice: e.target.value })}
                       className="rounded-lg border border-ink-300 px-4 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
                     />
                     <input
-                      required
                       type="text"
                       inputMode="numeric"
-                      placeholder="Vergi No *"
+                      placeholder="Vergi No"
                       value={invoice.taxNumber}
                       onChange={(e) => setInvoice({ ...invoice, taxNumber: e.target.value })}
                       className="rounded-lg border border-ink-300 px-4 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
@@ -776,17 +832,15 @@ export default function CheckoutClient() {
                   </>
                 )}
                 <input
-                  required
                   type="text"
-                  placeholder="Şehir *"
+                  placeholder="Şehir"
                   value={invoice.city}
                   onChange={(e) => setInvoice({ ...invoice, city: e.target.value })}
                   className="rounded-lg border border-ink-300 px-4 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
                 />
                 <textarea
-                  required
                   rows={2}
-                  placeholder="Fatura Adresi *"
+                  placeholder="Fatura Adresi"
                   value={invoice.address}
                   onChange={(e) => setInvoice({ ...invoice, address: e.target.value })}
                   className="rounded-lg border border-ink-300 px-4 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100 sm:col-span-2"
@@ -954,7 +1008,7 @@ export default function CheckoutClient() {
                 <div className="flex items-center justify-center gap-3">
                   {isTransfer ? (
                     <span className="text-xs font-semibold text-ink-600">
-                      3 banka · IBAN&apos;a havale/EFT · dekontla onay
+                      {BANK_ACCOUNTS.length} banka · IBAN&apos;a havale/EFT · dekont veya hesap ismiyle onay
                     </span>
                   ) : (
                     <>
