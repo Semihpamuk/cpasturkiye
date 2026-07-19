@@ -20,6 +20,21 @@ function getTransporter() {
   });
 }
 
+/**
+ * Gönderen adresi: SMTP sağlayıcısı, kimlik doğrulanan hesaptan farklı bir
+ * "from" ile göndermeyi genelde reddeder. Bu yüzden from = SMTP_USER (veya
+ * açıkça SMTP_FROM). Görünen ad SITE.name olur.
+ */
+function fromAddress(): string {
+  const addr = process.env.SMTP_FROM || process.env.SMTP_USER || SITE.email;
+  return `"${SITE.name}" <${addr}>`;
+}
+
+/** Yeni sipariş bildirimlerinin gideceği kutu (varsayılan: gönderen hesap). */
+function notifyAddress(): string {
+  return process.env.ORDER_NOTIFY_EMAIL || process.env.SMTP_USER || SITE.email;
+}
+
 export async function sendOrderConfirmation(order: {
   id: string;
   name: string;
@@ -46,7 +61,8 @@ export async function sendOrderConfirmation(order: {
 
   // Müşteriye onay
   await transporter.sendMail({
-    from: `"${SITE.name}" <${SITE.email}>`,
+    from: fromAddress(),
+    replyTo: SITE.email,
     to: order.email,
     subject: `Siparişiniz Alındı — ${SITE.name} #${order.id}`,
     html: `
@@ -76,8 +92,8 @@ export async function sendOrderConfirmation(order: {
 
   // Sana bildirim
   await transporter.sendMail({
-    from: `"${SITE.name}" <${SITE.email}>`,
-    to: SITE.email,
+    from: fromAddress(),
+    to: notifyAddress(),
     subject: `🎉 Yeni Ödeme — ${order.name} — ${totalFormatted}`,
     html: `
       <div style="font-family:sans-serif">
@@ -122,7 +138,8 @@ export async function sendTransferReceived(order: {
 
   // Müşteriye "dekont alındı" bilgisi
   await transporter.sendMail({
-    from: `"${SITE.name}" <${SITE.email}>`,
+    from: fromAddress(),
+    replyTo: SITE.email,
     to: order.email,
     subject: `Dekontunuz Alındı — ${SITE.name} #${order.id}`,
     html: `
@@ -144,8 +161,8 @@ export async function sendTransferReceived(order: {
 
   // Ekibe doğrulama bildirimi + dekont eki
   await transporter.sendMail({
-    from: `"${SITE.name}" <${SITE.email}>`,
-    to: SITE.email,
+    from: fromAddress(),
+    to: notifyAddress(),
     subject: `🏦 Havale Siparişi — DOĞRULA — ${order.name} — ${totalFormatted}`,
     html: `
       <div style="font-family:sans-serif">
