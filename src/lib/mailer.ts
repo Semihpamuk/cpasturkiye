@@ -28,6 +28,8 @@ export async function sendOrderConfirmation(order: {
   marketplaces: string[];
   managementMonthly: number;
   paymentId?: string;
+  /** Jale kurulum kayıt linki (varsa e-postaya "Kuruluma Başla" butonu eklenir). */
+  setupUrl?: string;
 }): Promise<void> {
   const transporter = getTransporter();
   if (!transporter) return;
@@ -58,7 +60,13 @@ export async function sendOrderConfirmation(order: {
           <tr><td style="padding:8px;border:1px solid #e5e7eb;background:#f9fafb"><strong>Ödenen Tutar</strong></td><td style="padding:8px;border:1px solid #e5e7eb">${totalFormatted} (KDV dahil)</td></tr>
           ${order.paymentId ? `<tr><td style="padding:8px;border:1px solid #e5e7eb;background:#f9fafb"><strong>iyzico Ödeme ID</strong></td><td style="padding:8px;border:1px solid #e5e7eb">${order.paymentId}</td></tr>` : ""}
         </table>
-        <p><strong>Sırada ne var?</strong> Ekip arkadaşımız 24 saat içinde sizi arayarak kurulum planınızı netleştirecek. Kurulum ortalama 7 iş günü sürer; 2. aydan itibaren aylık yönetim bedeli ${formatTRY(order.managementMonthly)} + KDV'dir.</p>
+        ${order.setupUrl ? `
+        <div style="margin:24px 0;padding:20px;background:#f5f3ff;border:1px solid #ddd6fe;border-radius:12px;text-align:center">
+          <p style="margin:0 0 12px;font-weight:600;color:#5850EC">Kurulumunuza hemen başlayın</p>
+          <a href="${order.setupUrl}" style="display:inline-block;background:#5850EC;color:#fff;text-decoration:none;padding:12px 28px;border-radius:8px;font-weight:600">Kuruluma Başla</a>
+          <p style="margin:12px 0 0;font-size:12px;color:#9ca3af">Bu bağlantı size özeldir, tek kullanımlıktır.</p>
+        </div>` : ""}
+        <p><strong>Sırada ne var?</strong> ${order.setupUrl ? "Yukarıdaki bağlantıdan panel hesabınızı oluşturup kurulum sürecini takip edebilirsiniz. " : ""}Ekip arkadaşımız 24 saat içinde sizi arayarak kurulum planınızı netleştirecek. Kurulum ortalama 7 iş günü sürer; 2. aydan itibaren aylık yönetim bedeli ${formatTRY(order.managementMonthly)} + KDV'dir.</p>
         <p>Sorularınız için: <a href="mailto:${SITE.email}">${SITE.email}</a></p>
         <hr style="border:none;border-top:1px solid #e5e7eb;margin:30px 0">
         <p style="color:#9ca3af;font-size:12px">${SITE.company}</p>

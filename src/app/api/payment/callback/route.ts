@@ -9,6 +9,7 @@ import {
   getCodes,
 } from "@/lib/db";
 import { sendOrderConfirmation } from "@/lib/mailer";
+import { createJaleOnboardingInvite } from "@/lib/jaleOnboarding";
 import { SITE } from "@/lib/site";
 
 // iyzico callback'i form POST ile gelir (application/x-www-form-urlencoded)
@@ -101,7 +102,15 @@ export async function POST(req: Request) {
     // Pending order'ı temizle
     await deletePendingOrder(conversationId);
 
-    // E-posta gönder
+    // Jale kurulum kayıt linki (best-effort — başarısız olsa da ödeme akışı bozulmaz)
+    const setupUrl = await createJaleOnboardingInvite({
+      brandName: order.companyName || order.name,
+      email: order.email,
+      phone: order.phone,
+      plan: order.marketplaces.join(", "),
+    });
+
+    // E-posta gönder (kurulum linki varsa dahil edilir — yönlendirme kaybolursa yedek)
     await sendOrderConfirmation({
       id: order.id,
       name: order.name,
@@ -110,8 +119,14 @@ export async function POST(req: Request) {
       marketplaces: order.marketplaces,
       managementMonthly: order.managementMonthly,
       paymentId: order.paymentId,
+      setupUrl: setupUrl ?? undefined,
     });
 
+    // Kurulum linki üretildiyse müşteriyi doğrudan Jale portal kaydına yönlendir;
+    // aksi halde normal başarı sayfasına düş (link e-postada da var).
+    if (setupUrl) {
+      return NextResponse.redirect(setupUrl, 303);
+    }
     return NextResponse.redirect(`${SITE.url}/satin-al?payment=success&orderId=${order.id}`, 303);
   } catch (err) {
     console.error("payment/callback error:", err);
