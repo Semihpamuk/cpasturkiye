@@ -35,6 +35,15 @@ function notifyAddress(): string {
   return process.env.ORDER_NOTIFY_EMAIL || process.env.SMTP_USER || SITE.email;
 }
 
+/**
+ * Müşteriye e-postalarda gösterilen iletişim/yanıt adresi. Varsayılan olarak
+ * gönderen hesaba (SMTP_USER) düşer — böylece yanıtlar okunan kutuya gider.
+ * CONTACT_EMAIL ile ayrıca ezilebilir.
+ */
+function contactEmail(): string {
+  return process.env.CONTACT_EMAIL || process.env.SMTP_FROM || process.env.SMTP_USER || SITE.email;
+}
+
 export async function sendOrderConfirmation(order: {
   id: string;
   name: string;
@@ -62,7 +71,7 @@ export async function sendOrderConfirmation(order: {
   // Müşteriye onay
   await transporter.sendMail({
     from: fromAddress(),
-    replyTo: SITE.email,
+    replyTo: contactEmail(),
     to: order.email,
     subject: `Siparişiniz Alındı — ${SITE.name} #${order.id}`,
     html: `
@@ -83,7 +92,7 @@ export async function sendOrderConfirmation(order: {
           <p style="margin:12px 0 0;font-size:12px;color:#9ca3af">Bu bağlantı size özeldir, tek kullanımlıktır.</p>
         </div>` : ""}
         <p><strong>Sırada ne var?</strong> ${order.setupUrl ? "Yukarıdaki bağlantıdan panel hesabınızı oluşturup kurulum sürecini takip edebilirsiniz. " : ""}Ekip arkadaşımız 24 saat içinde sizi arayarak kurulum planınızı netleştirecek. Kurulum ortalama 7 iş günü sürer; 2. aydan itibaren aylık yönetim bedeli ${formatTRY(order.managementMonthly)} + KDV'dir.</p>
-        <p>Sorularınız için: <a href="mailto:${SITE.email}">${SITE.email}</a></p>
+        <p>Sorularınız için: <a href="mailto:${contactEmail()}">${contactEmail()}</a></p>
         <hr style="border:none;border-top:1px solid #e5e7eb;margin:30px 0">
         <p style="color:#9ca3af;font-size:12px">${SITE.company}</p>
       </div>
@@ -139,7 +148,7 @@ export async function sendTransferReceived(order: {
   // Müşteriye "dekont alındı" bilgisi
   await transporter.sendMail({
     from: fromAddress(),
-    replyTo: SITE.email,
+    replyTo: contactEmail(),
     to: order.email,
     subject: `Dekontunuz Alındı — ${SITE.name} #${order.id}`,
     html: `
@@ -152,7 +161,7 @@ export async function sendTransferReceived(order: {
           <tr><td style="padding:8px;border:1px solid #e5e7eb;background:#f9fafb"><strong>Pazaryerleri</strong></td><td style="padding:8px;border:1px solid #e5e7eb">${marketplacesLabel}</td></tr>
           <tr><td style="padding:8px;border:1px solid #e5e7eb;background:#f9fafb"><strong>Havale Tutarı</strong></td><td style="padding:8px;border:1px solid #e5e7eb">${totalFormatted} (KDV dahil, %5 havale indirimi uygulandı)</td></tr>
         </table>
-        <p>Sorularınız için: <a href="mailto:${SITE.email}">${SITE.email}</a></p>
+        <p>Sorularınız için: <a href="mailto:${contactEmail()}">${contactEmail()}</a></p>
         <hr style="border:none;border-top:1px solid #e5e7eb;margin:30px 0">
         <p style="color:#9ca3af;font-size:12px">${SITE.company}</p>
       </div>
