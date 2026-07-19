@@ -106,6 +106,7 @@ export async function sendTransferReceived(order: {
   marketplaces: string[];
   managementMonthly: number;
   receipt?: { filename: string; content: Buffer };
+  receiptAccountName?: string;
 }): Promise<void> {
   const transporter = getTransporter();
   if (!transporter) return;
@@ -154,7 +155,13 @@ export async function sendTransferReceived(order: {
         <p><strong>Pazaryerleri:</strong> ${marketplacesLabel}</p>
         <p><strong>Beklenen Tutar:</strong> ${totalFormatted}</p>
         <p><strong>⚠️ Aksiyon:</strong> Dekontu kontrol et, ödeme geldiyse admin panelinden siparişi "Ödendi" yap.</p>
-        <p>Dekont ektedir.</p>
+        ${
+          order.receipt
+            ? "<p>Dekont ektedir.</p>"
+            : order.receiptAccountName
+              ? `<p><strong>Dekont yüklenmedi.</strong> Müşterinin bildirdiği ödeme yapılan hesabın resmi ismi: <strong>${order.receiptAccountName}</strong> — hesap hareketleriyle eşleştirerek doğrula.</p>`
+              : "<p>Dekont yüklenmedi.</p>"
+        }
       </div>
     `,
     attachments: order.receipt

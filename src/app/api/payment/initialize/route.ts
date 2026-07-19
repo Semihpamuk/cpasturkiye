@@ -35,12 +35,7 @@ export async function POST(req: Request) {
     if (marketplaces.length === 0) {
       return NextResponse.json({ error: "En az bir pazaryeri seçmelisiniz" }, { status: 400 });
     }
-    if (!address || !city) {
-      return NextResponse.json({ error: "Fatura adresi ve şehir zorunludur" }, { status: 400 });
-    }
-    if (invoiceType === "company" && (!companyName || !taxOffice || !taxNumber)) {
-      return NextResponse.json({ error: "Şirket faturası için unvan, vergi dairesi ve vergi no zorunludur" }, { status: 400 });
-    }
+    // Fatura bilgileri opsiyoneldir — zorunlu doğrulama yapılmaz.
     if (storeUrl && !/^https?:\/\/.+\..+/i.test(storeUrl)) {
       return NextResponse.json({ error: "Mağaza linki geçerli bir web adresi olmalıdır" }, { status: 400 });
     }
@@ -87,6 +82,12 @@ export async function POST(req: Request) {
 
     const callbackUrl = `${SITE.url}/api/payment/callback`;
 
+    // Fatura bilgileri opsiyonel — iyzico boş adres/şehir kabul etmediği için
+    // güvenli varsayılanlarla doldur.
+    const buyerAddress = address || SITE.address;
+    const buyerCity = city || "İstanbul";
+    const billingContact = (invoiceType === "company" ? companyName : name) || name;
+
     const result = await initializeCheckoutForm({
       locale: "tr",
       conversationId,
@@ -104,21 +105,21 @@ export async function POST(req: Request) {
         gsmNumber: phone.startsWith("+") ? phone : `+90${phone.replace(/\D/g, "").slice(-10)}`,
         email,
         identityNumber: identityNo || "11111111110",
-        registrationAddress: address,
-        city,
+        registrationAddress: buyerAddress,
+        city: buyerCity,
         country: "Turkey",
       },
       shippingAddress: {
         contactName: name,
-        city,
+        city: buyerCity,
         country: "Turkey",
-        address,
+        address: buyerAddress,
       },
       billingAddress: {
-        contactName: invoiceType === "company" ? companyName : name,
-        city,
+        contactName: billingContact,
+        city: buyerCity,
         country: "Turkey",
-        address,
+        address: buyerAddress,
       },
       basketItems,
     });

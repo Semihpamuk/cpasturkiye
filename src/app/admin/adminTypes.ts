@@ -46,6 +46,7 @@ export interface Order {
   address: string;
   city: string;
   receiptFile?: string;
+  receiptAccountName?: string;
 }
 
 export interface Lead {

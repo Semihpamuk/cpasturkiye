@@ -23,17 +23,18 @@ function extFor(type: string, name: string): string {
 export async function POST(req: Request) {
   try {
     const formData = await req.formData();
-    const receipt = formData.get("receipt");
+    const receiptRaw = formData.get("receipt");
     const payloadRaw = formData.get("payload");
+    const hasReceipt = receiptRaw instanceof File && receiptRaw.size > 0;
+    const receipt = hasReceipt ? (receiptRaw as File) : null;
 
-    if (!(receipt instanceof File)) {
-      return NextResponse.json({ error: "Dekont dosyası zorunludur" }, { status: 400 });
-    }
-    if (receipt.size === 0 || receipt.size > MAX_RECEIPT_BYTES) {
-      return NextResponse.json({ error: "Dekont dosyası en fazla 10 MB olmalıdır" }, { status: 400 });
-    }
-    if (!ALLOWED_TYPES.has(receipt.type)) {
-      return NextResponse.json({ error: "Dekont JPG, PNG veya PDF olmalıdır" }, { status: 400 });
+    if (receipt) {
+      if (receipt.size > MAX_RECEIPT_BYTES) {
+        return NextResponse.json({ error: "Dekont dosyası en fazla 10 MB olmalıdır" }, { status: 400 });
+      }
+      if (!ALLOWED_TYPES.has(receipt.type)) {
+        return NextResponse.json({ error: "Dekont JPG, PNG veya PDF olmalıdır" }, { status: 400 });
+      }
     }
     if (typeof payloadRaw !== "string") {
       return NextResponse.json({ error: "Sipariş bilgileri eksik" }, { status: 400 });
@@ -63,6 +64,7 @@ export async function POST(req: Request) {
     const taxNumber = String(body.taxNumber || "").trim();
     const address = String(body.address || "").trim();
     const city = String(body.city || "").trim();
+    const receiptAccountName = String(body.receiptAccountName || "").trim();
 
     if (!name || !phone || !email) {
       return NextResponse.json({ error: "Ad, telefon ve e-posta zorunludur" }, { status: 400 });
@@ -70,12 +72,11 @@ export async function POST(req: Request) {
     if (marketplaces.length === 0) {
       return NextResponse.json({ error: "En az bir pazaryeri seçmelisiniz" }, { status: 400 });
     }
-    if (!address || !city) {
-      return NextResponse.json({ error: "Fatura adresi ve şehir zorunludur" }, { status: 400 });
-    }
-    if (invoiceType === "company" && (!companyName || !taxOffice || !taxNumber)) {
+    // Fatura bilgileri opsiyoneldir; dekont dosyası veya ödeme yapılan hesabın
+    // resmi isminden en az biri gereklidir.
+    if (!receipt && !receiptAccountName) {
       return NextResponse.json(
-        { error: "Şirket faturası için unvan, vergi dairesi ve vergi no zorunludur" },
+        { error: "Dekont yükleyin veya ödeme yapılan hesabın resmi ismini yazın" },
         { status: 400 }
       );
     }
@@ -100,10 +101,14 @@ export async function POST(req: Request) {
 
     const orderId = generateId();
 
-    // Dekontu diske kaydet
-    const buffer = Buffer.from(await receipt.arrayBuffer());
-    const receiptFile = `${orderId}.${extFor(receipt.type, receipt.name)}`;
-    await saveReceipt(receiptFile, buffer);
+    // Dekont yüklendiyse diske kaydet (opsiyonel)
+    let receiptFile: string | undefined;
+    let buffer: Buffer | undefined;
+    if (receipt) {
+      buffer = Buffer.from(await receipt.arrayBuffer());
+      receiptFile = `${orderId}.${extFor(receipt.type, receipt.name)}`;
+      await saveReceipt(receiptFile, buffer);
+    }
 
     await addOrder({
       id: orderId,
@@ -132,6 +137,7 @@ export async function POST(req: Request) {
       address,
       city,
       receiptFile,
+      receiptAccountName: receiptAccountName || undefined,
     });
 
     // Bildirim e-postaları (SMTP yoksa sessizce geçer)
@@ -142,7 +148,11 @@ export async function POST(req: Request) {
       total: quote.total,
       marketplaces,
       managementMonthly: quote.managementMonthly,
-      receipt: { filename: receipt.name || receiptFile, content: buffer },
+      receipt:
+        receipt && buffer
+          ? { filename: receipt.name || receiptFile!, content: buffer }
+          : undefined,
+      receiptAccountName: receiptAccountName || undefined,
     });
 
     return NextResponse.json({ orderId });

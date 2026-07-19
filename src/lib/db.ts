@@ -67,6 +67,8 @@ export interface Order {
   conversationId?: string;
   // Havale dekontu (opsiyonel) — data/receipts/ altındaki dosya adı
   receiptFile?: string;
+  // Dekont yerine: ödeme yapılan hesabın resmi ismi (dosya yüklenmediyse)
+  receiptAccountName?: string;
 }
 
 export interface PendingOrder {

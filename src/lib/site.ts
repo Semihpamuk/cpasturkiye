@@ -80,17 +80,22 @@ export const BANK_ACCOUNTS = [
   {
     bank: "Ziraat Bankası",
     holder: "Brother Hustle Danışmanlık ve Tic. Ltd. Şti.",
-    iban: "TR12 0001 0000 0000 0000 0000 01",
+    iban: "TR83 0001 0021 5898 1005 2450 01",
+  },
+  {
+    bank: "VakıfBank",
+    holder: "Brother Hustle Danışmanlık ve Tic. Ltd. Şti.",
+    iban: "TR81 0001 5001 5800 7360 8558 03",
+  },
+  {
+    bank: "QNB",
+    holder: "Brother Hustle Danışmanlık ve Tic. Ltd. Şti.",
+    iban: "TR79 0011 1000 0000 0165 3447 04",
   },
   {
     bank: "İş Bankası",
     holder: "Brother Hustle Danışmanlık ve Tic. Ltd. Şti.",
-    iban: "TR34 0006 4000 0011 2345 6789 01",
-  },
-  {
-    bank: "Garanti BBVA",
-    holder: "Brother Hustle Danışmanlık ve Tic. Ltd. Şti.",
-    iban: "TR56 0006 2000 1234 0000 9876 54",
+    iban: "TR49 0006 4000 0011 1351 3963 37",
   },
 ] as const;
 

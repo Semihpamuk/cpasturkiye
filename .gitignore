@@ -25,3 +25,6 @@ npm-debug.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Yayin rehberi — GERCEK sirlar icerir (ADMIN_PASSWORD/ADMIN_SECRET), repoya girmez
+YAYIN-REHBERI.md
