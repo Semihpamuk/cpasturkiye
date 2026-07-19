@@ -148,6 +148,7 @@ export async function POST(req: Request) {
         id: orderId,
         name,
         email,
+        phone,
         total: quote.total,
         marketplaces,
         managementMonthly: quote.managementMonthly,
