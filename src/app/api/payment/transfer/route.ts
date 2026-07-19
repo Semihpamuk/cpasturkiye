@@ -140,20 +140,26 @@ export async function POST(req: Request) {
       receiptAccountName: receiptAccountName || undefined,
     });
 
-    // Bildirim e-postaları (SMTP yoksa sessizce geçer)
-    await sendTransferReceived({
-      id: orderId,
-      name,
-      email,
-      total: quote.total,
-      marketplaces,
-      managementMonthly: quote.managementMonthly,
-      receipt:
-        receipt && buffer
-          ? { filename: receipt.name || receiptFile!, content: buffer }
-          : undefined,
-      receiptAccountName: receiptAccountName || undefined,
-    });
+    // Bildirim e-postaları BEST-EFFORT: sipariş zaten kaydedildi (admin'de görünür).
+    // Mail gönderimi (SMTP hatası vb.) başarısız olsa bile isteği 500'e düşürme —
+    // müşteri hata görmemeli, sipariş oluşmuş durumda.
+    try {
+      await sendTransferReceived({
+        id: orderId,
+        name,
+        email,
+        total: quote.total,
+        marketplaces,
+        managementMonthly: quote.managementMonthly,
+        receipt:
+          receipt && buffer
+            ? { filename: receipt.name || receiptFile!, content: buffer }
+            : undefined,
+        receiptAccountName: receiptAccountName || undefined,
+      });
+    } catch (mailErr) {
+      console.error("payment/transfer mail error (sipariş yine de kaydedildi):", mailErr);
+    }
 
     return NextResponse.json({ orderId });
   } catch (err) {

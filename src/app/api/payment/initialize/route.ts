@@ -29,6 +29,15 @@ export async function POST(req: Request) {
     const address = String(body.address || "").trim();
     const city = String(body.city || "").trim();
 
+    // iyzico kimlik bilgileri yoksa hızlı ve net hata ver — genel 500 yerine.
+    if (!process.env.IYZICO_API_KEY || !process.env.IYZICO_SECRET_KEY) {
+      console.error("payment/initialize: IYZICO_API_KEY / IYZICO_SECRET_KEY tanımlı değil");
+      return NextResponse.json(
+        { error: "Kart ödemesi şu an kullanılamıyor. Lütfen havale/EFT ile deneyin veya bizimle iletişime geçin." },
+        { status: 503 }
+      );
+    }
+
     if (!name || !phone || !email) {
       return NextResponse.json({ error: "Ad, telefon ve e-posta zorunludur" }, { status: 400 });
     }

@@ -110,17 +110,23 @@ export async function POST(req: Request) {
       plan: order.marketplaces.join(", "),
     });
 
-    // E-posta gönder (kurulum linki varsa dahil edilir — yönlendirme kaybolursa yedek)
-    await sendOrderConfirmation({
-      id: order.id,
-      name: order.name,
-      email: order.email,
-      total: order.total,
-      marketplaces: order.marketplaces,
-      managementMonthly: order.managementMonthly,
-      paymentId: order.paymentId,
-      setupUrl: setupUrl ?? undefined,
-    });
+    // E-posta gönder BEST-EFFORT: ödeme başarılı ve sipariş kaydedildi. Mail
+    // gönderimi (SMTP hatası vb.) başarısız olsa bile müşteriyi hata sayfasına
+    // düşürme — başarı akışını bozmadan devam et.
+    try {
+      await sendOrderConfirmation({
+        id: order.id,
+        name: order.name,
+        email: order.email,
+        total: order.total,
+        marketplaces: order.marketplaces,
+        managementMonthly: order.managementMonthly,
+        paymentId: order.paymentId,
+        setupUrl: setupUrl ?? undefined,
+      });
+    } catch (mailErr) {
+      console.error("payment/callback mail error (sipariş yine de kaydedildi):", mailErr);
+    }
 
     // Kurulum linki üretildiyse müşteriyi doğrudan Jale portal kaydına yönlendir;
     // aksi halde normal başarı sayfasına düş (link e-postada da var).
