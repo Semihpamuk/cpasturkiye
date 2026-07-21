@@ -139,9 +139,11 @@ export interface OrderQuote {
   paymentMethod: PaymentMethod;
   /** setupNet + managementAddon (indirim öncesi net). */
   baseNet: number;
-  /** İndirim kodundan gelen indirim (yalnızca kart). */
+  /** baseNet'in KDV dahil hali (indirim öncesi). İndirimler bunun üzerinden. */
+  grossBase: number;
+  /** İndirim kodundan gelen indirim (yalnızca kart) — KDV dahil tutardan. */
   codeDiscount: number;
-  /** Havale indirimi (yalnızca havale). */
+  /** Havale indirimi (yalnızca havale) — KDV dahil tutardan. */
   transferDiscount: number;
   /** Tüm indirimlerin toplamı. */
   discountAmount: number;
@@ -175,25 +177,32 @@ export function computeOrderQuote(
 
   const baseNet = setupNet + managementAddon;
 
-  // İndirim kodu yalnızca kart ödemesinde geçerli.
+  // İndirimler KDV DAHİL tutar üzerinden uygulanır (müşterinin ödeyeceği fiyat).
+  const grossBase = Math.round(baseNet * (1 + VAT_RATE));
+
+  // İndirim kodu yalnızca kart ödemesinde geçerli — KDV dahil tutardan düşer.
   let codeDiscount = 0;
   if (input.paymentMethod === "card" && input.discount) {
     codeDiscount =
       input.discount.type === "percent"
-        ? Math.round(baseNet * (input.discount.value / 100))
-        : Math.min(input.discount.value, baseNet);
+        ? Math.round(grossBase * (input.discount.value / 100))
+        : Math.min(input.discount.value, grossBase);
   }
 
-  const afterCode = baseNet - codeDiscount;
+  const afterCodeGross = grossBase - codeDiscount;
 
-  // Havale indirimi yalnızca havale ödemesinde, kod indirimi sonrası tutara.
+  // Havale indirimi yalnızca havale ödemesinde, kod indirimi sonrası KDV dahil tutara.
   const transferDiscount =
     input.paymentMethod === "transfer"
-      ? Math.round(afterCode * TRANSFER_DISCOUNT)
+      ? Math.round(afterCodeGross * TRANSFER_DISCOUNT)
       : 0;
 
-  const netAfterDiscount = afterCode - transferDiscount;
-  const vatAmount = Math.round(netAfterDiscount * VAT_RATE);
+  // Ödenecek KDV dahil toplam.
+  const total = Math.max(0, afterCodeGross - transferDiscount);
+
+  // Kayıt/gösterim için KDV'yi içeriden ayıkla.
+  const netAfterDiscount = Math.round(total / (1 + VAT_RATE));
+  const vatAmount = total - netAfterDiscount;
 
   return {
     marketplaceCount: count,
@@ -204,11 +213,12 @@ export function computeOrderQuote(
     addManagement: input.addManagement,
     paymentMethod: input.paymentMethod,
     baseNet,
+    grossBase,
     codeDiscount,
     transferDiscount,
     discountAmount: codeDiscount + transferDiscount,
     netAfterDiscount,
     vatAmount,
-    total: netAfterDiscount + vatAmount,
+    total,
   };
 }

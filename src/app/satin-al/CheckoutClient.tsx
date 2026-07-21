@@ -960,6 +960,18 @@ export default function CheckoutClient() {
                   </div>
                 )}
 
+                <div className="flex justify-between">
+                  <dt className="text-ink-600">KDV (%20)</dt>
+                  <dd className="font-semibold text-ink-900">
+                    +{formatTRY(quote.grossBase - quote.baseNet)}
+                  </dd>
+                </div>
+
+                <div className="flex justify-between border-t border-ink-100 pt-3">
+                  <dt className="text-ink-600">Ara toplam (KDV dahil)</dt>
+                  <dd className="font-semibold text-ink-900">{formatTRY(quote.grossBase)}</dd>
+                </div>
+
                 {quote.codeDiscount > 0 && (
                   <div className="flex justify-between text-green-700">
                     <dt>İndirim ({discount?.code})</dt>
@@ -974,14 +986,6 @@ export default function CheckoutClient() {
                   </div>
                 )}
 
-                <div className="flex justify-between border-t border-ink-100 pt-3">
-                  <dt className="text-ink-600">Ara toplam</dt>
-                  <dd className="font-semibold text-ink-900">{formatTRY(quote.netAfterDiscount)}</dd>
-                </div>
-                <div className="flex justify-between">
-                  <dt className="text-ink-600">KDV (%20)</dt>
-                  <dd className="font-semibold text-ink-900">{formatTRY(quote.vatAmount)}</dd>
-                </div>
                 <div className="flex items-baseline justify-between border-t-2 border-ink-900 pt-4">
                   <dt className="font-display text-base font-bold text-ink-900">Bugün ödenecek</dt>
                   <dd className="font-display text-2xl font-extrabold text-ink-900">
