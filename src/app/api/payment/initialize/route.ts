@@ -113,7 +113,7 @@ export async function POST(req: Request) {
         surname: buyerSurname,
         gsmNumber: phone.startsWith("+") ? phone : `+90${phone.replace(/\D/g, "").slice(-10)}`,
         email,
-        identityNumber: identityNo || "11111111110",
+        identityNumber: identityNo || "11111111111",
         registrationAddress: buyerAddress,
         city: buyerCity,
         country: "Turkey",

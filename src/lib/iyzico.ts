@@ -13,6 +13,31 @@ function getClient() {
     throw new Error("IYZICO_API_KEY ve IYZICO_SECRET_KEY ortam değişkenleri tanımlanmalıdır.");
   }
 
+  // Doldurulmamış placeholder anahtarları erkenden yakala.
+  if (apiKey.includes("xxxx") || secretKey.includes("xxxx")) {
+    throw new Error(
+      "IYZICO anahtarları placeholder (xxxx) — .env / Vercel ortam değişkenlerine gerçek anahtarları girin."
+    );
+  }
+
+  // Sandbox anahtarı yalnızca sandbox URL ile, production anahtarı yalnızca
+  // production URL ile çalışır. Uyumsuzluk iyzico'da sessiz auth hatası (→502)
+  // olarak döner; burada net hata verelim.
+  const isSandboxKey = apiKey.startsWith("sandbox-");
+  const isProdUrl = baseUrl.includes("//api.iyzipay.com");
+  if (isSandboxKey && isProdUrl) {
+    throw new Error(
+      "iyzico yapılandırma hatası: SANDBOX anahtarı PRODUCTION URL'e (api.iyzipay.com) gönderiliyor. " +
+        "IYZICO_BASE_URL=https://sandbox-api.iyzipay.com yapın ya da production anahtarları kullanın."
+    );
+  }
+  if (!isSandboxKey && baseUrl.includes("sandbox-api.iyzipay.com")) {
+    throw new Error(
+      "iyzico yapılandırma hatası: PRODUCTION anahtarı SANDBOX URL'e gönderiliyor. " +
+        "IYZICO_BASE_URL=https://api.iyzipay.com yapın ya da sandbox anahtarları kullanın."
+    );
+  }
+
   return new Iyzipay({ apiKey, secretKey, uri: baseUrl });
 }
 
