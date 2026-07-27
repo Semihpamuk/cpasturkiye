@@ -32,7 +32,9 @@ function SuccessJourney({ orderId }: { orderId: string }) {
   const steps = [
     {
       title: "Ödemeniz alındı",
-      description: `Sipariş numaranız: ${orderId}. Onay e-postanız yola çıktı.`,
+      description: orderId
+        ? `Sipariş numaranız: ${orderId}. Onay e-postanız yola çıktı.`
+        : "Ödemeniz başarıyla alındı. Sipariş kaydınız ekibimizce tamamlanıp e-posta ile iletilecek.",
       icon: <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />,
       state: "done" as const,
     },
@@ -248,8 +250,10 @@ export default function CheckoutClient() {
   useEffect(() => {
     const payment = searchParams.get("payment");
     const oid = searchParams.get("orderId");
-    if (payment === "success" && oid) {
-      setOrderId(oid);
+    if (payment === "success") {
+      // orderId olmayabilir: ödeme alındı ama kayıt adımı hata verdiyse
+      // callback ?payment=success&pending=1 ile döner — yine başarı ekranı göster.
+      setOrderId(oid ?? "");
       setStep("done");
     } else if (payment === "failure" || payment === "error") {
       setStep("failed");

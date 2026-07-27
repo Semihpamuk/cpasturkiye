@@ -132,11 +132,26 @@ export function initializeCheckoutForm(request: IyzicoCheckoutRequest): Promise<
   });
 }
 
-export function retrieveCheckoutForm(token: string): Promise<IyzicoRetrieveResult> {
+/**
+ * Ödeme sonucunu sunucu tarafında doğrular.
+ *
+ * DİKKAT: iyzipay paketindeki kaynak adı `checkoutForm` (resources/CheckoutForm.js
+ * → /payment/iyzipos/checkoutform/auth/ecom/detail). `checkoutFormAuth` diye bir
+ * kaynak YOKTUR; o isim kullanılırsa çağrı TypeError ile patlar ve iyzico'da
+ * ödeme başarılı olmasına rağmen callback hata sayfasına düşer.
+ */
+export function retrieveCheckoutForm(
+  token: string,
+  conversationId?: string
+): Promise<IyzicoRetrieveResult> {
   return new Promise((resolve, reject) => {
     const client = getClient();
-    client.checkoutFormAuth.retrieve(
-      { locale: "tr", token },
+    if (!client.checkoutForm || typeof client.checkoutForm.retrieve !== "function") {
+      reject(new Error("iyzipay paketinde checkoutForm.retrieve bulunamadı (paket sürümü uyumsuz)."));
+      return;
+    }
+    client.checkoutForm.retrieve(
+      { locale: "tr", conversationId, token },
       (err: Error | null, result: IyzicoRetrieveResult) => {
         if (err) reject(err);
         else resolve(result);
