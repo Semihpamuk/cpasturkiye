@@ -107,6 +107,7 @@ async function finalizePaidOrder(
       managementMonthly: order.managementMonthly,
       paymentId: order.paymentId,
       setupUrl: setupUrl ?? undefined,
+      termsAcceptedAt: order.termsAcceptedAt,
     });
   } catch (mailErr) {
     console.error("payment/callback mail error (sipariş yine de kaydedildi):", mailErr);

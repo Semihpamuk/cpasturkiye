@@ -196,6 +196,28 @@ function emailShell(o: ShellOptions): string {
 
 /* ─────────────────────────────── E-postalar ─────────────────────────────── */
 
+// Mesafeli Sözleşmeler Yönetmeliği, sözleşme ve ön bilgilendirmenin bir örneğinin
+// kalıcı veri saklayıcısıyla alıcıya iletilmesini istiyor — müşteri e-postalarına
+// her iki belgenin bağlantısı ve varsa onay zamanı eklenir.
+function legalNote(termsAcceptedAt?: string): string {
+  const link = (path: string, label: string) =>
+    `<a href="${SITE.url}${path}" style="color:#4338ca;text-decoration:underline">${label}</a>`;
+
+  let when = "";
+  if (termsAcceptedAt) {
+    const parsed = new Date(termsAcceptedAt);
+    if (!Number.isNaN(parsed.getTime())) {
+      when = ` Onay tarihiniz: ${parsed.toLocaleString("tr-TR", { timeZone: "Europe/Istanbul" })}.`;
+    }
+  }
+
+  return (
+    `Sipariş sırasında onayladığınız ${link("/on-bilgilendirme-formu", "Ön Bilgilendirme Formu")} ` +
+    `ve ${link("/mesafeli-satis-sozlesmesi", "Mesafeli Satış Sözleşmesi")} belgelerine ` +
+    `bu bağlantılardan ulaşabilir, kayıt altına alabilirsiniz.${when}`
+  );
+}
+
 export async function sendOrderConfirmation(order: {
   id: string;
   name: string;
@@ -207,6 +229,8 @@ export async function sendOrderConfirmation(order: {
   paymentId?: string;
   /** Jale kurulum kayıt linki (varsa e-postaya "Kuruluma Başla" butonu eklenir). */
   setupUrl?: string;
+  /** Ön bilgilendirme/sözleşme onay zamanı (ISO) — e-postada belirtilir. */
+  termsAcceptedAt?: string;
 }): Promise<void> {
   const transporter = getTransporter();
   if (!transporter) return;
@@ -251,7 +275,9 @@ export async function sendOrderConfirmation(order: {
       rows,
       cta: order.setupUrl ? { href: order.setupUrl, label: "Kuruluma Başla" } : undefined,
       steps,
-      note: `2. aydan itibaren aylık yönetim bedeli <b>${formatTRY(order.managementMonthly)} + KDV</b>'dir — isteğe bağlıdır, taahhüt yok.`,
+      note:
+        `2. aydan itibaren aylık yönetim bedeli <b>${formatTRY(order.managementMonthly)} + KDV</b>'dir — isteğe bağlıdır, taahhüt yok.` +
+        `<br><br>${legalNote(order.termsAcceptedAt)}`,
     }),
   });
 
@@ -296,6 +322,8 @@ export async function sendTransferReceived(order: {
   managementMonthly: number;
   receipt?: { filename: string; content: Buffer };
   receiptAccountName?: string;
+  /** Ön bilgilendirme/sözleşme onay zamanı (ISO) — e-postada belirtilir. */
+  termsAcceptedAt?: string;
 }): Promise<void> {
   const transporter = getTransporter();
   if (!transporter) return;
@@ -327,7 +355,9 @@ export async function sendTransferReceived(order: {
         "Onay e-postanız gönderilir ve kurulum bağlantınız iletilir.",
         "Ekip arkadaşımız <b>24 saat içinde (iş günü)</b> sizi arar, kurulum başlar.",
       ],
-      note: "Dekont doğrulanana kadar bir şey yapmanıza gerek yok — süreci biz yürütüyoruz.",
+      note:
+        "Dekont doğrulanana kadar bir şey yapmanıza gerek yok — süreci biz yürütüyoruz." +
+        `<br><br>${legalNote(order.termsAcceptedAt)}`,
     }),
   });
 

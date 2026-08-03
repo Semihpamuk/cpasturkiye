@@ -107,6 +107,8 @@ export async function POST(req: Request) {
     }
 
     const orderId = generateId();
+    // Onay zamanı hem siparişe yazılır hem müşteri e-postasında belirtilir.
+    const termsAcceptedAt = new Date().toISOString();
 
     // Dekont yüklendiyse diske kaydet (opsiyonel)
     let receiptFile: string | undefined;
@@ -145,7 +147,7 @@ export async function POST(req: Request) {
       city,
       receiptFile,
       receiptAccountName: receiptAccountName || undefined,
-      termsAcceptedAt: new Date().toISOString(),
+      termsAcceptedAt,
     });
 
     // Bildirim e-postaları BEST-EFFORT: sipariş zaten kaydedildi (admin'de görünür).
@@ -165,6 +167,7 @@ export async function POST(req: Request) {
             ? { filename: receipt.name || receiptFile!, content: buffer }
             : undefined,
         receiptAccountName: receiptAccountName || undefined,
+        termsAcceptedAt,
       });
     } catch (mailErr) {
       console.error("payment/transfer mail error (sipariş yine de kaydedildi):", mailErr);

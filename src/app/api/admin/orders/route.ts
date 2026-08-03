@@ -56,6 +56,7 @@ export async function PATCH(req: Request) {
             managementMonthly: order.managementMonthly,
             paymentId: order.paymentId,
             setupUrl,
+            termsAcceptedAt: order.termsAcceptedAt,
           });
         }
       } catch (e) {
