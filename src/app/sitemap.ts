@@ -21,6 +21,7 @@ const STATIC_ROUTES: Array<{
   { path: "/blog",                    lastModified: "2026-06-20", changeFrequency: "weekly",  priority: 0.7 },
   { path: "/gizlilik-politikasi",     lastModified: "2026-06-01", changeFrequency: "yearly",  priority: 0.3 },
   { path: "/kvkk",                    lastModified: "2026-06-01", changeFrequency: "yearly",  priority: 0.3 },
+  { path: "/on-bilgilendirme-formu",  lastModified: "2026-08-03", changeFrequency: "yearly",  priority: 0.3 },
   { path: "/mesafeli-satis-sozlesmesi", lastModified: "2026-06-01", changeFrequency: "yearly", priority: 0.3 },
   { path: "/hizmet-sozlesmesi",       lastModified: "2026-06-01", changeFrequency: "yearly",  priority: 0.3 },
   { path: "/iptal-iade-politikasi",   lastModified: "2026-06-01", changeFrequency: "yearly",  priority: 0.3 },
