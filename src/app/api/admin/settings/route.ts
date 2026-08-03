@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { getSettings, saveSettings, type SiteSettings } from "@/lib/db";
+import { normalizeReferences } from "@/lib/references";
 
 export async function GET() {
   if (!(await isAdminAuthenticated())) {
@@ -38,13 +39,7 @@ export async function PUT(req: Request) {
         setupDays: num(body?.pricing?.setupDays, current.pricing.setupDays, 1),
       },
       references: Array.isArray(body?.references)
-        ? body.references
-            .map((r: unknown) => ({
-              name: String((r as { name?: unknown }).name ?? "").trim().slice(0, 80),
-              url: String((r as { url?: unknown }).url ?? "").trim().slice(0, 300),
-            }))
-            .filter((r: { name: string; url: string }) => r.name.length > 0)
-            .slice(0, 50)
+        ? normalizeReferences(body.references)
         : current.references,
     };
 
