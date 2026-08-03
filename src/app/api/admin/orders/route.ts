@@ -3,6 +3,7 @@ import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { getOrders, updateOrderStatus, type Order } from "@/lib/db";
 import { createJaleOnboardingInvite } from "@/lib/jaleOnboarding";
 import { sendOrderConfirmation } from "@/lib/mailer";
+import { gaIdentityFrom, sendGaPurchase } from "@/lib/ga-server";
 
 const STATUSES: Order["status"][] = [
   "new",
@@ -39,6 +40,23 @@ export async function PATCH(req: Request) {
     await updateOrderStatus(id, status);
 
     if (becomingPaid && order) {
+      // Havale siparişi onaylandı → ciro şimdi kesinleşti. Kart siparişleri
+      // purchase'ı zaten callback'te gönderdi; tekrar göndermiyoruz.
+      // (Gönderilse bile GA4 aynı transaction_id'yi eler, ama niyeti net tut.)
+      if (order.paymentMethod === "transfer") {
+        await sendGaPurchase(gaIdentityFrom(order, order.id), {
+          transactionId: order.id,
+          total: order.total,
+          vatAmount: order.vatAmount,
+          discountAmount: order.discountAmount,
+          discountCode: order.discountCode,
+          marketplaces: order.marketplaces,
+          setupNet: order.setupNet,
+          managementAddon: order.managementAddon,
+          paymentMethod: "transfer",
+        });
+      }
+
       try {
         const setupUrl = await createJaleOnboardingInvite({
           brandName: order.companyName || order.name,

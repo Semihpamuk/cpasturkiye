@@ -12,6 +12,14 @@ import {
   type PaymentMethod,
 } from "@/lib/site";
 import { useSettings } from "@/lib/useSettings";
+import {
+  trackAddPaymentInfo,
+  trackBeginCheckout,
+  trackDiscountApplied,
+  trackPaymentFailed,
+  trackViewCheckout,
+  type CheckoutEventInput,
+} from "@/lib/analytics";
 
 type InvoiceType = "individual" | "company";
 type Step = "details" | "payment" | "done" | "failed" | "transfer_pending";
@@ -334,8 +342,12 @@ export default function CheckoutClient() {
       // callback ?payment=success&pending=1 ile döner — yine başarı ekranı göster.
       setOrderId(oid ?? "");
       setStep("done");
+      // purchase BURADA atılmaz: müşteri sık sık harici kurulum portalına
+      // yönlendirildiği için bu ekran güvenilir değil. Sunucudan gönderiliyor
+      // (api/payment/callback → sendGaPurchase).
     } else if (payment === "failure" || payment === "error") {
       setStep("failed");
+      trackPaymentFailed(searchParams.get("reason") ?? payment);
     }
   }, [searchParams]);
 
@@ -371,6 +383,27 @@ export default function CheckoutClient() {
     [marketplaces.length, addManagement, paymentMethod, discount, pricing]
   );
 
+  // GA4 olaylarının paylaştığı sepet özeti.
+  const analyticsInput = useMemo<CheckoutEventInput>(
+    () => ({
+      marketplaces,
+      setupNet: quote.setupNet,
+      managementAddon: quote.managementAddon,
+      total: quote.total,
+      discountCode: discount?.code ?? null,
+    }),
+    [marketplaces, quote.setupNet, quote.managementAddon, quote.total, discount]
+  );
+
+  // view_item yalnızca ilk görüntülemede atılır; pazaryeri seçimi değiştikçe
+  // tekrar gönderilirse funnel'ın ilk adımı şişer.
+  const hasTrackedView = useRef(false);
+  useEffect(() => {
+    if (hasTrackedView.current || step !== "details") return;
+    hasTrackedView.current = true;
+    trackViewCheckout(analyticsInput);
+  }, [step, analyticsInput]);
+
   function toggleMarketplace(key: string) {
     setMarketplaces((current) =>
       current.includes(key) ? current.filter((m) => m !== key) : [...current, key]
@@ -381,11 +414,38 @@ export default function CheckoutClient() {
     setPaymentMethod(method);
     setSubmitError("");
     // Havalede indirim kodu geçersiz — temizle.
-    if (method === "transfer") {
+    const keepsDiscount = method === "card";
+    if (!keepsDiscount) {
       setDiscount(null);
       setCodeInput("");
       setCodeStatus("idle");
     }
+
+    // `quote` bu render'da hâlâ eski yönteme göre hesaplı; olayın tutarı doğru
+    // olsun diye seçilen yöntemle yeniden hesaplıyoruz.
+    const nextDiscount = keepsDiscount ? discount : null;
+    const nextQuote = computeOrderQuote(
+      {
+        marketplaceCount: marketplaces.length || 1,
+        addManagement,
+        paymentMethod: method,
+        discount: nextDiscount
+          ? { type: nextDiscount.type, value: nextDiscount.value }
+          : null,
+      },
+      pricing
+    );
+
+    trackAddPaymentInfo(
+      {
+        marketplaces,
+        setupNet: nextQuote.setupNet,
+        managementAddon: nextQuote.managementAddon,
+        total: nextQuote.total,
+        discountCode: nextDiscount?.code ?? null,
+      },
+      method
+    );
   }
 
   async function copyText(value: string, key: string) {
@@ -411,6 +471,7 @@ export default function CheckoutClient() {
       if (data.valid) {
         setDiscount({ code: data.code, type: data.type, value: data.value });
         setCodeStatus("idle");
+        trackDiscountApplied(String(data.code));
       } else {
         setDiscount(null);
         setCodeStatus("invalid");
@@ -432,6 +493,9 @@ export default function CheckoutClient() {
       );
       return;
     }
+    // Tüm guard'lardan SONRA: olay yalnızca gerçekten ödemeye geçildiğinde atılmalı,
+    // yoksa sözleşmeyi onaylamayan ziyaretçiler funnel'ın ikinci adımını şişirir.
+    trackBeginCheckout(analyticsInput);
     if (paymentMethod === "transfer") {
       await submitTransfer();
     } else {

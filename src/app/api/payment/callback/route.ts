@@ -10,6 +10,7 @@ import {
 } from "@/lib/db";
 import { sendOrderConfirmation } from "@/lib/mailer";
 import { createJaleOnboardingInvite } from "@/lib/jaleOnboarding";
+import { gaIdentityFrom, sendGaPurchase } from "@/lib/ga-server";
 import { SITE } from "@/lib/site";
 
 /**
@@ -67,9 +68,26 @@ async function finalizePaidOrder(
     paymentId: String(result.paymentId ?? ""),
     conversationId,
     termsAcceptedAt: pending?.termsAcceptedAt,
+    gaClientId: pending?.gaClientId,
+    gaSessionId: pending?.gaSessionId,
   };
 
   await addOrder(order);
+
+  // GA4 purchase — ödeme kesinleşti. İstemci tarafında güvenilir bir an yok
+  // (müşteri birazdan harici kurulum portalına yönlendirilebilir), bu yüzden
+  // Measurement Protocol ile sunucudan gönderiyoruz. sendGaPurchase throw etmez.
+  await sendGaPurchase(gaIdentityFrom(pending, conversationId), {
+    transactionId: order.id,
+    total: order.total,
+    vatAmount: order.vatAmount,
+    discountAmount: order.discountAmount,
+    discountCode: order.discountCode,
+    marketplaces: order.marketplaces,
+    setupNet: order.setupNet,
+    managementAddon: order.managementAddon,
+    paymentMethod: "card",
+  });
 
   // İndirim kodu kullanım sayacını artır
   if (order.discountCode) {
