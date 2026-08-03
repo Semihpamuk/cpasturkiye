@@ -94,7 +94,7 @@ export default function ReportPreview() {
                     }}
                   />
                 </div>
-                <span className="text-[9px] font-medium text-ink-400">{DAY_LABELS[i]}</span>
+                <span className="text-[9px] font-medium text-ink-500">{DAY_LABELS[i]}</span>
               </div>
             ))}
           </div>
@@ -124,7 +124,7 @@ export default function ReportPreview() {
 
       {/* Alt bilgi */}
       <div className="flex items-center justify-between border-t border-ink-100 bg-ink-50/60 px-5 py-2.5">
-        <p className="text-[10px] text-ink-400">Her Pazartesi e-posta + WhatsApp özeti</p>
+        <p className="text-[10px] text-ink-500">Her Pazartesi e-posta + WhatsApp özeti</p>
         <p className="text-[10px] font-semibold text-ink-500">PDF · Sayfa 1/4</p>
       </div>
     </div>

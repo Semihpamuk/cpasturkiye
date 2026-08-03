@@ -98,7 +98,7 @@ export default function CodesPanel({ codes, onCreate, onToggle, onDelete }: Prop
             onChange={(e) => setNewCode({ ...newCode, note: e.target.value })}
             className="flex-1 rounded-lg border border-ink-300 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none"
           />
-          <button type="submit" className="rounded-lg bg-brand-600 px-6 py-2 text-sm font-semibold text-white hover:bg-brand-700">
+          <button type="submit" className="rounded-lg bg-brand-700 px-6 py-2 text-sm font-semibold text-white hover:bg-brand-800">
             Oluştur
           </button>
         </div>

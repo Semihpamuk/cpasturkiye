@@ -84,7 +84,7 @@ export default function ManagementCycle() {
 
             <span
               className={`flex h-9 w-9 items-center justify-center rounded-xl font-display text-sm font-extrabold transition-colors duration-500 ${
-                isActive ? "bg-brand-600 text-white" : "bg-ink-200 text-ink-500"
+                isActive ? "bg-brand-700 text-white" : "bg-ink-200 text-ink-500"
               }`}
             >
               {i + 1}

@@ -35,7 +35,7 @@ export default function NotFound() {
 
         <Link
           href="/satin-al"
-          className="mt-8 inline-block rounded-xl bg-brand-600 px-8 py-3 text-sm font-semibold text-white shadow-md transition-colors hover:bg-brand-700"
+          className="mt-8 inline-block rounded-xl bg-brand-700 px-8 py-3 text-sm font-semibold text-white shadow-md transition-colors hover:bg-brand-800"
         >
           Hemen Başla →
         </Link>

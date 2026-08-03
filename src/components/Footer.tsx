@@ -66,7 +66,7 @@ export default function Footer() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm text-ink-500 transition-colors hover:text-brand-600"
+                    className="text-sm text-ink-500 transition-colors hover:text-brand-700"
                   >
                     {link.label}
                   </Link>
@@ -82,7 +82,7 @@ export default function Footer() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm text-ink-500 transition-colors hover:text-brand-600"
+                    className="text-sm text-ink-500 transition-colors hover:text-brand-700"
                   >
                     {link.label}
                   </Link>
@@ -98,7 +98,7 @@ export default function Footer() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm text-ink-500 transition-colors hover:text-brand-600"
+                    className="text-sm text-ink-500 transition-colors hover:text-brand-700"
                   >
                     {link.label}
                   </Link>
@@ -110,10 +110,10 @@ export default function Footer() {
 
         <div className="mt-12 space-y-3 border-t border-ink-200 pt-8">
           <div className="flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
-            <p className="text-xs text-ink-400">
+            <p className="text-xs text-ink-500">
               © {new Date().getFullYear()} {SITE.company} Tüm hakları saklıdır.
             </p>
-            <p className="text-xs text-ink-400">
+            <p className="text-xs text-ink-500">
               CPAS Türkiye; Meta, Trendyol, Hepsiburada veya Amazon ile resmi bir
               ortaklık iddiasında bulunmaz. CPAS (Collaborative Ads), Meta&apos;nın
               pazaryeri satıcılarına yönelik reklam çözümüdür.

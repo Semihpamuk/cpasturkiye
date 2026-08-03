@@ -234,22 +234,22 @@ export default function HomePage() {
       <section className="px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
         <div className="mx-auto max-w-7xl">
           <Reveal>
-            <p className="text-xs font-bold uppercase tracking-widest text-brand-600">
+            <p className="text-xs font-bold uppercase tracking-widest text-brand-700">
               Neden Meta CPAS?
             </p>
             <h2 className="mt-3 max-w-2xl font-display text-3xl font-extrabold tracking-tight text-ink-900 sm:text-4xl">
               Pazaryeri içinde herkes aynı kalabalıkta.
-              <span className="text-ink-400"> Kazanan, dışarıdan müşteri getiren.</span>
+              <span className="text-ink-500"> Kazanan, dışarıdan müşteri getiren.</span>
             </h2>
           </Reveal>
           <div className="mt-12 grid gap-6 lg:grid-cols-3">
             {WHY_CPAS.map((card, i) => (
               <Reveal key={card.title} delay={i * 120}>
                 <div className="group flex h-full flex-col rounded-2xl border border-ink-200 bg-white p-7 transition-all duration-300 hover:-translate-y-1 hover:border-brand-200 hover:shadow-xl hover:shadow-brand-600/5">
-                  <p className="font-display text-4xl font-extrabold text-brand-600">
+                  <p className="font-display text-4xl font-extrabold text-brand-700">
                     {card.stat}
                   </p>
-                  <p className="mt-1 text-xs font-semibold uppercase tracking-wider text-ink-400">
+                  <p className="mt-1 text-xs font-semibold uppercase tracking-wider text-ink-500">
                     {card.statLabel}
                   </p>
                   <h3 className="mt-5 font-display text-lg font-bold text-ink-900">
@@ -269,7 +269,7 @@ export default function HomePage() {
       <section className="bg-ink-50/70 px-4 py-20 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-5xl">
           <Reveal className="text-center">
-            <p className="text-xs font-bold uppercase tracking-widest text-brand-600">
+            <p className="text-xs font-bold uppercase tracking-widest text-brand-700">
               Doğru eşleşme
             </p>
             <h2 className="mt-3 font-display text-3xl font-extrabold tracking-tight text-ink-900 sm:text-4xl">
@@ -328,7 +328,7 @@ export default function HomePage() {
       <section id="surec" className="px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
         <div className="mx-auto max-w-5xl">
           <Reveal className="text-center">
-            <p className="text-xs font-bold uppercase tracking-widest text-brand-600">
+            <p className="text-xs font-bold uppercase tracking-widest text-brand-700">
               1. Ay — Kurulum + İlk Ay Yönetim · {formatTRY(PRICING.setupFee)} + KDV
             </p>
             <h2 className="mt-3 font-display text-3xl font-extrabold tracking-tight text-ink-900 sm:text-4xl">
@@ -349,7 +349,7 @@ export default function HomePage() {
       <section className="bg-ink-50/70 px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
         <div className="mx-auto max-w-7xl">
           <Reveal className="text-center">
-            <p className="text-xs font-bold uppercase tracking-widest text-brand-600">
+            <p className="text-xs font-bold uppercase tracking-widest text-brand-700">
               2. Ay ve Sonrası — Aylık Yönetim · {formatTRY(PRICING.managementFee)} + KDV/ay
             </p>
             <h2 className="mt-3 font-display text-3xl font-extrabold tracking-tight text-ink-900 sm:text-4xl">
@@ -369,7 +369,7 @@ export default function HomePage() {
             <Reveal>
               <h3 className="font-display text-2xl font-extrabold tracking-tight text-ink-900 sm:text-3xl">
                 &ldquo;Param nereye gidiyor?&rdquo; sorusu
-                <span className="text-brand-600"> bizde sorulmaz.</span>
+                <span className="text-brand-700"> bizde sorulmaz.</span>
               </h3>
               <p className="mt-4 leading-relaxed text-ink-600">
                 Her Pazartesi kutunuza düşen rapor; harcamayı, reklam kaynaklı ciroyu,
@@ -468,7 +468,7 @@ export default function HomePage() {
       <section className="px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
         <div className="mx-auto max-w-6xl">
           <Reveal className="text-center">
-            <p className="text-xs font-bold uppercase tracking-widest text-brand-600">
+            <p className="text-xs font-bold uppercase tracking-widest text-brand-700">
               Müşterilerimiz
             </p>
             <h2 className="mt-3 font-display text-3xl font-extrabold tracking-tight text-ink-900 sm:text-4xl">
@@ -483,7 +483,7 @@ export default function HomePage() {
       <section id="fiyat" className="bg-ink-50/70 px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
         <div className="mx-auto max-w-7xl">
           <Reveal className="text-center">
-            <p className="text-xs font-bold uppercase tracking-widest text-brand-600">
+            <p className="text-xs font-bold uppercase tracking-widest text-brand-700">
               Fiyatlandırma
             </p>
             <h2 className="mt-3 font-display text-3xl font-extrabold tracking-tight text-ink-900 sm:text-4xl">

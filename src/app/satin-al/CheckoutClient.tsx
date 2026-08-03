@@ -24,6 +24,82 @@ interface AppliedDiscount {
 
 const MAX_RECEIPT_MB = 10;
 
+/* ─────────────────────────── Form alanı ───────────────────────────
+ *
+ * Alanlar daha önce yalnızca placeholder ile etiketleniyordu. Bunun iki
+ * somut sonucu vardı:
+ *   1) Ekran okuyucu için alanın erişilebilir adı yoktu (WCAG 4.1.2) ve
+ *      kullanıcı yazmaya başlayınca alanın ne olduğu ekrandan siliniyordu
+ *      (WCAG 3.3.2).
+ *   2) name/autoComplete olmadığı için tarayıcı otomatik doldurma hiç
+ *      devreye girmiyordu — mobil ödeme formunda doğrudan kayıp.
+ * Bu bileşen her alana kalıcı bir <label>, name ve autoComplete verir.
+ * ------------------------------------------------------------------- */
+
+const FIELD_CLASS =
+  "w-full rounded-lg border border-ink-300 px-4 py-2.5 text-sm text-ink-900 placeholder:text-ink-500 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100";
+
+interface FieldProps {
+  id: string;
+  label: string;
+  name: string;
+  value: string;
+  onChange: (value: string) => void;
+  type?: React.HTMLInputTypeAttribute;
+  autoComplete?: string;
+  inputMode?: React.HTMLAttributes<HTMLInputElement>["inputMode"];
+  placeholder?: string;
+  required?: boolean;
+  multiline?: boolean;
+  className?: string;
+}
+
+function Field({
+  id,
+  label,
+  name,
+  value,
+  onChange,
+  type = "text",
+  autoComplete,
+  inputMode,
+  placeholder,
+  required = false,
+  multiline = false,
+  className = "",
+}: FieldProps) {
+  const shared = {
+    id,
+    name,
+    value,
+    required,
+    autoComplete,
+    placeholder,
+    "aria-required": required || undefined,
+    onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+      onChange(e.target.value),
+    className: FIELD_CLASS,
+  };
+
+  return (
+    <div className={className}>
+      <label htmlFor={id} className="mb-1.5 block text-xs font-semibold text-ink-700">
+        {label}
+        {required && (
+          <span className="ml-0.5 text-brand-700" aria-hidden="true">
+            *
+          </span>
+        )}
+      </label>
+      {multiline ? (
+        <textarea rows={2} {...shared} />
+      ) : (
+        <input type={type} inputMode={inputMode} {...shared} />
+      )}
+    </div>
+  );
+}
+
 /* ─────────────── Kart ödemesi sonrası: "ekibimiz sizi arayacak" ─────────────── */
 
 function SuccessJourney({ orderId }: { orderId: string }) {
@@ -113,8 +189,8 @@ function SuccessJourney({ orderId }: { orderId: string }) {
                   step.state === "done"
                     ? "border-green-500 bg-green-50 text-green-600"
                     : step.state === "next"
-                      ? "border-brand-500 bg-brand-50 text-brand-600"
-                      : "border-ink-200 bg-white text-ink-400"
+                      ? "border-brand-500 bg-brand-50 text-brand-700"
+                      : "border-ink-200 bg-white text-ink-500"
                 }`}
               >
                 {step.state === "next" && (
@@ -177,7 +253,7 @@ function TransferPending({ orderId }: { orderId: string }) {
           transition={{ type: "spring", stiffness: 260, damping: 18 }}
           className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-brand-100 ring-8 ring-brand-50"
         >
-          <svg className="h-8 w-8 text-brand-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <svg className="h-8 w-8 text-brand-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
         </motion.div>
@@ -194,9 +270,9 @@ function TransferPending({ orderId }: { orderId: string }) {
         <div className="mt-8 rounded-2xl border border-ink-200 bg-ink-50 p-5 text-left text-sm text-ink-600">
           <p className="font-bold text-ink-900">Sırada ne var?</p>
           <ul className="mt-3 space-y-2">
-            <li className="flex gap-2"><span className="text-brand-600">1.</span> Ödemenizi doğrularız (genelde aynı iş günü).</li>
-            <li className="flex gap-2"><span className="text-brand-600">2.</span> Onay e-postanız gönderilir.</li>
-            <li className="flex gap-2"><span className="text-brand-600">3.</span> Ekip sizi arar, kurulum başlar.</li>
+            <li className="flex gap-2"><span className="text-brand-700">1.</span> Ödemenizi doğrularız (genelde aynı iş günü).</li>
+            <li className="flex gap-2"><span className="text-brand-700">2.</span> Onay e-postanız gönderilir.</li>
+            <li className="flex gap-2"><span className="text-brand-700">3.</span> Ekip sizi arar, kurulum başlar.</li>
           </ul>
         </div>
         <Link
@@ -448,7 +524,7 @@ export default function CheckoutClient() {
               setStep("details");
               window.history.replaceState({}, "", "/satin-al");
             }}
-            className="mt-8 inline-block rounded-xl bg-brand-600 px-8 py-3 text-sm font-semibold text-white shadow-md hover:bg-brand-700"
+            className="mt-8 inline-block rounded-xl bg-brand-700 px-8 py-3 text-sm font-semibold text-white shadow-md hover:bg-brand-800"
           >
             Tekrar Dene
           </button>
@@ -469,7 +545,7 @@ export default function CheckoutClient() {
         <div className="mb-6 text-center">
           <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-4 border-brand-200 border-t-brand-600" />
           <p className="text-sm text-ink-600">Güvenli ödeme formu yükleniyor...</p>
-          <p className="mt-1 text-xs text-ink-400">iyzico altyapısıyla 256-bit SSL şifreli ödeme</p>
+          <p className="mt-1 text-xs text-ink-500">iyzico altyapısıyla 256-bit SSL şifreli ödeme</p>
         </div>
         <div ref={iyzFormRef} id="iyzipay-checkout-form" className="w-full max-w-lg" />
       </section>
@@ -549,7 +625,7 @@ export default function CheckoutClient() {
             <div className="rounded-2xl border border-ink-200 bg-white p-6 shadow-sm">
               <h2 className="font-display text-base font-bold text-ink-900">
                 2. Devam ayını da ekleyin{" "}
-                <span className="font-sans text-xs font-normal text-ink-400">(opsiyonel)</span>
+                <span className="font-sans text-xs font-normal text-ink-500">(opsiyonel)</span>
               </h2>
               <p className="mt-1 text-xs text-ink-500">
                 Kurulum paketine ilk ay yönetim zaten dahil. İsterseniz bir sonraki ayın yönetimini
@@ -586,7 +662,7 @@ export default function CheckoutClient() {
                   <span className="block font-display text-sm font-extrabold text-brand-700">
                     +{formatTRY(quote.managementAddon || Math.round(quote.managementMonthly * 0.9))}
                   </span>
-                  <span className="block text-[10px] text-ink-400 line-through">
+                  <span className="block text-[10px] text-ink-500 line-through">
                     {formatTRY(quote.managementMonthly)}
                   </span>
                 </span>
@@ -673,7 +749,7 @@ export default function CheckoutClient() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-ink-800">
+                    <label htmlFor="receipt-file" className="block text-sm font-semibold text-ink-800">
                       Havale/EFT dekontu
                     </label>
                     <p className="mt-1 text-xs text-ink-500">
@@ -685,10 +761,12 @@ export default function CheckoutClient() {
                       </strong>
                     </p>
                     <input
+                      id="receipt-file"
+                      name="receipt"
                       type="file"
                       accept="image/png,image/jpeg,image/jpg,application/pdf"
                       onChange={(e) => setReceipt(e.target.files?.[0] ?? null)}
-                      className="mt-2 block w-full text-sm text-ink-700 file:mr-4 file:rounded-lg file:border-0 file:bg-brand-600 file:px-4 file:py-2.5 file:text-sm file:font-semibold file:text-white hover:file:bg-brand-700"
+                      className="mt-2 block w-full text-sm text-ink-700 file:mr-4 file:rounded-lg file:border-0 file:bg-brand-700 file:px-4 file:py-2.5 file:text-sm file:font-semibold file:text-white hover:file:bg-brand-800"
                     />
                     {receipt && (
                       <p className="mt-2 text-xs font-medium text-green-700">
@@ -699,13 +777,16 @@ export default function CheckoutClient() {
                     {/* VEYA ayıracı */}
                     <div className="my-3 flex items-center gap-3">
                       <span className="h-px flex-1 bg-ink-200" />
-                      <span className="text-[11px] font-semibold uppercase tracking-wider text-ink-400">
+                      <span className="text-[11px] font-semibold uppercase tracking-wider text-ink-500">
                         veya
                       </span>
                       <span className="h-px flex-1 bg-ink-200" />
                     </div>
 
-                    <label className="block text-sm font-semibold text-ink-800">
+                    <label
+                      htmlFor="receipt-account-name"
+                      className="block text-sm font-semibold text-ink-800"
+                    >
                       Ödeme yapılan hesabın resmi ismi
                     </label>
                     <p className="mt-1 text-xs text-ink-500">
@@ -713,11 +794,14 @@ export default function CheckoutClient() {
                       şirket unvanı). Ödemenizi eşleştirebilmemiz için gereklidir.
                     </p>
                     <input
+                      id="receipt-account-name"
+                      name="receiptAccountName"
                       type="text"
+                      autoComplete="name"
                       placeholder="Örn: Ahmet Yılmaz / Örnek Ltd. Şti."
                       value={receiptAccountName}
                       onChange={(e) => setReceiptAccountName(e.target.value)}
-                      className="mt-2 w-full rounded-lg border border-ink-300 px-4 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
+                      className="mt-2 w-full rounded-lg border border-ink-300 px-4 py-2.5 text-sm text-ink-900 placeholder:text-ink-500 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
                     />
                   </div>
                 </div>
@@ -731,36 +815,50 @@ export default function CheckoutClient() {
                 Kurulum görüşmesi bu bilgilerle yapılır — telefonunuzu doğru yazdığınızdan emin olun.
               </p>
               <div className="mt-4 grid gap-4 sm:grid-cols-2">
-                <input
+                <Field
+                  id="checkout-name"
+                  name="name"
+                  label="Ad Soyad"
                   required
-                  type="text"
-                  placeholder="Ad Soyad *"
+                  autoComplete="name"
+                  placeholder="Ahmet Yılmaz"
                   value={form.name}
-                  onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  className="rounded-lg border border-ink-300 px-4 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
+                  onChange={(name) => setForm({ ...form, name })}
                 />
-                <input
+                <Field
+                  id="checkout-phone"
+                  name="tel"
+                  label="Telefon"
                   required
                   type="tel"
-                  placeholder="Telefon *"
+                  inputMode="tel"
+                  autoComplete="tel"
+                  placeholder="0532 000 00 00"
                   value={form.phone}
-                  onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                  className="rounded-lg border border-ink-300 px-4 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
+                  onChange={(phone) => setForm({ ...form, phone })}
                 />
-                <input
+                <Field
+                  id="checkout-email"
+                  name="email"
+                  label="E-posta"
                   required
                   type="email"
-                  placeholder="E-posta *"
+                  inputMode="email"
+                  autoComplete="email"
+                  placeholder="ornek@magazam.com"
                   value={form.email}
-                  onChange={(e) => setForm({ ...form, email: e.target.value })}
-                  className="rounded-lg border border-ink-300 px-4 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
+                  onChange={(email) => setForm({ ...form, email })}
                 />
-                <input
+                <Field
+                  id="checkout-store-url"
+                  name="url"
+                  label="Mağaza linki (Trendyol/Hepsiburada)"
                   type="url"
-                  placeholder="Mağaza linki (Trendyol/Hepsiburada)"
+                  inputMode="url"
+                  autoComplete="url"
+                  placeholder="https://..."
                   value={form.storeUrl}
-                  onChange={(e) => setForm({ ...form, storeUrl: e.target.value })}
-                  className="rounded-lg border border-ink-300 px-4 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
+                  onChange={(storeUrl) => setForm({ ...form, storeUrl })}
                 />
               </div>
             </div>
@@ -769,7 +867,7 @@ export default function CheckoutClient() {
             <div className="rounded-2xl border border-ink-200 bg-white p-6 shadow-sm">
               <h2 className="font-display text-base font-bold text-ink-900">
                 5. Fatura bilgileriniz{" "}
-                <span className="font-sans text-xs font-normal text-ink-400">(opsiyonel)</span>
+                <span className="font-sans text-xs font-normal text-ink-500">(opsiyonel)</span>
               </h2>
               <p className="mt-1 text-xs text-ink-500">
                 Fatura kesilmesini isterseniz doldurun — dilerseniz sonradan da iletebilirsiniz.
@@ -801,53 +899,61 @@ export default function CheckoutClient() {
 
               <div className="mt-4 grid gap-4 sm:grid-cols-2">
                 {invoiceType === "individual" ? (
-                  <input
-                    type="text"
+                  <Field
+                    id="invoice-identity"
+                    name="identityNo"
+                    label="TC Kimlik No"
                     inputMode="numeric"
-                    placeholder="TC Kimlik No"
+                    placeholder="11111111111"
+                    className="sm:col-span-2"
                     value={invoice.identityNo}
-                    onChange={(e) => setInvoice({ ...invoice, identityNo: e.target.value })}
-                    className="rounded-lg border border-ink-300 px-4 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100 sm:col-span-2"
+                    onChange={(identityNo) => setInvoice({ ...invoice, identityNo })}
                   />
                 ) : (
                   <>
-                    <input
-                      type="text"
-                      placeholder="Şirket / Ticari Unvan"
+                    <Field
+                      id="invoice-company"
+                      name="organization"
+                      label="Şirket / Ticari Unvan"
+                      autoComplete="organization"
+                      className="sm:col-span-2"
                       value={invoice.companyName}
-                      onChange={(e) => setInvoice({ ...invoice, companyName: e.target.value })}
-                      className="rounded-lg border border-ink-300 px-4 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100 sm:col-span-2"
+                      onChange={(companyName) => setInvoice({ ...invoice, companyName })}
                     />
-                    <input
-                      type="text"
-                      placeholder="Vergi Dairesi"
+                    <Field
+                      id="invoice-tax-office"
+                      name="taxOffice"
+                      label="Vergi Dairesi"
                       value={invoice.taxOffice}
-                      onChange={(e) => setInvoice({ ...invoice, taxOffice: e.target.value })}
-                      className="rounded-lg border border-ink-300 px-4 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
+                      onChange={(taxOffice) => setInvoice({ ...invoice, taxOffice })}
                     />
-                    <input
-                      type="text"
+                    <Field
+                      id="invoice-tax-number"
+                      name="taxNumber"
+                      label="Vergi No"
                       inputMode="numeric"
-                      placeholder="Vergi No"
                       value={invoice.taxNumber}
-                      onChange={(e) => setInvoice({ ...invoice, taxNumber: e.target.value })}
-                      className="rounded-lg border border-ink-300 px-4 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
+                      onChange={(taxNumber) => setInvoice({ ...invoice, taxNumber })}
                     />
                   </>
                 )}
-                <input
-                  type="text"
-                  placeholder="Şehir"
+                <Field
+                  id="invoice-city"
+                  name="city"
+                  label="Şehir"
+                  autoComplete="address-level2"
                   value={invoice.city}
-                  onChange={(e) => setInvoice({ ...invoice, city: e.target.value })}
-                  className="rounded-lg border border-ink-300 px-4 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
+                  onChange={(city) => setInvoice({ ...invoice, city })}
                 />
-                <textarea
-                  rows={2}
-                  placeholder="Fatura Adresi"
+                <Field
+                  id="invoice-address"
+                  name="street-address"
+                  label="Fatura Adresi"
+                  multiline
+                  autoComplete="street-address"
+                  className="sm:col-span-2"
                   value={invoice.address}
-                  onChange={(e) => setInvoice({ ...invoice, address: e.target.value })}
-                  className="rounded-lg border border-ink-300 px-4 py-2.5 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100 sm:col-span-2"
+                  onChange={(address) => setInvoice({ ...invoice, address })}
                 />
               </div>
             </div>
@@ -857,7 +963,7 @@ export default function CheckoutClient() {
               <div className="rounded-2xl border border-ink-200 bg-white p-6 shadow-sm">
                 <h2 className="font-display text-base font-bold text-ink-900">
                   İndirim kodu{" "}
-                  <span className="font-sans text-xs font-normal text-ink-400">(varsa)</span>
+                  <span className="font-sans text-xs font-normal text-ink-500">(varsa)</span>
                 </h2>
                 {discount ? (
                   <div className="mt-4 flex items-center justify-between rounded-xl border border-green-200 bg-green-50 px-4 py-3">
@@ -881,14 +987,17 @@ export default function CheckoutClient() {
                 ) : (
                   <div className="mt-4 flex gap-3">
                     <input
+                      id="discount-code"
+                      name="discountCode"
                       type="text"
+                      aria-label="İndirim kodu"
                       value={codeInput}
                       onChange={(event) => {
                         setCodeInput(event.target.value.toUpperCase());
                         setCodeStatus("idle");
                       }}
                       placeholder="ÖRN: HOSGELDIN10"
-                      className="flex-1 rounded-lg border border-ink-300 px-4 py-2.5 text-sm uppercase tracking-wider text-ink-900 placeholder:normal-case placeholder:text-ink-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
+                      className="flex-1 rounded-lg border border-ink-300 px-4 py-2.5 text-sm uppercase tracking-wider text-ink-900 placeholder:normal-case placeholder:text-ink-500 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
                     />
                     <button
                       type="button"
@@ -910,7 +1019,7 @@ export default function CheckoutClient() {
             <button
               type="submit"
               disabled={submitting}
-              className="w-full rounded-xl bg-brand-600 px-6 py-4 text-sm font-bold text-white shadow-md transition-all hover:bg-brand-700 disabled:opacity-60"
+              className="w-full rounded-xl bg-brand-700 px-6 py-4 text-sm font-bold text-white shadow-md transition-all hover:bg-brand-800 disabled:opacity-60"
             >
               {submitting
                 ? isTransfer
@@ -920,7 +1029,7 @@ export default function CheckoutClient() {
                   ? "Dekontu Gönder ve Siparişi Tamamla →"
                   : "Güvenli Ödemeye Geç →"}
             </button>
-            <p className="text-center text-[11px] text-ink-400">
+            <p className="text-center text-[11px] text-ink-500">
               {isTransfer
                 ? "Dekontunuz doğrulandıktan sonra siparişiniz onaylanır ve ekip sizi arar."
                 : "iyzico altyapısıyla 256-bit SSL şifreli güvenli ödeme · 9'a kadar taksit"}
@@ -949,7 +1058,7 @@ export default function CheckoutClient() {
                   </dt>
                   <dd className="text-right">
                     {quote.listSetupNet > quote.setupNet && (
-                      <span className="mr-2 text-xs text-ink-400 line-through">
+                      <span className="mr-2 text-xs text-ink-500 line-through">
                         {formatTRY(quote.listSetupNet)}
                       </span>
                     )}
@@ -1010,7 +1119,7 @@ export default function CheckoutClient() {
 
               {/* Güvenli ödeme rozetleri */}
               <div className="mt-5 rounded-xl border border-ink-100 bg-ink-50 px-4 py-3">
-                <p className="mb-2.5 text-center text-[10px] font-semibold uppercase tracking-wider text-ink-400">
+                <p className="mb-2.5 text-center text-[10px] font-semibold uppercase tracking-wider text-ink-500">
                   {isTransfer ? "Havale / EFT" : "Güvenli Ödeme"}
                 </p>
                 <div className="flex items-center justify-center gap-3">
@@ -1038,7 +1147,7 @@ export default function CheckoutClient() {
                 </div>
               </div>
 
-              <p className="mt-4 text-center text-[11px] leading-relaxed text-ink-400">
+              <p className="mt-4 text-center text-[11px] leading-relaxed text-ink-500">
                 Ödeme sonrası ekip arkadaşımız 24 saat içinde sizi arar.{" "}
                 <Link href="/mesafeli-satis-sozlesmesi" className="underline">
                   Mesafeli Satış Sözleşmesi

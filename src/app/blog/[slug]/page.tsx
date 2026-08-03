@@ -100,7 +100,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           <h1 className="mt-4 font-display text-3xl font-extrabold leading-tight tracking-tight text-ink-900 sm:text-4xl">
             {post.title}
           </h1>
-          <div className="mt-4 flex items-center gap-3 text-sm text-ink-400">
+          <div className="mt-4 flex items-center gap-3 text-sm text-ink-500">
             <time dateTime={post.date}>{formatDate(post.date)}</time>
             <span>·</span>
             <span>{post.readingMinutes} dk okuma</span>

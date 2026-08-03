@@ -2,16 +2,11 @@
 
 import { useSettings, type ReferenceItem } from "@/lib/useSettings";
 
-const FALLBACK_REFERENCES: ReferenceItem[] = [
-  { name: "Modavera", url: "", logo: "" },
-  { name: "LunaHome Tekstil", url: "", logo: "" },
-  { name: "Trendline Ayakkabı", url: "", logo: "" },
-  { name: "Bella Cosmetics", url: "", logo: "" },
-  { name: "KidsJoy Oyuncak", url: "", logo: "" },
-  { name: "UrbanFit Spor", url: "", logo: "" },
-  { name: "Nordica Living", url: "", logo: "" },
-  { name: "Pearl Aksesuar", url: "", logo: "" },
-];
+/* Şerit yalnızca gerçek referans varken görünür. Uydurma marka adlarından
+   oluşan bir fallback listesi TUTULMAZ — admin'de liste boşaltıldığında
+   sahte müşteri adları yayına çıkardı. Az sayıda referans da inandırıcı
+   durmadığı için asgari eşik altında bölüm tamamen gizlenir. */
+const MIN_REFERENCES = 4;
 
 // Logo varsa görsel, yoksa mağaza adı yazıyla gösterilir.
 // Renkli logolar şeridi bozmasın diye normalde gri, hover'da renkli.
@@ -31,7 +26,7 @@ function ReferenceMark({ item }: { item: ReferenceItem }) {
   }
 
   return (
-    <span className="font-display text-lg font-bold text-ink-400 transition-colors group-hover:text-brand-600">
+    <span className="font-display text-lg font-bold text-ink-500 transition-colors group-hover:text-brand-700">
       {item.name}
     </span>
   );
@@ -39,17 +34,18 @@ function ReferenceMark({ item }: { item: ReferenceItem }) {
 
 export default function ReferencesBar() {
   const { references } = useSettings();
-  const items = references.length > 0 ? references : FALLBACK_REFERENCES;
+
+  if (references.length < MIN_REFERENCES) return null;
 
   // Kesintisiz kayan şerit için liste iki kez render edilir
-  const doubled = [...items, ...items];
+  const doubled = [...references, ...references];
 
   return (
     <section
       aria-label="Referans mağazalar"
       className="border-y border-ink-100 bg-white py-6"
     >
-      <p className="text-center text-xs font-semibold uppercase tracking-widest text-ink-400">
+      <p className="text-center text-xs font-semibold uppercase tracking-widest text-ink-500">
         Reklamlarını CPAS Türkiye&apos;nin yönettiği mağazalardan bazıları
       </p>
       <div className="relative mt-4 overflow-hidden">

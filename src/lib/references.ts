@@ -13,6 +13,32 @@ const MAX_NAME = 80;
 const MAX_URL = 300;
 const MAX_LOGO = 500;
 
+/** Panelden yüklenebilecek logo formatları (MIME → dosya uzantısı) */
+export const LOGO_MIME_EXT: Record<string, string> = {
+  "image/png": "png",
+  "image/jpeg": "jpg",
+  "image/jpg": "jpg",
+  "image/webp": "webp",
+  "image/svg+xml": "svg",
+};
+
+/** Yüklenen logoyu sunarken kullanılacak içerik tipi (uzantı → MIME) */
+export const LOGO_EXT_MIME: Record<string, string> = {
+  png: "image/png",
+  jpg: "image/jpeg",
+  jpeg: "image/jpeg",
+  webp: "image/webp",
+  svg: "image/svg+xml",
+};
+
+export const MAX_LOGO_BYTES = 2 * 1024 * 1024; // 2 MB
+export const LOGO_ACCEPT = ".png,.jpg,.jpeg,.webp,.svg";
+
+/** Yüklenen logonun ayarlarda saklanan servis yolu */
+export function logoPathFor(storedName: string): string {
+  return `/api/logo?file=${encodeURIComponent(storedName)}`;
+}
+
 /**
  * Logo kaynağını güvenli şemalarla sınırlar. Kabul edilmeyen değer boş döner,
  * bu durumda barda mağaza adı yazıyla gösterilir.

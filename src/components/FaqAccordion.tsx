@@ -26,7 +26,7 @@ export default function FaqAccordion({ items }: { items: FaqItem[] }) {
                 {item.question}
               </span>
               <svg
-                className={`h-5 w-5 shrink-0 text-brand-600 transition-transform ${
+                className={`h-5 w-5 shrink-0 text-brand-700 transition-transform ${
                   isOpen ? "rotate-180" : ""
                 }`}
                 fill="none"

@@ -156,7 +156,7 @@ export default function AdminClient() {
           {loginError && <p className="mt-2 text-sm font-medium text-red-400">{loginError}</p>}
           <button
             type="submit"
-            className="mt-4 w-full rounded-xl bg-brand-600 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-brand-500"
+            className="mt-4 w-full rounded-xl bg-brand-700 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-brand-800"
           >
             Giriş Yap
           </button>
@@ -169,7 +169,7 @@ export default function AdminClient() {
   const awaitingTransfer = orders.filter((o) => o.status === "awaiting_transfer").length;
   const STAT_CARDS = [
     { label: "Toplam Sipariş", value: orders.length, accent: "text-ink-900" },
-    { label: "Yeni Sipariş", value: newOrders, accent: "text-brand-600" },
+    { label: "Yeni Sipariş", value: newOrders, accent: "text-brand-700" },
     { label: "Havale Bekleyen", value: awaitingTransfer, accent: "text-purple-600" },
     { label: "Form Başvurusu", value: leads.length, accent: "text-ink-900" },
     { label: "Aktif Kod", value: codes.filter((c) => c.active).length, accent: "text-ink-900" },
@@ -225,7 +225,7 @@ export default function AdminClient() {
               key={id}
               onClick={() => setTab(id)}
               className={`flex-1 whitespace-nowrap rounded-lg px-4 py-2 text-sm font-semibold transition-colors sm:flex-none ${
-                tab === id ? "bg-brand-600 text-white shadow-sm" : "text-ink-500 hover:bg-ink-50 hover:text-ink-800"
+                tab === id ? "bg-brand-700 text-white shadow-sm" : "text-ink-500 hover:bg-ink-50 hover:text-ink-800"
               }`}
             >
               {label}

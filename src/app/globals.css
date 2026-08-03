@@ -1,6 +1,14 @@
 @import "tailwindcss";
 
 @theme {
+  /* ===== Kontrast notu (WCAG AA — normal metin 4.5:1) =====
+     AÇIK zeminde (beyaz/ink-50) güvenli olan tonlar:
+       brand-700 #c2410c → beyazla 5.25:1  ✔ buton zemini ve turuncu metin
+       ink-500   #64748b → beyazla 4.78:1  ✔ ikincil metin alt sınırı
+     AÇIK zeminde KULLANILMAZ:
+       brand-600 #f2630a → 3.25:1  ✘  (koyu zeminde 5.91:1 ✔)
+       ink-400   #94a3b8 → 2.56:1  ✘  (koyu zeminde 7.52:1 ✔)
+     Yani brand-600 ve ink-400 yalnızca .section-dark içinde kullanılır. */
   --color-brand-50: #fff5ed;
   --color-brand-100: #ffe8d5;
   --color-brand-200: #fed0aa;
@@ -111,10 +119,34 @@ body {
     font-family: var(--font-display);
     @apply text-ink-900;
   }
+
+  /* ===== Klavye odak göstergesi =====
+     WCAG 2.4.7. Tarayıcı varsayılan outline'ı rounded bileşenlerde
+     kayboluyordu; :focus-visible kullanıldığı için fare tıklamasında
+     çıkmaz, yalnızca klavye/AT navigasyonunda görünür. */
+  a:focus-visible,
+  button:focus-visible,
+  summary:focus-visible,
+  [role="button"]:focus-visible,
+  [role="tab"]:focus-visible,
+  [tabindex]:focus-visible {
+    outline: 2px solid var(--color-brand-700);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* Koyu zeminde turuncu outline yeterli ayrışmıyor — beyaza döner. */
+  .section-dark a:focus-visible,
+  .section-dark button:focus-visible,
+  .section-dark summary:focus-visible,
+  .section-dark [role="button"]:focus-visible,
+  .section-dark [tabindex]:focus-visible {
+    outline-color: #ffffff;
+  }
 }
 
 ::selection {
-  @apply bg-brand-600 text-white;
+  @apply bg-brand-700 text-white;
 }
 
 /* ===== Koyu "teknik" bölümler ===== */

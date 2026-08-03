@@ -59,8 +59,9 @@ export default function ContactForm() {
             id="name"
             name="name"
             type="text"
+          autoComplete="name"
             required
-            className="w-full rounded-lg border border-ink-300 px-4 py-2.5 text-sm text-ink-900 placeholder:text-ink-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
+            className="w-full rounded-lg border border-ink-300 px-4 py-2.5 text-sm text-ink-900 placeholder:text-ink-500 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
             placeholder="Adınız ve soyadınız"
           />
         </div>
@@ -72,8 +73,9 @@ export default function ContactForm() {
             id="phone"
             name="phone"
             type="tel"
+            autoComplete="tel"
             required
-            className="w-full rounded-lg border border-ink-300 px-4 py-2.5 text-sm text-ink-900 placeholder:text-ink-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
+            className="w-full rounded-lg border border-ink-300 px-4 py-2.5 text-sm text-ink-900 placeholder:text-ink-500 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
             placeholder="05XX XXX XX XX"
           />
         </div>
@@ -87,8 +89,9 @@ export default function ContactForm() {
           id="email"
           name="email"
           type="email"
+          autoComplete="email"
           required
-          className="w-full rounded-lg border border-ink-300 px-4 py-2.5 text-sm text-ink-900 placeholder:text-ink-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
+          className="w-full rounded-lg border border-ink-300 px-4 py-2.5 text-sm text-ink-900 placeholder:text-ink-500 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
           placeholder="ornek@firma.com"
         />
       </div>
@@ -101,7 +104,8 @@ export default function ContactForm() {
           id="storeUrl"
           name="storeUrl"
           type="url"
-          className="w-full rounded-lg border border-ink-300 px-4 py-2.5 text-sm text-ink-900 placeholder:text-ink-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
+          autoComplete="url"
+          className="w-full rounded-lg border border-ink-300 px-4 py-2.5 text-sm text-ink-900 placeholder:text-ink-500 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
           placeholder="https://www.trendyol.com/magaza/... veya hepsiburada.com/..."
         />
       </div>
@@ -135,7 +139,7 @@ export default function ContactForm() {
           id="message"
           name="message"
           rows={4}
-          className="w-full rounded-lg border border-ink-300 px-4 py-2.5 text-sm text-ink-900 placeholder:text-ink-400 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
+          className="w-full rounded-lg border border-ink-300 px-4 py-2.5 text-sm text-ink-900 placeholder:text-ink-500 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
           placeholder="Sorularınızı veya talebinizi yazın..."
         />
       </div>
@@ -148,14 +152,14 @@ export default function ContactForm() {
       <button
         type="submit"
         disabled={status === "submitting"}
-        className="w-full rounded-xl bg-brand-600 px-6 py-3.5 text-sm font-semibold text-white shadow-md transition-all hover:bg-brand-700 hover:shadow-lg disabled:opacity-60"
+        className="w-full rounded-xl bg-brand-700 px-6 py-3.5 text-sm font-semibold text-white shadow-md transition-all hover:bg-brand-800 hover:shadow-lg disabled:opacity-60"
       >
         {status === "submitting" ? "Gönderiliyor..." : "Beni Arayın"}
       </button>
 
-      <p className="text-center text-xs text-ink-400">
+      <p className="text-center text-xs text-ink-500">
         Formu göndererek{" "}
-        <a href="/kvkk" className="underline hover:text-brand-600">
+        <a href="/kvkk" className="underline hover:text-brand-700">
           KVKK Aydınlatma Metni
         </a>
         &apos;ni okuduğunuzu kabul etmiş olursunuz.

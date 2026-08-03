@@ -45,7 +45,7 @@ export default function BlogPage() {
       {featured && (
         <section className="border-b border-ink-100 bg-white px-4 py-14 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-5xl">
-            <p className="mb-6 text-xs font-bold uppercase tracking-widest text-brand-600">
+            <p className="mb-6 text-xs font-bold uppercase tracking-widest text-brand-700">
               Öne çıkan yazı
             </p>
             <Link
@@ -62,7 +62,7 @@ export default function BlogPage() {
                 <p className="mt-4 max-w-2xl text-base leading-relaxed text-ink-600">
                   {featured.excerpt}
                 </p>
-                <div className="mt-6 flex items-center gap-4 text-sm text-ink-400">
+                <div className="mt-6 flex items-center gap-4 text-sm text-ink-500">
                   <time dateTime={featured.date}>{formatDate(featured.date)}</time>
                   <span>·</span>
                   <span>{featured.readingMinutes} dk okuma</span>
@@ -89,7 +89,7 @@ export default function BlogPage() {
       {rest.length > 0 && (
         <section className="bg-ink-50/60 px-4 py-14 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-5xl">
-            <p className="mb-8 text-xs font-bold uppercase tracking-widest text-ink-400">
+            <p className="mb-8 text-xs font-bold uppercase tracking-widest text-ink-500">
               Tüm yazılar
             </p>
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -103,7 +103,7 @@ export default function BlogPage() {
                     <span className="inline-block rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider text-brand-700">
                       {post.category}
                     </span>
-                    <span className="text-xs text-ink-400">{post.readingMinutes} dk</span>
+                    <span className="text-xs text-ink-500">{post.readingMinutes} dk</span>
                   </div>
                   <h2 className="mt-4 font-display text-base font-bold leading-snug text-ink-900 transition-colors group-hover:text-brand-700">
                     {post.title}
@@ -112,7 +112,7 @@ export default function BlogPage() {
                     {post.excerpt}
                   </p>
                   <div className="mt-5 flex items-center justify-between border-t border-ink-100 pt-4">
-                    <time className="text-xs text-ink-400" dateTime={post.date}>
+                    <time className="text-xs text-ink-500" dateTime={post.date}>
                       {formatDate(post.date)}
                     </time>
                     <svg

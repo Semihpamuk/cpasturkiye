@@ -1,5 +1,6 @@
 "use client";
 
+import { Fragment } from "react";
 import Link from "next/link";
 import { motion, useReducedMotion } from "motion/react";
 import AnimatedBeamFlow from "./AnimatedBeamFlow";
@@ -61,19 +62,25 @@ export default function Hero() {
           </motion.p>
 
           {/* Başlık — kelime kelime giriş */}
-          <h1 className="mt-6 font-display text-4xl font-extrabold leading-[1.08] tracking-tight text-white sm:text-5xl lg:text-6xl">
+          {/* Kelime kelime giriş için her kelime inline-block'tur. Kelimeler
+              arasındaki boşluk margin ile DEĞİL gerçek boşluk karakteriyle
+              verilir — margin kullanıldığında satır sonuna taşan kelime
+              boşluğu da beraberinde taşıyıp başlığı içeri kaydırıyordu. */}
+          <h1 className="mt-6 text-balance font-display text-4xl font-extrabold leading-[1.08] tracking-tight text-white sm:text-5xl lg:text-6xl">
             {HEADLINE_LINES.map((line, li) => (
               <span key={li} className="block">
                 {line.map((word, wi) => (
-                  <motion.span
-                    key={`${li}-${wi}`}
-                    variants={item}
-                    className={`inline-block ${
-                      word === "Meta'da" ? "text-meta-light" : ""
-                    } ${wi > 0 ? "ml-[0.28em]" : ""}`}
-                  >
-                    {word}
-                  </motion.span>
+                  <Fragment key={`${li}-${wi}`}>
+                    {wi > 0 && " "}
+                    <motion.span
+                      variants={item}
+                      className={`inline-block ${
+                        word === "Meta'da" ? "text-meta-light" : ""
+                      }`}
+                    >
+                      {word}
+                    </motion.span>
+                  </Fragment>
                 ))}
               </span>
             ))}
@@ -110,7 +117,7 @@ export default function Hero() {
           <motion.div variants={item} className="mt-9 flex flex-wrap items-center gap-4">
             <Link
               href="/satin-al"
-              className="group relative overflow-hidden rounded-xl bg-brand-600 px-8 py-3.5 text-sm font-bold text-white shadow-lg shadow-brand-600/25 transition-all hover:bg-brand-500 hover:shadow-brand-500/30"
+              className="group relative overflow-hidden rounded-xl bg-brand-700 px-8 py-3.5 text-sm font-bold text-white shadow-lg shadow-brand-600/25 transition-all hover:bg-brand-800 hover:shadow-brand-500/30"
             >
               <span className="relative z-10">Hemen Başla →</span>
               <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
@@ -123,7 +130,8 @@ export default function Hero() {
             </Link>
           </motion.div>
 
-          <motion.p variants={item} className="mt-6 text-xs text-ink-500">
+          {/* Koyu zemin: ink-500 burada 4.0:1'de kalıyor, ink-400 7.5:1 verir. */}
+          <motion.p variants={item} className="mt-6 text-xs text-ink-400">
             Kurulum ortalama 7 iş günü · Her hafta performans raporu · Sözleşmeli çalışma
           </motion.p>
         </motion.div>

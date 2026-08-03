@@ -197,7 +197,7 @@ export default function LiveStatsBand() {
                   onClick={() => setRange(r.key)}
                   className={`rounded-full px-4 py-1.5 text-sm font-semibold transition-colors sm:px-5 ${
                     isActive
-                      ? "bg-brand-600 text-white shadow"
+                      ? "bg-brand-700 text-white shadow"
                       : "text-ink-300 hover:text-white"
                   }`}
                 >

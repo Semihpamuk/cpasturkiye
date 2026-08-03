@@ -7,6 +7,7 @@ import { normalizeReferences, type ReferenceItem } from "./references";
 
 const DATA_DIR = path.join(process.cwd(), "data");
 const RECEIPTS_DIR = path.join(DATA_DIR, "receipts");
+const LOGOS_DIR = path.join(DATA_DIR, "logos");
 
 export interface DiscountCode {
   id: string;
@@ -283,6 +284,24 @@ export async function readReceipt(
 ): Promise<Buffer | null> {
   try {
     return await fs.readFile(path.join(RECEIPTS_DIR, path.basename(storedName)));
+  } catch {
+    return null;
+  }
+}
+
+// --- Referans logoları (data/logos/ altında dosya olarak saklanır) ---
+// public/ yerine data/ altında tutulur: data/ kalıcı diske bağlı olduğu için
+// yüklenen logolar deploy sonrası da kaybolmaz.
+
+export async function saveLogo(storedName: string, data: Buffer): Promise<void> {
+  await fs.mkdir(LOGOS_DIR, { recursive: true });
+  // path traversal koruması: yalnızca dosya adı kullan.
+  await fs.writeFile(path.join(LOGOS_DIR, path.basename(storedName)), data);
+}
+
+export async function readLogo(storedName: string): Promise<Buffer | null> {
+  try {
+    return await fs.readFile(path.join(LOGOS_DIR, path.basename(storedName)));
   } catch {
     return null;
   }

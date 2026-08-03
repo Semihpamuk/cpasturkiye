@@ -110,7 +110,7 @@ export default function SetupTimeline({ steps }: SetupTimelineProps) {
               {/* Nokta */}
               <span className="absolute left-[11px] top-1.5 flex h-[18px] w-[18px] items-center justify-center sm:left-1/2 sm:-ml-[9px]">
                 <span className="absolute h-full w-full rounded-full bg-brand-500/30 transition-transform duration-500 group-[.is-active]:animate-ping-soft" />
-                <span className="relative h-2.5 w-2.5 rounded-full bg-ink-300 transition-colors duration-500 group-[.is-active]:bg-brand-600" />
+                <span className="relative h-2.5 w-2.5 rounded-full bg-ink-300 transition-colors duration-500 group-[.is-active]:bg-brand-700" />
               </span>
 
               <div
@@ -120,7 +120,7 @@ export default function SetupTimeline({ steps }: SetupTimelineProps) {
                     : "sm:col-start-2 sm:pl-4"
                 } translate-y-4 transition-all duration-500 group-[.is-active]:translate-y-0`}
               >
-                <p className="text-xs font-bold uppercase tracking-widest text-brand-600">
+                <p className="text-xs font-bold uppercase tracking-widest text-brand-700">
                   {step.day}
                 </p>
                 <h3 className="mt-1.5 font-display text-lg font-bold text-ink-900">

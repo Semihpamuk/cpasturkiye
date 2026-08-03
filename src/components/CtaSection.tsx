@@ -22,7 +22,7 @@ export default function CtaSection() {
           <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
             <Link
               href="/satin-al"
-              className="rounded-full bg-brand-600 px-9 py-3.5 text-sm font-bold text-white shadow-lg shadow-brand-600/30 transition-colors hover:bg-brand-500"
+              className="rounded-full bg-brand-700 px-9 py-3.5 text-sm font-bold text-white shadow-lg shadow-brand-600/30 transition-colors hover:bg-brand-800"
             >
               Hemen Başla →
             </Link>

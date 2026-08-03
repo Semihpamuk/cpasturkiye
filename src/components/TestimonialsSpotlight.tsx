@@ -79,7 +79,7 @@ export default function TestimonialsSpotlight({ testimonials }: TestimonialsSpot
             onClick={() => setActiveIndex(index)}
             aria-label={`${index + 1}. yoruma geç`}
             className={`h-2 rounded-full transition-all ${
-              index === activeIndex ? "w-6 bg-brand-600" : "w-2 bg-ink-300 hover:bg-ink-400"
+              index === activeIndex ? "w-6 bg-brand-700" : "w-2 bg-ink-300 hover:bg-ink-400"
             }`}
           />
         ))}

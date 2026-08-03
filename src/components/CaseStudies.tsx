@@ -98,28 +98,39 @@ function normalizeCurve(values: number[]): number[] {
   return values.map((v) => Math.max(6, Math.round((v / max) * 100)));
 }
 
+/** Önce/Sonra anlatısı için gereken iki "harcama olan" ay ve gerçek iyileşme. */
+function beforeAfterRoas(cat: CategoryStat): { first: number; last: number } | null {
+  const spentMonths = cat.monthly.filter((m) => m.spend > 0);
+  if (spentMonths.length < 2) return null;
+
+  const first = spentMonths[0].roas;
+  const last = spentMonths[spentMonths.length - 1].roas;
+  if (first <= 0 || last <= first) return null;
+
+  return { first, last };
+}
+
+/* Tüm kartlar TEK metrik şeması kullanır: Önce / Sonra / Ciro.
+   Şema kart bazında değiştiğinde (bir kart "ROAS / Mağaza", diğeri
+   "Önce / Sonra") satır tutarsız görünüyordu. Önce/Sonra üretemeyen
+   kategori zaten vaka çalışması sayılmaz — filtrede elenir. */
 function toCard(cat: CategoryStat, index: number): CaseCard {
   const color = cat.color || PALETTE[index % PALETTE.length];
   const revenueCurve = cat.monthly.map((m) => m.revenue);
 
-  // Önce/Sonra: ilk ve son "harcama olan" ayın ROAS'ı
-  const spentMonths = cat.monthly.filter((m) => m.spend > 0);
-  const hasBeforeAfter = spentMonths.length >= 2;
-  const firstRoas = hasBeforeAfter ? spentMonths[0].roas : 0;
-  const lastRoas = hasBeforeAfter ? spentMonths[spentMonths.length - 1].roas : 0;
-  const improved = hasBeforeAfter && lastRoas > firstRoas && firstRoas > 0;
+  // Filtre garanti ettiği için burada null gelmez.
+  const roas = beforeAfterRoas(cat);
+  const first = roas?.first ?? 0;
+  const last = roas?.last ?? cat.roas;
 
-  const metrics: Metric[] = improved
-    ? [
-        { label: "Önce", value: `${firstRoas.toLocaleString("tr-TR", { minimumFractionDigits: 1, maximumFractionDigits: 1 })}x` },
-        { label: "Sonra", value: <CountUp end={lastRoas} decimals={1} suffix="x" />, accent: true },
-        { label: "Ciro", value: formatRevenue(cat.revenue), accent: true },
-      ]
-    : [
-        { label: "ROAS", value: <CountUp end={cat.roas} decimals={1} suffix="x" />, accent: true },
-        { label: "Mağaza", value: <CountUp end={cat.firmCount} /> },
-        { label: "Ciro", value: formatRevenue(cat.revenue), accent: true },
-      ];
+  const metrics: Metric[] = [
+    {
+      label: "Önce",
+      value: `${first.toLocaleString("tr-TR", { minimumFractionDigits: 1, maximumFractionDigits: 1 })}x`,
+    },
+    { label: "Sonra", value: <CountUp end={last} decimals={1} suffix="x" />, accent: true },
+    { label: "Ciro", value: formatRevenue(cat.revenue), accent: true },
+  ];
 
   return {
     key: cat.name,
@@ -219,12 +230,14 @@ export default function CaseStudies() {
         if (cancelled || !json.success || !json.data) return;
 
         // Yalnızca gerçekten performans gösteren kategoriler; ROAS'a göre (en iyi önce).
+        // Önce/Sonra üretemeyen kategori elenir — kartların metrik şeması tek kalsın.
         const live = json.data.categories
           .filter(
             (c) =>
               c.revenue >= MIN_REVENUE &&
               c.spend >= MIN_SPEND &&
-              c.roas >= MIN_ROAS
+              c.roas >= MIN_ROAS &&
+              beforeAfterRoas(c) !== null
           )
           .sort((a, b) => b.roas - a.roas)
           .slice(0, MAX_CARDS)
@@ -270,7 +283,7 @@ export default function CaseStudies() {
           <div className="mt-5 grid grid-cols-3 gap-3 border-t border-white/10 pt-5">
             {c.metrics.map((m) => (
               <div key={m.label}>
-                <p className="text-[11px] font-semibold uppercase tracking-wider text-ink-500">
+                <p className="text-[11px] font-semibold uppercase tracking-wider text-ink-400">
                   {m.label}
                 </p>
                 <p

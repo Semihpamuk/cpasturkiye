@@ -20,7 +20,7 @@ export default function LegalPage({ title, updatedAt, intro, sections }: LegalPa
         <h1 className="font-display text-3xl font-extrabold tracking-tight text-ink-900 sm:text-4xl">
           {title}
         </h1>
-        <p className="mt-3 text-sm text-ink-400">Son güncelleme: {updatedAt}</p>
+        <p className="mt-3 text-sm text-ink-500">Son güncelleme: {updatedAt}</p>
 
         {intro && <p className="mt-8 leading-relaxed text-ink-600">{intro}</p>}
 
@@ -54,7 +54,7 @@ export default function LegalPage({ title, updatedAt, intro, sections }: LegalPa
             <br />
             Adres: {SITE.address}
           </p>
-          <p className="mt-3 text-xs text-ink-400">
+          <p className="mt-3 text-xs text-ink-500">
             Bu metin bilgilendirme amaçlıdır ve hukuki danışmanlık yerine geçmez. Şirket
             bilgileri (ticari unvan, MERSİS no, vergi dairesi vb.) yayına alınmadan önce
             güncellenmelidir.

@@ -44,7 +44,7 @@ export default function PricingSingle() {
             <div className="mt-6">
               {pricing.listSetupFee > pricing.setupFee && (
                 <p className="flex items-center gap-2">
-                  <span className="text-lg font-semibold text-ink-400 line-through">
+                  <span className="text-lg font-semibold text-ink-500 line-through">
                     {formatTRY(pricing.listSetupFee)}
                   </span>
                   <span className="rounded-full bg-green-100 px-2 py-0.5 text-[11px] font-bold text-green-700">
@@ -129,7 +129,7 @@ export default function PricingSingle() {
             </p>
             <Link
               href="/satin-al"
-              className="w-full shrink-0 rounded-xl bg-brand-600 px-8 py-3.5 text-center text-sm font-bold text-white shadow-md transition-all hover:bg-brand-700 hover:shadow-lg sm:w-auto"
+              className="w-full shrink-0 rounded-xl bg-brand-700 px-8 py-3.5 text-center text-sm font-bold text-white shadow-md transition-all hover:bg-brand-800 hover:shadow-lg sm:w-auto"
             >
               Hemen Başla →
             </Link>

@@ -91,14 +91,14 @@ export default async function SetupPage() {
             <span className="text-sm text-ink-500">
               kurulum + ilk ay yönetim · ortalama {PRICING.setupDays} iş günü
             </span>
-            <span className="mt-1 text-xs text-ink-400">
+            <span className="mt-1 text-xs text-ink-500">
               2. aydan itibaren {formatTRY(PRICING.managementFee)} + KDV/ay
             </span>
           </div>
           <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
             <Link
               href="/satin-al"
-              className="rounded-xl bg-brand-600 px-8 py-3.5 text-sm font-bold text-white shadow-md hover:bg-brand-700 transition-colors"
+              className="rounded-xl bg-brand-700 px-8 py-3.5 text-sm font-bold text-white shadow-md hover:bg-brand-800 transition-colors"
             >
               Hemen Başla →
             </Link>
@@ -109,7 +109,7 @@ export default async function SetupPage() {
               Önce Görüşelim
             </Link>
           </div>
-          <p className="mt-3 text-xs text-ink-400">
+          <p className="mt-3 text-xs text-ink-500">
             Taahhüt yok · Güvenli iyzico ödemesi · 9&apos;a kadar taksit
           </p>
         </div>
@@ -130,7 +130,7 @@ export default async function SetupPage() {
                 <span className="absolute -left-[41px] flex h-5 w-5 items-center justify-center rounded-full border-2 border-brand-500 bg-white">
                   <span className="h-2 w-2 rounded-full bg-brand-500" />
                 </span>
-                <span className="text-xs font-bold uppercase tracking-wider text-brand-600">
+                <span className="text-xs font-bold uppercase tracking-wider text-brand-700">
                   {step.day}
                 </span>
                 <h3 className="mt-1 font-display text-lg font-bold text-ink-900">
@@ -157,7 +157,7 @@ export default async function SetupPage() {
                 className="flex items-start gap-3 rounded-xl border border-ink-200 bg-white p-4 text-sm text-ink-700"
               >
                 <svg
-                  className="mt-0.5 h-5 w-5 shrink-0 text-brand-600"
+                  className="mt-0.5 h-5 w-5 shrink-0 text-brand-700"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"

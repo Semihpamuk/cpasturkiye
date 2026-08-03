@@ -120,7 +120,7 @@ export default function AboutPage() {
                 <span className="absolute -left-[41px] flex h-5 w-5 items-center justify-center rounded-full border-2 border-brand-500 bg-white">
                   <span className="h-2 w-2 rounded-full bg-brand-500" />
                 </span>
-                <span className="text-xs font-bold uppercase tracking-wider text-brand-600">
+                <span className="text-xs font-bold uppercase tracking-wider text-brand-700">
                   {m.year}
                 </span>
                 <p className="mt-1 text-sm leading-relaxed text-ink-600">{m.text}</p>
@@ -168,15 +168,15 @@ export default function AboutPage() {
             <p><span className="font-semibold text-ink-800">Telefon:</span> {SITE.phone}</p>
             <p><span className="font-semibold text-ink-800">KEP:</span> {SITE.kep}</p>
           </div>
-          <p className="mt-4 text-xs text-ink-400">
+          <p className="mt-4 text-xs text-ink-500">
             Yasal belgeler:{" "}
-            <Link href="/mesafeli-satis-sozlesmesi" className="underline hover:text-brand-600">Mesafeli Satış Sözleşmesi</Link>
+            <Link href="/mesafeli-satis-sozlesmesi" className="underline hover:text-brand-700">Mesafeli Satış Sözleşmesi</Link>
             {" · "}
-            <Link href="/gizlilik-politikasi" className="underline hover:text-brand-600">Gizlilik Politikası</Link>
+            <Link href="/gizlilik-politikasi" className="underline hover:text-brand-700">Gizlilik Politikası</Link>
             {" · "}
-            <Link href="/kvkk" className="underline hover:text-brand-600">KVKK</Link>
+            <Link href="/kvkk" className="underline hover:text-brand-700">KVKK</Link>
             {" · "}
-            <Link href="/iptal-iade-politikasi" className="underline hover:text-brand-600">İptal ve İade</Link>
+            <Link href="/iptal-iade-politikasi" className="underline hover:text-brand-700">İptal ve İade</Link>
           </p>
         </div>
       </section>

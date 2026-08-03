@@ -37,7 +37,7 @@ export default function Navbar() {
 
   const linkClass = transparent
     ? "text-sm font-medium text-white/85 transition-colors hover:text-white"
-    : "text-sm font-medium text-ink-600 transition-colors hover:text-brand-600";
+    : "text-sm font-medium text-ink-600 transition-colors hover:text-brand-700";
 
   return (
     <header
@@ -66,14 +66,14 @@ export default function Navbar() {
             className={
               transparent
                 ? "rounded-lg px-4 py-2 text-sm font-semibold text-white/90 transition-colors hover:text-white"
-                : "rounded-lg px-4 py-2 text-sm font-semibold text-ink-700 transition-colors hover:text-brand-600"
+                : "rounded-lg px-4 py-2 text-sm font-semibold text-ink-700 transition-colors hover:text-brand-700"
             }
           >
             Sizi Arayalım
           </Link>
           <Link
             href="/satin-al"
-            className="rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all hover:bg-brand-700 hover:shadow-md"
+            className="rounded-lg bg-brand-700 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all hover:bg-brand-800 hover:shadow-md"
           >
             Hemen Başla
           </Link>
@@ -129,7 +129,7 @@ export default function Navbar() {
               </Link>
               <Link
                 href="/satin-al"
-                className="rounded-lg bg-brand-600 px-4 py-2.5 text-center text-sm font-semibold text-white"
+                className="rounded-lg bg-brand-700 px-4 py-2.5 text-center text-sm font-semibold text-white"
                 onClick={() => setIsOpen(false)}
               >
                 Hemen Başla
