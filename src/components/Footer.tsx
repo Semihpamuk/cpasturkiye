@@ -19,6 +19,7 @@ const COMPANY_LINKS = [
 const LEGAL_LINKS = [
   { href: "/gizlilik-politikasi", label: "Gizlilik Politikası" },
   { href: "/kvkk", label: "KVKK Aydınlatma Metni" },
+  { href: "/cerez-politikasi", label: "Çerez Politikası" },
   { href: "/on-bilgilendirme-formu", label: "Ön Bilgilendirme Formu" },
   { href: "/mesafeli-satis-sozlesmesi", label: "Mesafeli Satış Sözleşmesi" },
   { href: "/hizmet-sozlesmesi", label: "Hizmet Sözleşmesi" },

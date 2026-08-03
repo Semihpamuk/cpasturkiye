@@ -55,7 +55,7 @@ export default function PrivacyPolicyPage() {
         {
           heading: "Çerezler",
           paragraphs: [
-            "Platform; oturum yönetimi, tercihlerin hatırlanması ve anonim kullanım istatistikleri için çerezler kullanır. Tarayıcı ayarlarınızdan çerezleri reddedebilirsiniz; ancak bu durumda Platformun bazı işlevleri çalışmayabilir.",
+            "Platform yalnızca hizmetin çalışması için gerekli olan zorunlu çerezleri kullanır; reklam, hedefleme veya profilleme amaçlı çerez ile üçüncü taraf izleme araçları kullanılmaz. Tarayıcı ayarlarınızdan çerezleri reddedebilirsiniz; ancak bu durumda Platformun bazı işlevleri çalışmayabilir. Ayrıntılar Çerez Politikasında açıklanmıştır.",
           ],
         },
         {
