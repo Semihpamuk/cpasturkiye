@@ -1,5 +1,6 @@
 import { promises as fs } from "fs";
 import path from "path";
+import { normalizeReferences, type ReferenceItem } from "./references";
 
 // Basit dosya tabanlı veri katmanı (VPS/Easypanel dağıtımı için yeterli).
 // İleride Prisma + PostgreSQL'e geçilecekse bu modülün arayüzü korunabilir.
@@ -119,10 +120,7 @@ export interface PricingSettings {
   setupDays: number;
 }
 
-export interface ReferenceItem {
-  name: string;
-  url: string;
-}
+export type { ReferenceItem };
 
 export interface SiteSettings {
   pricing: PricingSettings;
@@ -137,14 +135,14 @@ export const DEFAULT_SETTINGS: SiteSettings = {
     setupDays: 7,
   },
   references: [
-    { name: "Modavera", url: "" },
-    { name: "LunaHome Tekstil", url: "" },
-    { name: "Trendline Ayakkabı", url: "" },
-    { name: "Bella Cosmetics", url: "" },
-    { name: "KidsJoy Oyuncak", url: "" },
-    { name: "UrbanFit Spor", url: "" },
-    { name: "Nordica Living", url: "" },
-    { name: "Pearl Aksesuar", url: "" },
+    { name: "Modavera", url: "", logo: "" },
+    { name: "LunaHome Tekstil", url: "", logo: "" },
+    { name: "Trendline Ayakkabı", url: "", logo: "" },
+    { name: "Bella Cosmetics", url: "", logo: "" },
+    { name: "KidsJoy Oyuncak", url: "", logo: "" },
+    { name: "UrbanFit Spor", url: "", logo: "" },
+    { name: "Nordica Living", url: "", logo: "" },
+    { name: "Pearl Aksesuar", url: "", logo: "" },
   ],
 };
 
@@ -174,11 +172,7 @@ export async function getSettings(): Promise<SiteSettings> {
     const parsed = JSON.parse(raw) as Partial<SiteSettings>;
     const rawRefs = parsed.references;
     const references: ReferenceItem[] = Array.isArray(rawRefs)
-      ? rawRefs.map((r) =>
-          typeof r === "string"
-            ? { name: r, url: "" }
-            : { name: String((r as ReferenceItem).name ?? ""), url: String((r as ReferenceItem).url ?? "") }
-        )
+      ? normalizeReferences(rawRefs)
       : DEFAULT_SETTINGS.references;
     return {
       pricing: { ...DEFAULT_SETTINGS.pricing, ...(parsed.pricing || {}) },

@@ -3,15 +3,39 @@
 import { useSettings, type ReferenceItem } from "@/lib/useSettings";
 
 const FALLBACK_REFERENCES: ReferenceItem[] = [
-  { name: "Modavera", url: "" },
-  { name: "LunaHome Tekstil", url: "" },
-  { name: "Trendline Ayakkabı", url: "" },
-  { name: "Bella Cosmetics", url: "" },
-  { name: "KidsJoy Oyuncak", url: "" },
-  { name: "UrbanFit Spor", url: "" },
-  { name: "Nordica Living", url: "" },
-  { name: "Pearl Aksesuar", url: "" },
+  { name: "Modavera", url: "", logo: "" },
+  { name: "LunaHome Tekstil", url: "", logo: "" },
+  { name: "Trendline Ayakkabı", url: "", logo: "" },
+  { name: "Bella Cosmetics", url: "", logo: "" },
+  { name: "KidsJoy Oyuncak", url: "", logo: "" },
+  { name: "UrbanFit Spor", url: "", logo: "" },
+  { name: "Nordica Living", url: "", logo: "" },
+  { name: "Pearl Aksesuar", url: "", logo: "" },
 ];
+
+// Logo varsa görsel, yoksa mağaza adı yazıyla gösterilir.
+// Renkli logolar şeridi bozmasın diye normalde gri, hover'da renkli.
+function ReferenceMark({ item }: { item: ReferenceItem }) {
+  if (item.logo) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element -- logo kaynakları admin panelinden serbest domain
+      <img
+        src={item.logo}
+        alt={item.name}
+        height={32}
+        loading="lazy"
+        decoding="async"
+        className="h-8 w-auto max-w-[150px] object-contain font-display text-lg font-bold text-ink-400 opacity-60 grayscale transition duration-300 group-hover:opacity-100 group-hover:grayscale-0"
+      />
+    );
+  }
+
+  return (
+    <span className="font-display text-lg font-bold text-ink-400 transition-colors group-hover:text-brand-600">
+      {item.name}
+    </span>
+  );
+}
 
 export default function ReferencesBar() {
   const { references } = useSettings();
@@ -37,19 +61,20 @@ export default function ReferencesBar() {
               key={`${item.name}-${index}`}
               className="flex items-center gap-3 whitespace-nowrap"
             >
-              <span className="h-1.5 w-1.5 rounded-full bg-brand-400" />
+              <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-brand-400" />
               {item.url ? (
                 <a
                   href={item.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="font-display text-lg font-bold text-ink-400 transition-colors hover:text-brand-600"
+                  className="group flex items-center"
+                  aria-label={item.name}
                 >
-                  {item.name}
+                  <ReferenceMark item={item} />
                 </a>
               ) : (
-                <span className="font-display text-lg font-bold text-ink-400">
-                  {item.name}
+                <span className="group flex items-center">
+                  <ReferenceMark item={item} />
                 </span>
               )}
             </span>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { safeLogoSrc } from "@/lib/references";
 
 interface SettingsForm {
   listSetupFee: string;
@@ -12,7 +13,10 @@ interface SettingsForm {
 interface RefRow {
   name: string;
   url: string;
+  logo: string;
 }
+
+const EMPTY_REF: RefRow = { name: "", url: "", logo: "" };
 
 const PRICE_FIELDS: [keyof SettingsForm, string][] = [
   ["listSetupFee", "Kurulum liste (çapa) fiyatı — üstü çizili (₺)"],
@@ -42,10 +46,16 @@ export default function SettingsPanel() {
             managementFee: String(data.pricing.managementFee ?? ""),
             setupDays: String(data.pricing.setupDays ?? ""),
           });
-          const rawRefs: (RefRow | string)[] = Array.isArray(data.references) ? data.references : [];
+          const rawRefs: (Partial<RefRow> | string)[] = Array.isArray(data.references) ? data.references : [];
           setRefs(
             rawRefs.map((r) =>
-              typeof r === "string" ? { name: r, url: "" } : { name: String(r.name ?? ""), url: String(r.url ?? "") }
+              typeof r === "string"
+                ? { ...EMPTY_REF, name: r }
+                : {
+                    name: String(r.name ?? ""),
+                    url: String(r.url ?? ""),
+                    logo: String(r.logo ?? ""),
+                  }
             )
           );
         }
@@ -68,7 +78,9 @@ export default function SettingsPanel() {
             managementFee: Number(form.managementFee),
             setupDays: Number(form.setupDays),
           },
-          references: refs.map((r) => ({ name: r.name.trim(), url: r.url.trim() })).filter((r) => r.name.length > 0),
+          references: refs
+            .map((r) => ({ name: r.name.trim(), url: r.url.trim(), logo: r.logo.trim() }))
+            .filter((r) => r.name.length > 0),
         }),
       });
       setStatus(res.ok ? "saved" : "error");
@@ -112,18 +124,21 @@ export default function SettingsPanel() {
         <h2 className="font-display text-base font-bold text-ink-900">🏪 Referans Mağazalar</h2>
         <p className="mt-1 text-xs text-ink-500">
           Anasayfadaki kayan referans barında gösterilir. Link eklersen mağaza adına tıklayanlar
-          Trendyol sayfasına yönlendirilir (isteğe bağlı).
+          Trendyol sayfasına yönlendirilir (isteğe bağlı). Logo girersen barda isim yerine logo
+          çıkar; logo alanı boşsa mağaza adı yazıyla gösterilir.
         </p>
 
         <div className="mt-4 space-y-2">
-          <div className="grid grid-cols-[1fr_1.4fr_auto] gap-2 px-1">
+          <div className="grid grid-cols-[1fr_1.2fr_1.2fr_auto_auto] gap-2 px-1">
             <span className="text-xs font-semibold text-ink-500">Mağaza adı</span>
             <span className="text-xs font-semibold text-ink-500">Trendyol linki (isteğe bağlı)</span>
+            <span className="text-xs font-semibold text-ink-500">Logo görsel adresi (isteğe bağlı)</span>
+            <span className="text-xs font-semibold text-ink-500">Önizleme</span>
             <span />
           </div>
 
           {refs.map((row, i) => (
-            <div key={i} className="grid grid-cols-[1fr_1.4fr_auto] items-center gap-2">
+            <div key={i} className="grid grid-cols-[1fr_1.2fr_1.2fr_auto_auto] items-center gap-2">
               <input
                 type="text"
                 placeholder="Mağaza adı"
@@ -138,6 +153,25 @@ export default function SettingsPanel() {
                 onChange={(e) => setRefs(refs.map((r, idx) => (idx === i ? { ...r, url: e.target.value } : r)))}
                 className="rounded-lg border border-ink-300 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
               />
+              <input
+                type="text"
+                placeholder="https://.../logo.png veya /logos/marka.svg"
+                value={row.logo}
+                onChange={(e) => setRefs(refs.map((r, idx) => (idx === i ? { ...r, logo: e.target.value } : r)))}
+                className="rounded-lg border border-ink-300 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
+              />
+              <span className="flex h-9 w-24 items-center justify-center rounded-lg border border-dashed border-ink-200 bg-ink-50/60 px-1">
+                {safeLogoSrc(row.logo) ? (
+                  // eslint-disable-next-line @next/next/no-img-element -- serbest domain önizlemesi
+                  <img
+                    src={safeLogoSrc(row.logo)}
+                    alt=""
+                    className="max-h-7 max-w-full object-contain"
+                  />
+                ) : (
+                  <span className="text-[10px] text-ink-400">logo yok</span>
+                )}
+              </span>
               <button
                 type="button"
                 onClick={() => setRefs(refs.filter((_, idx) => idx !== i))}
@@ -151,7 +185,7 @@ export default function SettingsPanel() {
 
           <button
             type="button"
-            onClick={() => setRefs([...refs, { name: "", url: "" }])}
+            onClick={() => setRefs([...refs, { ...EMPTY_REF }])}
             className="mt-2 flex items-center gap-1.5 rounded-lg border border-dashed border-brand-300 px-4 py-2 text-xs font-semibold text-brand-600 transition-colors hover:border-brand-500 hover:bg-brand-50"
           >
             + Referans Ekle

@@ -2,11 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { PRICING, type PricingValues } from "@/lib/site";
+import { normalizeReferences, type ReferenceItem } from "@/lib/references";
 
-export interface ReferenceItem {
-  name: string;
-  url: string;
-}
+export type { ReferenceItem };
 
 export interface PublicSettings {
   pricing: PricingValues;
@@ -29,12 +27,7 @@ export function useSettings(): PublicSettings {
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
         if (!cancelled && data?.pricing) {
-          const rawRefs: unknown[] = Array.isArray(data.references) ? data.references : [];
-          const references: ReferenceItem[] = rawRefs.map((r) =>
-            typeof r === "string"
-              ? { name: r, url: "" }
-              : { name: String((r as ReferenceItem).name ?? ""), url: String((r as ReferenceItem).url ?? "") }
-          );
+          const references = normalizeReferences(data.references);
           setSettings({ pricing: { ...PRICING, ...data.pricing }, references });
         }
       })
