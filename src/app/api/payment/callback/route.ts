@@ -66,6 +66,7 @@ async function finalizePaidOrder(
     city: pending?.city ?? String(result.billingAddress?.city ?? ""),
     paymentId: String(result.paymentId ?? ""),
     conversationId,
+    termsAcceptedAt: pending?.termsAcceptedAt,
   };
 
   await addOrder(order);

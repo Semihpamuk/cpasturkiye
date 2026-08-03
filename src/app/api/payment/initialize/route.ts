@@ -44,6 +44,13 @@ export async function POST(req: Request) {
     if (marketplaces.length === 0) {
       return NextResponse.json({ error: "En az bir pazaryeri seçmelisiniz" }, { status: 400 });
     }
+    // Ön bilgilendirmenin teyidi zorunlu — istemci kontrolü tek başına yeterli değil.
+    if (body.termsAccepted !== true) {
+      return NextResponse.json(
+        { error: "Ön Bilgilendirme Formu ve Mesafeli Satış Sözleşmesi onaylanmadan sipariş oluşturulamaz" },
+        { status: 400 }
+      );
+    }
     // Fatura bilgileri opsiyoneldir — zorunlu doğrulama yapılmaz.
     if (storeUrl && !/^https?:\/\/.+\..+/i.test(storeUrl)) {
       return NextResponse.json({ error: "Mağaza linki geçerli bir web adresi olmalıdır" }, { status: 400 });
@@ -162,6 +169,7 @@ export async function POST(req: Request) {
       taxNumber,
       address,
       city,
+      termsAcceptedAt: new Date().toISOString(),
     });
 
     return NextResponse.json({

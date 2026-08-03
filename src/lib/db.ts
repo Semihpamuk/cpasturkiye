@@ -71,6 +71,8 @@ export interface Order {
   receiptFile?: string;
   // Dekont yerine: ödeme yapılan hesabın resmi ismi (dosya yüklenmediyse)
   receiptAccountName?: string;
+  /** Ön Bilgilendirme Formu + Mesafeli Satış Sözleşmesi onay zamanı (ISO) */
+  termsAcceptedAt?: string;
 }
 
 export interface PendingOrder {
@@ -96,6 +98,8 @@ export interface PendingOrder {
   taxNumber: string;
   address: string;
   city: string;
+  /** Ön Bilgilendirme Formu + Mesafeli Satış Sözleşmesi onay zamanı (ISO) */
+  termsAcceptedAt?: string;
 }
 
 export interface Lead {

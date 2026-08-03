@@ -72,6 +72,13 @@ export async function POST(req: Request) {
     if (marketplaces.length === 0) {
       return NextResponse.json({ error: "En az bir pazaryeri seçmelisiniz" }, { status: 400 });
     }
+    // Ön bilgilendirmenin teyidi zorunlu — istemci kontrolü tek başına yeterli değil.
+    if (body.termsAccepted !== true) {
+      return NextResponse.json(
+        { error: "Ön Bilgilendirme Formu ve Mesafeli Satış Sözleşmesi onaylanmadan sipariş oluşturulamaz" },
+        { status: 400 }
+      );
+    }
     // Fatura bilgileri opsiyoneldir; dekont dosyası veya ödeme yapılan hesabın
     // resmi isminden en az biri gereklidir.
     if (!receipt && !receiptAccountName) {
@@ -138,6 +145,7 @@ export async function POST(req: Request) {
       city,
       receiptFile,
       receiptAccountName: receiptAccountName || undefined,
+      termsAcceptedAt: new Date().toISOString(),
     });
 
     // Bildirim e-postaları BEST-EFFORT: sipariş zaten kaydedildi (admin'de görünür).

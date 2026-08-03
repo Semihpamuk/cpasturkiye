@@ -318,6 +318,9 @@ export default function CheckoutClient() {
 
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
+  // Mesafeli Sözleşmeler Yönetmeliği: sipariş öncesi ön bilgilendirmenin
+  // teyidi zorunlu. Onaylanmadan ödeme başlatılmaz (sunucuda da doğrulanır).
+  const [termsAccepted, setTermsAccepted] = useState(false);
   const [orderId, setOrderId] = useState("");
   const [checkoutFormContent, setCheckoutFormContent] = useState("");
   const iyzFormRef = useRef<HTMLDivElement>(null);
@@ -423,6 +426,12 @@ export default function CheckoutClient() {
       setSubmitError("Lütfen en az bir pazaryeri seçin.");
       return;
     }
+    if (!termsAccepted) {
+      setSubmitError(
+        "Devam etmek için Ön Bilgilendirme Formu'nu ve Mesafeli Satış Sözleşmesi'ni onaylayın."
+      );
+      return;
+    }
     if (paymentMethod === "transfer") {
       await submitTransfer();
     } else {
@@ -444,6 +453,7 @@ export default function CheckoutClient() {
           discountCode: discount?.code || "",
           invoiceType,
           ...invoice,
+          termsAccepted,
         }),
       });
       const data = await res.json();
@@ -483,6 +493,7 @@ export default function CheckoutClient() {
           invoiceType,
           ...invoice,
           receiptAccountName: receiptAccountName.trim(),
+          termsAccepted,
         })
       );
       const res = await fetch("/api/payment/transfer", { method: "POST", body: fd });
@@ -1016,9 +1027,40 @@ export default function CheckoutClient() {
             )}
 
             {submitError && <p className="text-sm font-medium text-red-600">{submitError}</p>}
+
+            {/* Ön bilgilendirmenin teyidi — Mesafeli Sözleşmeler Yönetmeliği gereği zorunlu */}
+            <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-ink-200 bg-ink-50 p-4 transition-colors hover:border-brand-300">
+              <input
+                type="checkbox"
+                checked={termsAccepted}
+                onChange={(e) => setTermsAccepted(e.target.checked)}
+                className="mt-0.5 h-4 w-4 shrink-0 accent-brand-700"
+              />
+              <span className="text-xs leading-relaxed text-ink-600">
+                <Link
+                  href="/on-bilgilendirme-formu"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-semibold text-brand-700 underline"
+                >
+                  Ön Bilgilendirme Formu
+                </Link>
+                &apos;nu ve{" "}
+                <Link
+                  href="/mesafeli-satis-sozlesmesi"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-semibold text-brand-700 underline"
+                >
+                  Mesafeli Satış Sözleşmesi
+                </Link>
+                &apos;ni okudum, onaylıyorum.
+              </span>
+            </label>
+
             <button
               type="submit"
-              disabled={submitting}
+              disabled={submitting || !termsAccepted}
               className="w-full rounded-xl bg-brand-700 px-6 py-4 text-sm font-bold text-white shadow-md transition-all hover:bg-brand-800 disabled:opacity-60"
             >
               {submitting
@@ -1029,6 +1071,9 @@ export default function CheckoutClient() {
                   ? "Dekontu Gönder ve Siparişi Tamamla →"
                   : "Güvenli Ödemeye Geç →"}
             </button>
+            <p className="text-center text-[11px] font-semibold text-ink-600">
+              Bu buton ödeme yükümlülüğü doğuran bir sipariş oluşturur.
+            </p>
             <p className="text-center text-[11px] text-ink-500">
               {isTransfer
                 ? "Dekontunuz doğrulandıktan sonra siparişiniz onaylanır ve ekip sizi arar."
