@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import LegalPage from "@/components/LegalPage";
-import { SITE, PRICING, formatTRY } from "@/lib/site";
+import { SITE } from "@/lib/site";
+import { getLegalPricing } from "@/lib/legalPricing";
 
 export const metadata: Metadata = {
   title: "Mesafeli Satış Sözleşmesi",
@@ -8,11 +9,16 @@ export const metadata: Metadata = {
   alternates: { canonical: "/mesafeli-satis-sozlesmesi" },
 };
 
-export default function DistanceSalesPage() {
+// Bedeller admin panelindeki güncel fiyatlardan okunur.
+export const dynamic = "force-dynamic";
+
+export default async function DistanceSalesPage() {
+  const price = await getLegalPricing();
+
   return (
     <LegalPage
       title="Mesafeli Satış Sözleşmesi"
-      updatedAt="14 Temmuz 2026"
+      updatedAt="3 Ağustos 2026"
       intro={`İşbu Mesafeli Satış Sözleşmesi ("Sözleşme"), ${SITE.company} ("Satıcı") ile ${SITE.domain} üzerinden hizmet satın alan gerçek veya tüzel kişi ("Alıcı") arasında, 6502 sayılı Tüketicinin Korunması Hakkında Kanun ve Mesafeli Sözleşmeler Yönetmeliği hükümleri uyarınca elektronik ortamda kurulmuştur.`}
       sections={[
         {
@@ -31,10 +37,12 @@ export default function DistanceSalesPage() {
         },
         {
           heading: "Hizmet Bilgileri ve Bedeli",
-          paragraphs: ["Sunulan hizmetler ve güncel bedelleri şunlardır:"],
+          paragraphs: [
+            `Sunulan hizmetler ve güncel bedelleri aşağıdadır. Belirtilen tutarlar %${price.vatPercent} KDV dahil toplam bedellerdir; sipariş özetinde gösterilen ve Alıcı tarafından onaylanan tutar esastır.`,
+          ],
           list: [
-            `Kurulum + İlk Ay Yönetim Paketi: ${formatTRY(PRICING.setupFee)} + KDV (tek seferlik) — pazaryeri reklam yetkilendirmesi, Meta Business Manager kurulumu, CPAS katalog bağlantısı, piksel/event ölçümleme, kampanya mimarisi, canlıya alma ve ilk ayın yönetimi; kurulum ortalama ${PRICING.setupDays} iş günü sürer`,
-            `Aylık Yönetim Hizmeti (2. ay ve sonrası): ${formatTRY(PRICING.managementFee)} + KDV/ay — haftalık optimizasyon, bütçe yönetimi, raporlama ve strateji görüşmesi`,
+            `Kurulum + İlk Ay Yönetim Paketi: ${price.setupGross} (KDV hariç ${price.setupNet}, tek seferlik) — pazaryeri reklam yetkilendirmesi, Meta Business Manager kurulumu, CPAS katalog bağlantısı, piksel/event ölçümleme, kampanya mimarisi, canlıya alma ve ilk ayın yönetimi; kurulum ortalama ${price.setupDays} iş günü sürer`,
+            `Aylık Yönetim Hizmeti (2. ay ve sonrası): ${price.managementGross}/ay (KDV hariç ${price.managementNet}) — haftalık optimizasyon, bütçe yönetimi, raporlama ve strateji görüşmesi`,
             "Meta'ya ödenen reklam bütçesi hizmet bedellerine dahil değildir; Alıcı tarafından doğrudan Meta'ya ödenir",
           ],
         },
@@ -47,7 +55,7 @@ export default function DistanceSalesPage() {
         {
           heading: "Hizmetin İfası",
           paragraphs: [
-            `Kurulum hizmeti, ödemenin alınmasını takiben başlatılır ve ortalama ${PRICING.setupDays} iş günü içinde tamamlanır; süre, pazaryeri ve Meta tarafındaki onay süreçlerine bağlı olarak uzayabilir. Aylık yönetim hizmeti, kurulumun tamamlanmasını takip eden aydan itibaren aylık dönemler halinde sunulan sürekli edimli bir hizmettir.`,
+            `Kurulum hizmeti, ödemenin alınmasını takiben başlatılır ve ortalama ${price.setupDays} iş günü içinde tamamlanır; süre, pazaryeri ve Meta tarafındaki onay süreçlerine bağlı olarak uzayabilir. Aylık yönetim hizmeti, kurulumun tamamlanmasını takip eden aydan itibaren aylık dönemler halinde sunulan sürekli edimli bir hizmettir.`,
           ],
         },
         {

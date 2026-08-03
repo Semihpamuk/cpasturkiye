@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import LegalPage from "@/components/LegalPage";
-import { SITE, PRICING, formatTRY } from "@/lib/site";
+import { SITE } from "@/lib/site";
+import { getLegalPricing } from "@/lib/legalPricing";
 
 export const metadata: Metadata = {
   title: "İptal ve İade Politikası",
@@ -8,11 +9,16 @@ export const metadata: Metadata = {
   alternates: { canonical: "/iptal-iade-politikasi" },
 };
 
-export default function RefundPolicyPage() {
+// Bedeller admin panelindeki güncel fiyatlardan okunur.
+export const dynamic = "force-dynamic";
+
+export default async function RefundPolicyPage() {
+  const price = await getLegalPricing();
+
   return (
     <LegalPage
       title="İptal ve İade Politikası"
-      updatedAt="14 Temmuz 2026"
+      updatedAt="3 Ağustos 2026"
       intro={`İşbu politika, ${SITE.company} tarafından sunulan Meta CPAS kurulum ve aylık reklam yönetim hizmetlerine ilişkin iptal ve iade koşullarını düzenler.`}
       sections={[
         {
@@ -26,7 +32,7 @@ export default function RefundPolicyPage() {
         {
           heading: "Kurulum + İlk Ay Yönetim Paketinde İade",
           paragraphs: [
-            `Kurulum + İlk Ay Yönetim Paketi (${formatTRY(PRICING.setupFee)} + KDV), müşteriye özel olarak ifa edilen bir hizmettir ve süreç başlamadan önce tahsil edilir.`,
+            `Kurulum + İlk Ay Yönetim Paketi (${price.setupGross} — KDV hariç ${price.setupNet}), müşteriye özel olarak ifa edilen bir hizmettir ve süreç başlamadan önce tahsil edilir.`,
           ],
           list: [
             "Kurulum süreci henüz başlamadıysa: bedelin tamamı iade edilir",

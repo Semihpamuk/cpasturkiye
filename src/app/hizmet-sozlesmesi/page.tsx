@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import LegalPage from "@/components/LegalPage";
-import { SITE, PRICING, formatTRY } from "@/lib/site";
+import { SITE } from "@/lib/site";
+import { getLegalPricing } from "@/lib/legalPricing";
 
 export const metadata: Metadata = {
   title: "Hizmet Sözleşmesi",
@@ -8,11 +9,16 @@ export const metadata: Metadata = {
   alternates: { canonical: "/hizmet-sozlesmesi" },
 };
 
-export default function ServiceAgreementPage() {
+// Bedeller admin panelindeki güncel fiyatlardan okunur.
+export const dynamic = "force-dynamic";
+
+export default async function ServiceAgreementPage() {
+  const price = await getLegalPricing();
+
   return (
     <LegalPage
       title="Hizmet Sözleşmesi"
-      updatedAt="14 Temmuz 2026"
+      updatedAt="3 Ağustos 2026"
       intro={`İşbu Hizmet Sözleşmesi ("Sözleşme"), ${SITE.company} ("Sağlayıcı") ile Meta CPAS kurulum ve reklam yönetim hizmetini satın alan müşteri ("Müşteri") arasında akdedilmiştir. Müşteri, hizmeti satın almakla işbu Sözleşmeyi kabul etmiş sayılır.`}
       sections={[
         {
@@ -21,8 +27,8 @@ export default function ServiceAgreementPage() {
             "Sağlayıcı, Müşteriye aşağıdaki hizmetleri sunar:",
           ],
           list: [
-            `Kurulum + İlk Ay Yönetim Paketi (${formatTRY(PRICING.setupFee)} + KDV, tek seferlik): pazaryeri (Trendyol/Hepsiburada) reklam yetkilendirmesi, Meta Business Manager kurulumu, CPAS katalog bağlantısı, piksel/event ölçümleme kurulumu, kampanya mimarisinin oluşturulması, test yayını ve kampanyaların canlıya alınması ile ilk ayın yönetimi`,
-            `Aylık Yönetim Hizmeti (${formatTRY(PRICING.managementFee)} + KDV/ay, 2. aydan itibaren): kampanyaların haftalık optimizasyonu, bütçe yönetimi, stok/fiyat senkron takibi, anomali izleme, haftalık raporlama ve aylık strateji görüşmesi`,
+            `Kurulum + İlk Ay Yönetim Paketi (${price.setupGross} KDV dahil — KDV hariç ${price.setupNet}, tek seferlik): pazaryeri (Trendyol/Hepsiburada) reklam yetkilendirmesi, Meta Business Manager kurulumu, CPAS katalog bağlantısı, piksel/event ölçümleme kurulumu, kampanya mimarisinin oluşturulması, test yayını ve kampanyaların canlıya alınması ile ilk ayın yönetimi`,
+            `Aylık Yönetim Hizmeti (${price.managementGross}/ay KDV dahil — KDV hariç ${price.managementNet}, 2. aydan itibaren): kampanyaların haftalık optimizasyonu, bütçe yönetimi, stok/fiyat senkron takibi, anomali izleme, haftalık raporlama ve aylık strateji görüşmesi`,
             "Hizmet süresince e-posta ve telefon üzerinden destek",
           ],
         },

@@ -12,7 +12,7 @@ export default function PrivacyPolicyPage() {
   return (
     <LegalPage
       title="Gizlilik Politikası"
-      updatedAt="10 Haziran 2026"
+      updatedAt="3 Ağustos 2026"
       intro={`İşbu Gizlilik Politikası, ${SITE.company} ("Şirket") tarafından işletilen ${SITE.domain} alan adlı web sitesi ve CPAS Türkiye hizmetleri ("Platform") aracılığıyla toplanan kişisel verilerin işlenmesine ilişkin esasları açıklamaktadır.`}
       sections={[
         {
