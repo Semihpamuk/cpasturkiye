@@ -187,7 +187,7 @@ function SuccessJourney({ orderId }: { orderId: string }) {
               <span
                 className={`relative flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-2 ${
                   step.state === "done"
-                    ? "border-green-500 bg-green-50 text-green-600"
+                    ? "border-green-500 bg-green-50 text-green-700"
                     : step.state === "next"
                       ? "border-brand-500 bg-brand-50 text-brand-700"
                       : "border-ink-200 bg-white text-ink-500"

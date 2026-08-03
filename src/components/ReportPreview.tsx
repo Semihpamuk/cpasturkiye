@@ -71,7 +71,7 @@ export default function ReportPreview() {
                 {kpi.value}
               </p>
               {kpi.delta && (
-                <p className="text-[10px] font-bold text-green-600">{kpi.delta} geçen haftaya göre</p>
+                <p className="text-[10px] font-bold text-green-700">{kpi.delta} geçen haftaya göre</p>
               )}
             </div>
           ))}
