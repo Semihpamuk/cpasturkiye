@@ -244,7 +244,7 @@ export default function HomePage() {
           </Reveal>
           <div className="mt-12 grid gap-6 lg:grid-cols-3">
             {WHY_CPAS.map((card, i) => (
-              <Reveal key={card.title} delay={i * 120}>
+              <Reveal key={card.title} delay={i * 70}>
                 <div className="group flex h-full flex-col rounded-2xl border border-ink-200 bg-white p-7 transition-all duration-300 hover:-translate-y-1 hover:border-brand-200 hover:shadow-xl hover:shadow-brand-600/5">
                   <p className="font-display text-4xl font-extrabold text-brand-700">
                     {card.stat}
@@ -298,7 +298,7 @@ export default function HomePage() {
                 </ul>
               </div>
             </Reveal>
-            <Reveal delay={120}>
+            <Reveal delay={80}>
               <div className="h-full rounded-2xl border border-ink-200 bg-white p-7">
                 <p className="flex items-center gap-2 font-display text-base font-bold text-ink-500">
                   <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -392,7 +392,7 @@ export default function HomePage() {
                 ))}
               </ul>
             </Reveal>
-            <Reveal delay={150}>
+            <Reveal delay={90}>
               <ReportPreview />
             </Reveal>
           </div>
@@ -416,7 +416,7 @@ export default function HomePage() {
             {TECH_CARDS.map((card, i) => (
               <Reveal
                 key={card.title}
-                delay={i * 90}
+                delay={i * 55}
                 className={card.wide ? "md:col-span-2" : ""}
               >
                 <div className="group h-full rounded-2xl border border-white/10 bg-white/[0.04] p-6 transition-all duration-300 hover:border-brand-500/30 hover:bg-white/[0.07]">
