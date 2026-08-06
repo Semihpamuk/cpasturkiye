@@ -12,7 +12,7 @@ export default function PrivacyPolicyPage() {
   return (
     <LegalPage
       title="Gizlilik Politikası"
-      updatedAt="3 Ağustos 2026"
+      updatedAt="6 Ağustos 2026"
       intro={`İşbu Gizlilik Politikası, ${SITE.company} ("Şirket") tarafından işletilen ${SITE.domain} alan adlı web sitesi ve CPAS Türkiye hizmetleri ("Platform") aracılığıyla toplanan kişisel verilerin işlenmesine ilişkin esasları açıklamaktadır.`}
       sections={[
         {
@@ -55,7 +55,7 @@ export default function PrivacyPolicyPage() {
         {
           heading: "Çerezler",
           paragraphs: [
-            "Platform yalnızca hizmetin çalışması için gerekli olan zorunlu çerezleri kullanır; reklam, hedefleme veya profilleme amaçlı çerez ile üçüncü taraf izleme araçları kullanılmaz. Tarayıcı ayarlarınızdan çerezleri reddedebilirsiniz; ancak bu durumda Platformun bazı işlevleri çalışmayabilir. Ayrıntılar Çerez Politikasında açıklanmıştır.",
+            "Platform, hizmetin çalışması için gerekli olan zorunlu çerezlerin yanında ziyaret istatistiklerinin ölçülmesi amacıyla Google Analytics 4 analitik çerezlerini kullanır. Analitik çerezler yalnızca çerez onay bandı üzerinden verdiğiniz açık rıza ile çalıştırılır; onay vermediğiniz takdirde oluşturulmaz. Reklam, hedefleme veya profilleme amaçlı çerez kullanılmaz. Analitik ölçüm kapsamında işlenen veriler Google Ireland Limited tarafından yurt dışındaki sunucularda işlenebilir; sizi doğrudan tanımlayan bilgiler (ad, e-posta, telefon, fatura verileri) bu araca aktarılmaz. Tarayıcı ayarlarınızdan çerezleri reddedebilirsiniz; ancak bu durumda Platformun bazı işlevleri çalışmayabilir. Ayrıntılar Çerez Politikasında açıklanmıştır.",
           ],
         },
         {

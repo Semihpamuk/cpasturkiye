@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextResponse, after } from "next/server";
 import { retrieveCheckoutForm, type IyzicoRetrieveResult } from "@/lib/iyzico";
 import {
   addOrder,
@@ -10,6 +10,7 @@ import {
 } from "@/lib/db";
 import { sendOrderConfirmation } from "@/lib/mailer";
 import { createJaleOnboardingInvite } from "@/lib/jaleOnboarding";
+import { gaIdentityFrom, sendGaPurchase } from "@/lib/ga-server";
 import { SITE } from "@/lib/site";
 
 /**
@@ -67,9 +68,31 @@ async function finalizePaidOrder(
     paymentId: String(result.paymentId ?? ""),
     conversationId,
     termsAcceptedAt: pending?.termsAcceptedAt,
+    gaClientId: pending?.gaClientId,
+    gaSessionId: pending?.gaSessionId,
   };
 
   await addOrder(order);
+
+  // GA4 purchase — ödeme kesinleşti. İstemci tarafında güvenilir bir an yok
+  // (müşteri birazdan harici kurulum portalına yönlendirilebilir), bu yüzden
+  // Measurement Protocol ile sunucudan gönderiyoruz. sendGaPurchase throw etmez.
+  //
+  // after(): yanıt (303 redirect) gönderildikten SONRA çalışır. Beklemeye
+  // alınırsa timeout'a düşen bir MP isteği müşteriyi 4 sn boş ekranda tutar.
+  after(() =>
+    sendGaPurchase(gaIdentityFrom(pending, order.id), {
+      transactionId: order.id,
+      total: order.total,
+      vatAmount: order.vatAmount,
+      discountAmount: order.discountAmount,
+      discountCode: order.discountCode,
+      marketplaces: order.marketplaces,
+      setupNet: order.setupNet,
+      managementAddon: order.managementAddon,
+      paymentMethod: "card",
+    })
+  );
 
   // İndirim kodu kullanım sayacını artır
   if (order.discountCode) {

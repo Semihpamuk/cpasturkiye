@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Analytics from "@/components/Analytics";
 import SiteChrome from "@/components/SiteChrome";
 import { SITE } from "@/lib/site";
 import "./globals.css";
@@ -63,6 +64,7 @@ export default function RootLayout({
     <html lang="tr">
       <body className="font-sans">
         <SiteChrome>{children}</SiteChrome>
+        <Analytics />
       </body>
     </html>
   );

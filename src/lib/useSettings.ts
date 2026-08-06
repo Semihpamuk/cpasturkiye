@@ -9,11 +9,21 @@ export type { ReferenceItem };
 export interface PublicSettings {
   pricing: PricingValues;
   references: ReferenceItem[];
+  /**
+   * /api/settings yanıtı geldi mi (hata alsak da true olur).
+   *
+   * Analytics olaylarının doğru fiyatı beklemesi için gerekli: admin panelinden
+   * fiyat değiştirilmişse, ayarlar gelmeden atılan bir view_item koddaki eski
+   * varsayılanı raporlar ve funnel'ın ilk adımı ile purchase arasında kalıcı
+   * gelir tutarsızlığı oluşur.
+   */
+  loaded: boolean;
 }
 
 const FALLBACK: PublicSettings = {
   pricing: { ...PRICING },
   references: [],
+  loaded: false,
 };
 
 // Admin panelinden güncellenen fiyat ve referansları çeker.
@@ -26,12 +36,24 @@ export function useSettings(): PublicSettings {
     fetch("/api/settings")
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
-        if (!cancelled && data?.pricing) {
+        if (cancelled) return;
+        if (data?.pricing) {
           const references = normalizeReferences(data.references);
-          setSettings({ pricing: { ...PRICING, ...data.pricing }, references });
+          setSettings({
+            pricing: { ...PRICING, ...data.pricing },
+            references,
+            loaded: true,
+          });
+        } else {
+          // Ayar çekilemedi: varsayılan fiyatlarla devam et, ama ölçümü bloklama.
+          setSettings((current) => ({ ...current, loaded: true }));
         }
       })
-      .catch(() => {});
+      .catch(() => {
+        if (!cancelled) {
+          setSettings((current) => ({ ...current, loaded: true }));
+        }
+      });
     return () => { cancelled = true; };
   }, []);
 

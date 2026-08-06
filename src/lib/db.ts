@@ -73,6 +73,11 @@ export interface Order {
   receiptAccountName?: string;
   /** Ön Bilgilendirme Formu + Mesafeli Satış Sözleşmesi onay zamanı (ISO) */
   termsAcceptedAt?: string;
+  // GA4 kimliği — siparişi başlatan ziyaretçinin çerezinden alınır. Havale
+  // siparişlerinde purchase olayı günler sonra (admin onayında) gönderildiği
+  // için burada saklanmalı; admin'in kendi çerezi kullanılamaz.
+  gaClientId?: string;
+  gaSessionId?: string;
 }
 
 export interface PendingOrder {
@@ -100,6 +105,9 @@ export interface PendingOrder {
   city: string;
   /** Ön Bilgilendirme Formu + Mesafeli Satış Sözleşmesi onay zamanı (ISO) */
   termsAcceptedAt?: string;
+  /** GA4 kimliği — callback purchase olayını doğru ziyaretçiye bağlamak için. */
+  gaClientId?: string;
+  gaSessionId?: string;
 }
 
 export interface Lead {
