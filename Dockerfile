@@ -14,6 +14,12 @@ RUN npm ci
 ARG NEXT_PUBLIC_GA_ID=""
 ENV NEXT_PUBLIC_GA_ID=$NEXT_PUBLIC_GA_ID
 
+# Search Console doğrulama meta etiketi — aynı build-time kuralı geçerli.
+# Boş bırakılırsa etiket hiç basılmaz (GSC'de Google Analytics yöntemiyle
+# doğrulama yapıldıysa bu değere zaten gerek yok).
+ARG NEXT_PUBLIC_GSC_VERIFICATION=""
+ENV NEXT_PUBLIC_GSC_VERIFICATION=$NEXT_PUBLIC_GSC_VERIFICATION
+
 # Kaynak kodu kopyala ve production derlemesi yap
 # (NODE_ENV burada henüz production değil, böylece devDependencies build sırasında kullanılabilir)
 COPY . .

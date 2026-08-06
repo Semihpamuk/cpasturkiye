@@ -1,8 +1,19 @@
 import type { Metadata } from "next";
 import Analytics from "@/components/Analytics";
+import JsonLd from "@/components/JsonLd";
 import SiteChrome from "@/components/SiteChrome";
+import { ORGANIZATION_JSONLD, WEBSITE_JSONLD } from "@/lib/organization-schema";
 import { SITE } from "@/lib/site";
 import "./globals.css";
+
+/**
+ * Google Search Console doğrulama kodu.
+ *
+ * GSC'de "HTML etiketi" yöntemini seçtiğinizde verilen `content` değeridir.
+ * Tanımlı değilse meta etiketi hiç basılmaz — boş bir doğrulama etiketi
+ * göndermek GSC tarafında hatalı doğrulama denemesi olarak görünüyor.
+ */
+const GSC_VERIFICATION = process.env.NEXT_PUBLIC_GSC_VERIFICATION;
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
@@ -53,6 +64,7 @@ export const metadata: Metadata = {
   alternates: {
     canonical: SITE.url,
   },
+  ...(GSC_VERIFICATION ? { verification: { google: GSC_VERIFICATION } } : {}),
 };
 
 export default function RootLayout({
@@ -63,6 +75,8 @@ export default function RootLayout({
   return (
     <html lang="tr">
       <body className="font-sans">
+        <JsonLd data={ORGANIZATION_JSONLD} />
+        <JsonLd data={WEBSITE_JSONLD} />
         <SiteChrome>{children}</SiteChrome>
         <Analytics />
       </body>
