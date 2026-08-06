@@ -55,23 +55,24 @@ export default function CookieConsentBanner() {
         <p className="flex-1 text-sm leading-relaxed text-white/80">
           Sitenin çalışması için gerekli zorunlu çerezleri kullanıyoruz. Ziyaret
           istatistiklerini ölçmek için kullanılan analitik çerezler ise yalnızca
-          onayınızla çalışır.{" "}
-          <Link
-            href="/cerez-politikasi"
-            className="font-semibold text-white underline underline-offset-4 transition-colors hover:text-brand-300"
-          >
-            Çerez Politikası
-          </Link>
-        </p>
-
-        <div className="flex shrink-0 gap-3">
+          onayınızla çalışır; dilerseniz{" "}
           <button
             type="button"
             onClick={reject}
+            className="font-semibold text-white underline underline-offset-4 transition-colors hover:text-brand-300"
+          >
+            reddedebilirsiniz
+          </button>
+          .
+        </p>
+
+        <div className="flex shrink-0 gap-3">
+          <Link
+            href="/cerez-politikasi"
             className="rounded-full border border-white/15 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:border-white/30 hover:bg-white/5"
           >
-            Reddet
-          </button>
+            Çerez Politikası
+          </Link>
           <button
             type="button"
             onClick={accept}
