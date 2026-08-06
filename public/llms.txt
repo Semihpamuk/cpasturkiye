@@ -11,7 +11,7 @@ CPAS (Collaborative Performance Advertising Solution / Collaborative Ads), Meta'
 CPAS Türkiye bir yazılım (SaaS) değil, uçtan uca yönetilen bir hizmettir:
 
 - **1. Ay — Kurulum + İlk Ay Yönetim (25.000 TL + KDV, tek seferlik):** Pazaryeri reklam yetkilendirmesi, Meta Business Manager kurulumu, CPAS katalog bağlantısı, piksel/event ölçümleme, kampanya mimarisi (retargeting + prospecting katmanları), test yayını ve canlıya alma. Ortalama 7 iş günü.
-- **2. Ay ve Sonrası — Aylık Yönetim (17.000 TL + KDV/ay):** Haftalık optimizasyon döngüsü (izle → analiz et → optimize et → raporla), bütçe yönetimi, haftalık PDF rapor + WhatsApp özeti, aylık strateji görüşmesi. Taahhüt yoktur.
+- **2. Ay ve Sonrası — Aylık Yönetim (16.000 TL + KDV/ay):** Haftalık optimizasyon döngüsü (izle → analiz et → optimize et → raporla), bütçe yönetimi, haftalık PDF rapor + WhatsApp özeti, aylık strateji görüşmesi. Taahhüt yoktur.
 - Reklam bütçesi bu tutarlara dahil değildir; satıcı doğrudan Meta'ya kendi hesabından öder.
 
 ## Desteklenen Pazaryerleri
@@ -40,9 +40,14 @@ CPAS Türkiye bir yazılım (SaaS) değil, uçtan uca yönetilen bir hizmettir:
 
 ## Blog (Rehber İçerikler)
 
-- [CPAS Nedir? Trendyol Satıcıları İçin Eksiksiz Rehber](https://cpasturkiye.com/blog/cpas-nedir-trendyol-saticilari-icin-rehber)
-- [Trendyol Satıcısı Meta Reklamlarına Ne Zaman Geçmeli?](https://cpasturkiye.com/blog/trendyol-saticisi-meta-reklamlarina-ne-zaman-gecmeli)
-- [ROAS Nasıl Yükseltilir? CPAS Kampanyalarında 5 Kanıtlanmış Taktik](https://cpasturkiye.com/blog/roas-nasil-yukseltilir-cpas-kampanyalarinda-5-taktik)
-- [Trendyol CPAS Reklam Yetkisi Nasıl Alınır? Adım Adım 2026 Rehberi](https://cpasturkiye.com/blog/trendyol-cpas-reklam-yetkisi-nasil-alinir)
-- [Trendyol Meta Reklam Entegrasyonu: Facebook ve Instagram'dan Satış](https://cpasturkiye.com/blog/trendyol-meta-reklam-entegrasyonu-nedir)
-- [CPAS mi, Trendyol İç Reklam mı? Hangisi Daha Kârlı?](https://cpasturkiye.com/blog/cpas-ile-trendyol-ic-reklam-karsilastirma)
+- [CPAS Nedir? Trendyol Satıcıları İçin Eksiksiz Rehber (2026)](https://cpasturkiye.com/blog/cpas-nedir-trendyol-saticilari-icin-rehber): CPAS'in tanımı, teknik çalışma mantığı, ön koşullar, kurulum adımları, bütçe yakan hatalar ve ilk 90 günde beklenecek ROAS bandı.
+- [Trendyol CPAS Reklam Yetkisi Nasıl Alınır? Adım Adım 2026 Rehberi](https://cpasturkiye.com/blog/trendyol-cpas-reklam-yetkisi-nasil-alinir): Başvuru koşulları, istenen belgeler, adım adım süreç, red nedenleri ve gerçekçi takvim.
+- [Hepsiburada CPAS Kurulumu: Adım Adım Rehber (2026)](https://cpasturkiye.com/blog/hepsiburada-cpas-kurulumu-adim-adim): Hepsiburada tarafındaki kurulum akışı, Trendyol'dan farklı noktalar, katalog kalite kontrolü ve kampanya mimarisi.
+- [CPAS Maliyeti Ne Kadar? 2026 Bütçe Planlama Rehberi](https://cpasturkiye.com/blog/cpas-maliyeti-ve-butce-planlamasi): Reklam bütçesi, kurulum ve yönetim kalemleri, gizli maliyetler, başabaş ROAS hesabı ve örnek 3 aylık plan.
+- [CPAS Kampanyam Neden Satış Getirmiyor? 9 Neden ve Çözümü](https://cpasturkiye.com/blog/cpas-kampanyasi-neden-satis-getirmiyor): Teşhis sırası, veri akışı kontrolü, katalog senkronu, ürün sayfası ve kitle sorunlarının ayrıştırılması.
+- [ROAS Nasıl Yükseltilir? CPAS Kampanyalarında 5 Kanıtlanmış Taktik](https://cpasturkiye.com/blog/roas-nasil-yukseltilir-cpas-kampanyalarinda-5-taktik): Bütçe kaydırma, katalog hijyeni, geniş hedefleme, yeniden pazarlama mimarisi ve anomali takibi.
+- [CPAS Ajansı Nasıl Seçilir? Sormanız Gereken 10 Soru](https://cpasturkiye.com/blog/cpas-ajansi-nasil-secilir): Veri sahipliği, fiyat modelleri, raporlama beklentisi, taahhüt koşulları ve ajans/iç ekip karşılaştırması.
+- [Meta Business Manager Kurulumu: Pazaryeri Satıcıları İçin Rehber](https://cpasturkiye.com/blog/meta-business-manager-kurulumu-pazaryeri-saticilari): İşletme doğrulaması, reklam hesabı ayarları, yetki yönetimi ve CPAS öncesi kontrol listesi.
+- [Trendyol Meta Reklam Entegrasyonu: Facebook ve Instagram'dan Satış](https://cpasturkiye.com/blog/trendyol-meta-reklam-entegrasyonu-nedir): Entegrasyonun dört bileşeni, veri akışı, doğrulama kontrolleri, sınırları ve bakım rutini.
+- [CPAS mi, Trendyol İç Reklam mı? Hangisi Daha Kârlı?](https://cpasturkiye.com/blog/cpas-ile-trendyol-ic-reklam-karsilastirma): İki kanalın kitle, maliyet, ölçüm ve ROAS karşılaştırması; birlikte kullanma kurgusu ve bütçe dağılımı.
+- [Trendyol Satıcısı Meta Reklamlarına Ne Zaman Geçmeli?](https://cpasturkiye.com/blog/trendyol-saticisi-meta-reklamlarina-ne-zaman-gecmeli): Sipariş hacmi, katkı marjı, katalog genişliği ve nakit akışı eşikleri; doğru başlangıç zamanlaması.
