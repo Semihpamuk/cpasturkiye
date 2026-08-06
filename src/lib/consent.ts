@@ -15,6 +15,14 @@
 
 export const CONSENT_STORAGE_KEY = "cpas_cookie_consent";
 
+/**
+ * Tercih sıfırlandığında bandın tekrar açılması için yayınlanır.
+ *
+ * Band ile onu tekrar açan buton (footer) farklı ağaçlarda duruyor; araya
+ * context/store koymak yerine tek yönlü bir pencere olayı yeterli.
+ */
+export const CONSENT_CHANGED_EVENT = "cpas:consent-changed";
+
 export type ConsentValue = "granted" | "denied";
 
 /** Kayıtlı tercih; hiç karar verilmemişse null (band gösterilir). */
@@ -44,4 +52,27 @@ export function grantAnalyticsConsent(): void {
 
 export function denyAnalyticsConsent(): void {
   setConsent("denied");
+}
+
+/**
+ * Tercihi sıfırlar ve bandı tekrar gösterir.
+ *
+ * KVKK'da açık rızanın geri alınması, verilmesi kadar kolay olmak zorunda —
+ * ziyaretçiyi "tarayıcı ayarlarından site verilerini temizle" adımına yollamak
+ * bu ölçütü karşılamıyor. Footer'daki "Çerez Tercihleri" bağlantısı buraya bağlı.
+ *
+ * Halihazırda yazılmış `_ga` çerezleri BİLEREK silinmiyor: Consent Mode yeni
+ * çerez yazılmasını ve mevcutların okunmasını engeller, ziyaretçi tekrar onay
+ * verirse de aynı tanımlayıcıyla devam eder. Çerezleri tarayıcı ayarlarından
+ * silme yolu Çerez Politikasında ayrıca tarif ediliyor.
+ */
+export function reopenConsentBanner(): void {
+  try {
+    window.localStorage.removeItem(CONSENT_STORAGE_KEY);
+  } catch {
+    // Storage kapalıysa tercih zaten kalıcı değildi.
+  }
+  // Yeni karar alınana kadar ölçüm durmalı.
+  window.gtag?.("consent", "update", { analytics_storage: "denied" });
+  window.dispatchEvent(new Event(CONSENT_CHANGED_EVENT));
 }

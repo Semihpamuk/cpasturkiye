@@ -52,7 +52,8 @@ export default function CookiePolicyPage() {
           heading: "Çerez Tercihleriniz",
           paragraphs: [
             "Kişisel Verileri Koruma Kurulu rehberleri uyarınca, yalnızca hizmetin sunulabilmesi için zorunlu olan çerezler açık rıza olmaksızın kullanılabilir. Analitik çerezler bu kapsamda değildir; bu nedenle siteye ilk girişinizde bir çerez onay bandı gösterilir ve analitik çerezler yalnızca \"Kabul et\" seçeneğini işaretlemeniz halinde çalıştırılır.",
-            "Onay vermediğiniz sürece _ga ve _ga_<ölçüm-kimliği> çerezleri tarayıcınızda oluşturulmaz. Tercihiniz tarayıcınızın yerel deposunda saklanır ve sonraki ziyaretlerinizde band tekrar gösterilmez. Tercihinizi değiştirmek isterseniz tarayıcınızın site verilerini (çerezler ve yerel depolama) temizlemeniz yeterlidir; band yeniden gösterilir ve mevcut analitik çerezler silinir.",
+            "Onay vermediğiniz sürece _ga ve _ga_<ölçüm-kimliği> çerezleri tarayıcınızda oluşturulmaz. Tercihiniz tarayıcınızın yerel deposunda saklanır ve sonraki ziyaretlerinizde band tekrar gösterilmez.",
+            "Verdiğiniz onayı dilediğiniz zaman geri alabilirsiniz: sayfanın altındaki \"Yasal\" başlığı içinde yer alan \"Çerez Tercihleri\" bağlantısına tıklamanız yeterlidir. Bu işlem kayıtlı tercihinizi sıfırlar, analitik ölçümü durdurur ve onay bandını yeniden gösterir. Daha önce oluşturulmuş analitik çerezler tarayıcınızda kalmaya devam eder; onay geri alındığı sürece okunmaz ve yeni çerez oluşturulmaz. Bu çerezleri tamamen kaldırmak isterseniz tarayıcınızın ayarlarından site verilerini (çerezler ve yerel depolama) temizleyebilirsiniz.",
           ],
         },
         {

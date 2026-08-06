@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import {
+  CONSENT_CHANGED_EVENT,
   denyAnalyticsConsent,
   grantAnalyticsConsent,
   readStoredConsent,
@@ -24,6 +25,11 @@ export default function CookieConsentBanner() {
 
   useEffect(() => {
     if (readStoredConsent() === null) setIsVisible(true);
+
+    // Footer'daki "Çerez Tercihleri" tercihi sıfırlayıp bu olayı yayınlar.
+    const show = () => setIsVisible(true);
+    window.addEventListener(CONSENT_CHANGED_EVENT, show);
+    return () => window.removeEventListener(CONSENT_CHANGED_EVENT, show);
   }, []);
 
   if (!isVisible) return null;

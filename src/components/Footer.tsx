@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Logo from "./Logo";
+import CookieSettingsLink from "./CookieSettingsLink";
 import { SITE } from "@/lib/site";
 
 const PRODUCT_LINKS = [
@@ -106,6 +107,7 @@ export default function Footer() {
                   </Link>
                 </li>
               ))}
+              <CookieSettingsLink />
             </ul>
           </div>
         </div>
