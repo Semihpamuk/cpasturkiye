@@ -3,48 +3,66 @@
 import Script from "next/script";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
+import CookieConsentBanner from "@/components/CookieConsentBanner";
 import { GA_ID, isAnalyticsEnabled, trackPageView } from "@/lib/analytics";
+import { CONSENT_STORAGE_KEY } from "@/lib/consent";
 
 /**
  * Google Consent Mode v2 varsayılanları.
  *
- * KVKK gereği reklam amaçlı çerezler açık rıza olmadan çalışmamalı; ölçüm
- * çerezi meşru menfaat kapsamında açık bırakılıyor. Sitede çerez izin bandı
- * eklendiğinde `ad_*` değerleri kullanıcı onayıyla `granted`a çekilmelidir
- * (gtag("consent", "update", {...})).
+ * Tüm `ad_*` sinyalleri kapalı — reklam çerezi hiç kullanmıyoruz.
+ * `analytics_storage` da varsayılan olarak `denied`: KVKK Kurulu'nun çerez
+ * rehberi analitik çerezleri "zorunlu" saymıyor, açık rıza gerekiyor.
+ *
+ * Kayıtlı tercih inline script'in İÇİNDE okunuyor: gtag consent durumunu
+ * hatırlamaz, her sayfa yüklemesinde biz vermek zorundayız. React efektiyle
+ * sonradan `update` çekmek, ilk olaylar gönderildikten sonraya kalabileceği
+ * için yarış koşulu yaratır.
+ *
+ * `wait_for_update`, band'dan gelen onayın ilk olayları yakalayabilmesi için
+ * gtag'e kısa bir bekleme süresi tanır.
  */
-const CONSENT_DEFAULTS = {
-  ad_storage: "denied",
-  ad_user_data: "denied",
-  ad_personalization: "denied",
-  analytics_storage: "granted",
-} as const;
-
 const INIT_SCRIPT = `
 window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
 window.gtag = gtag;
-gtag('consent', 'default', ${JSON.stringify(CONSENT_DEFAULTS)});
+var __cpasConsent = null;
+try { __cpasConsent = localStorage.getItem(${JSON.stringify(
+  CONSENT_STORAGE_KEY
+)}); } catch (e) {}
+gtag('consent', 'default', {
+  ad_storage: 'denied',
+  ad_user_data: 'denied',
+  ad_personalization: 'denied',
+  analytics_storage: __cpasConsent === 'granted' ? 'granted' : 'denied',
+  wait_for_update: 500
+});
 gtag('js', new Date());
 gtag('config', '${GA_ID}', { send_page_view: true });
 `;
 
 /**
- * Rota değişiminde page_view gönderir.
+ * Son ölçülen yol — MODÜL seviyesinde tutuluyor.
  *
- * İlk yüklemede `config` zaten bir page_view atıyor — ilk efekt çalışması
- * atlanmazsa ana sayfa iki kez sayılır.
+ * Bileşen /admin'de unmount olduğu için ref kullanılsaydı her dönüşte sıfırlanır
+ * ve kullanıcı panelden siteye döndüğünde ilk sayfa hiç sayılmazdı.
+ *
+ * null = ilk `config` çağrısı zaten bir page_view attı; onu tekrarlama.
  */
+let lastTrackedPath: string | null = null;
+
+/** Rota değişiminde page_view gönderir. */
 function PageViewTracker() {
   const pathname = usePathname();
-  const isFirstRun = useRef(true);
 
   useEffect(() => {
-    if (isFirstRun.current) {
-      isFirstRun.current = false;
+    if (lastTrackedPath === null) {
+      lastTrackedPath = pathname;
       return;
     }
-    trackPageView(pathname);
+    if (lastTrackedPath === pathname) return;
+    lastTrackedPath = pathname;
+    trackPageView();
   }, [pathname]);
 
   return null;
@@ -75,6 +93,8 @@ export default function Analytics() {
         strategy="afterInteractive"
       />
       <PageViewTracker />
+      {/* Band yalnızca ölçüm açıkken ve /admin dışında — üstteki guard'ın altında. */}
+      <CookieConsentBanner />
     </>
   );
 }

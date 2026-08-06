@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextResponse, after } from "next/server";
 import { addOrder, generateId, getSettings, saveReceipt } from "@/lib/db";
 import { computeOrderQuote, MARKETPLACES } from "@/lib/site";
 import { sendTransferReceived } from "@/lib/mailer";
@@ -160,15 +160,20 @@ export async function POST(req: Request) {
     // BİLEREK purchase DEĞİL: para henüz tahsil edilmedi, dekont kontrol
     // bekliyor. purchase, admin siparişi "paid"e çektiğinde gönderilir.
     // Aksi halde GA4 cirosu onaylanmamış havalelerle şişer.
-    await sendGaServerEvent(gaIdentityFrom(gaIds, orderId), {
-      name: "order_pending_transfer",
-      params: {
-        currency: "TRY",
-        value: quote.total,
-        transaction_id: orderId,
-        marketplace_count: marketplaces.length,
-      },
-    });
+    //
+    // after(): yanıt gönderildikten sonra çalışır — MP isteği müşteriyi bekletmesin.
+    // (readGaCookies yukarıda, yanıt öncesinde okundu; cookie erişimi after() içinde olmaz.)
+    after(() =>
+      sendGaServerEvent(gaIdentityFrom(gaIds, orderId), {
+        name: "order_pending_transfer",
+        params: {
+          currency: "TRY",
+          value: quote.total,
+          transaction_id: orderId,
+          marketplace_count: marketplaces.length,
+        },
+      })
+    );
 
     // Bildirim e-postaları BEST-EFFORT: sipariş zaten kaydedildi (admin'de görünür).
     // Mail gönderimi (SMTP hatası vb.) başarısız olsa bile isteği 500'e düşürme —

@@ -13,7 +13,7 @@ export default function CookiePolicyPage() {
   return (
     <LegalPage
       title="Çerez Politikası"
-      updatedAt="3 Ağustos 2026"
+      updatedAt="6 Ağustos 2026"
       intro={`İşbu Çerez Politikası, ${SITE.company} tarafından işletilen ${SITE.domain} alan adlı web sitesinde çerezlerin nasıl kullanıldığını açıklar. Politika, Gizlilik Politikası ve KVKK Aydınlatma Metni ile birlikte değerlendirilmelidir.`}
       sections={[
         {
@@ -25,12 +25,21 @@ export default function CookiePolicyPage() {
         {
           heading: "Sitemizde Kullanılan Çerezler",
           paragraphs: [
-            "Sitemizde yalnızca hizmetin çalışması için gerekli olan zorunlu çerezler kullanılmaktadır. Ziyaretçi davranışını izleyen reklam, pazarlama veya profilleme çerezleri kullanılmamaktadır.",
+            "Sitemizde hizmetin çalışması için gerekli olan zorunlu çerezler ile ziyaret istatistiklerinin ölçülmesi amacıyla analitik çerezler kullanılmaktadır. Analitik çerezler yalnızca onayınız halinde çalışır. Ziyaretçi davranışını izleyen reklam, pazarlama veya profilleme çerezleri kullanılmamaktadır.",
           ],
           list: [
-            "Yönetim paneli oturum çerezi: yalnızca yetkili yöneticiler panele giriş yaptığında oluşturulur; imzalı bir oturum bilgisi taşır ve süre sonunda geçersiz hale gelir. Site ziyaretçileri için oluşturulmaz.",
-            "Site ziyaretçileri için reklam, hedefleme veya profilleme amaçlı çerez kullanılmaz.",
-            "Üçüncü taraf izleme ve ölçümleme araçları (ör. reklam pikselleri, ısı haritası araçları) sitemizde yer almaz.",
+            "Yönetim paneli oturum çerezi (zorunlu): yalnızca yetkili yöneticiler panele giriş yaptığında oluşturulur; imzalı bir oturum bilgisi taşır ve süre sonunda geçersiz hale gelir. Site ziyaretçileri için oluşturulmaz.",
+            "Çerez tercihi kaydı (zorunlu): çerez onay bandındaki seçiminiz, her ziyarette tekrar sorulmaması için tarayıcınızın yerel deposunda saklanır.",
+            "_ga (analitik, azami 2 yıl): Google Analytics 4 tarafından ziyaretçilerin birbirinden ayırt edilmesi amacıyla kullanılır. Sağlayıcı: Google Ireland Limited.",
+            "_ga_<ölçüm-kimliği> (analitik, azami 2 yıl): Google Analytics 4 tarafından oturum durumunun sürdürülmesi amacıyla kullanılır. Sağlayıcı: Google Ireland Limited.",
+            "Site ziyaretçileri için reklam, hedefleme veya profilleme amaçlı çerez kullanılmaz; Google Analytics'in reklam sinyalleri (ad_storage, ad_user_data, ad_personalization) tarafımızca kapalı tutulmaktadır.",
+          ],
+        },
+        {
+          heading: "Analitik Çerezler ve Yurt Dışına Aktarım",
+          paragraphs: [
+            "Analitik ölçüm, Google Ireland Limited tarafından sunulan Google Analytics 4 hizmeti ile yapılmaktadır. Bu kapsamda ziyaret edilen sayfa, yaklaşık konum, tarayıcı ve cihaz bilgisi gibi veriler ile çerez üzerinden atanan rastgele bir tanımlayıcı işlenir. Adınız, e-posta adresiniz, telefonunuz veya fatura bilgileriniz gibi sizi doğrudan tanımlayan veriler Google Analytics'e aktarılmaz.",
+            "Söz konusu veriler hizmetin doğası gereği yurt dışında bulunan sunucularda işlenebilmektedir. Analitik çerezleri onaylamanız halinde bu aktarım açık rızanıza dayanılarak gerçekleştirilir; onay vermediğiniz takdirde analitik çerez oluşturulmaz.",
           ],
         },
         {
@@ -40,9 +49,10 @@ export default function CookiePolicyPage() {
           ],
         },
         {
-          heading: "Açık Rıza Gerekmemesi",
+          heading: "Çerez Tercihleriniz",
           paragraphs: [
-            "Kişisel Verileri Koruma Kurulu rehberleri uyarınca, yalnızca hizmetin sunulabilmesi için zorunlu olan çerezler açık rıza olmaksızın kullanılabilir. Sitemizde bu kapsam dışında çerez kullanılmadığından ayrıca çerez onay penceresi gösterilmemektedir. İleride analitik veya pazarlama çerezleri kullanılması halinde bu politika güncellenecek ve gerekli açık rıza mekanizması sunulacaktır.",
+            "Kişisel Verileri Koruma Kurulu rehberleri uyarınca, yalnızca hizmetin sunulabilmesi için zorunlu olan çerezler açık rıza olmaksızın kullanılabilir. Analitik çerezler bu kapsamda değildir; bu nedenle siteye ilk girişinizde bir çerez onay bandı gösterilir ve analitik çerezler yalnızca \"Kabul et\" seçeneğini işaretlemeniz halinde çalıştırılır.",
+            "Onay vermediğiniz sürece _ga ve _ga_<ölçüm-kimliği> çerezleri tarayıcınızda oluşturulmaz. Tercihiniz tarayıcınızın yerel deposunda saklanır ve sonraki ziyaretlerinizde band tekrar gösterilmez. Tercihinizi değiştirmek isterseniz tarayıcınızın site verilerini (çerezler ve yerel depolama) temizlemeniz yeterlidir; band yeniden gösterilir ve mevcut analitik çerezler silinir.",
           ],
         },
         {

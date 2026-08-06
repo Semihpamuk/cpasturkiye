@@ -32,6 +32,9 @@ interface AppliedDiscount {
 
 const MAX_RECEIPT_MB = 10;
 
+/** GA4'e gönderilecek hata sebebi için kabul edilen biçim (iyzico errorCode uyumlu). */
+const SAFE_FAILURE_REASON = /^[A-Za-z0-9_-]{1,32}$/;
+
 /* ─────────────────────────── Form alanı ───────────────────────────
  *
  * Alanlar daha önce yalnızca placeholder ile etiketleniyordu. Bunun iki
@@ -297,7 +300,7 @@ function TransferPending({ orderId }: { orderId: string }) {
 /* ─────────────────────────────── Checkout ─────────────────────────────── */
 
 export default function CheckoutClient() {
-  const { pricing } = useSettings();
+  const { pricing, loaded: settingsLoaded } = useSettings();
   const searchParams = useSearchParams();
 
   const [step, setStep] = useState<Step>("details");
@@ -347,7 +350,12 @@ export default function CheckoutClient() {
       // (api/payment/callback → sendGaPurchase).
     } else if (payment === "failure" || payment === "error") {
       setStep("failed");
-      trackPaymentFailed(searchParams.get("reason") ?? payment);
+      // `reason` URL'den geliyor: doğrulanmazsa herkes GA4'e keyfi metin sokabilir.
+      // Whitelist yerine biçim kontrolü — iyzico errorCode'ları korunsun.
+      const rawReason = searchParams.get("reason") ?? payment;
+      trackPaymentFailed(
+        SAFE_FAILURE_REASON.test(rawReason) ? rawReason : "invalid_reason"
+      );
     }
   }, [searchParams]);
 
@@ -387,22 +395,32 @@ export default function CheckoutClient() {
   const analyticsInput = useMemo<CheckoutEventInput>(
     () => ({
       marketplaces,
-      setupNet: quote.setupNet,
       managementAddon: quote.managementAddon,
       total: quote.total,
+      discountAmount: quote.discountAmount,
       discountCode: discount?.code ?? null,
     }),
-    [marketplaces, quote.setupNet, quote.managementAddon, quote.total, discount]
+    [
+      marketplaces,
+      quote.managementAddon,
+      quote.total,
+      quote.discountAmount,
+      discount,
+    ]
   );
 
   // view_item yalnızca ilk görüntülemede atılır; pazaryeri seçimi değiştikçe
   // tekrar gönderilirse funnel'ın ilk adımı şişer.
+  //
+  // settingsLoaded beklenir: admin panelinden değiştirilmiş fiyatlar /api/settings
+  // ile async geliyor, olayı erken atarsak value koddaki eski varsayılanı taşır ve
+  // begin_checkout/purchase ile tutmaz.
   const hasTrackedView = useRef(false);
   useEffect(() => {
-    if (hasTrackedView.current || step !== "details") return;
+    if (hasTrackedView.current || !settingsLoaded || step !== "details") return;
     hasTrackedView.current = true;
     trackViewCheckout(analyticsInput);
-  }, [step, analyticsInput]);
+  }, [settingsLoaded, step, analyticsInput]);
 
   function toggleMarketplace(key: string) {
     setMarketplaces((current) =>
@@ -439,9 +457,9 @@ export default function CheckoutClient() {
     trackAddPaymentInfo(
       {
         marketplaces,
-        setupNet: nextQuote.setupNet,
         managementAddon: nextQuote.managementAddon,
         total: nextQuote.total,
+        discountAmount: nextQuote.discountAmount,
         discountCode: nextDiscount?.code ?? null,
       },
       method

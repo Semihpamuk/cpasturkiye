@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { VAT_RATE } from "@/lib/site";
 
 /**
  * GA4 Measurement Protocol — sunucu tarafı olay gönderimi.
@@ -12,7 +13,11 @@ import { cookies } from "next/headers";
  * çağrılıyorlar — analytics arızası müşteriyi asla etkilememeli.
  */
 
-const GA_ID = process.env.NEXT_PUBLIC_GA_ID ?? "";
+// Sunucuda runtime env yeterli. NEXT_PUBLIC_GA_ID build zamanında gömülür ve
+// Docker build arg'ı unutulursa boş kalır — o durumda istemci ölçümü kapanır
+// ama sunucudan giden purchase (ciro) çalışmaya devam etsin diye ayrı bir
+// runtime değişkenine öncelik veriyoruz.
+const GA_ID = process.env.GA_MEASUREMENT_ID || process.env.NEXT_PUBLIC_GA_ID || "";
 const GA_API_SECRET = process.env.GA_API_SECRET ?? "";
 const MP_ENDPOINT = "https://www.google-analytics.com/mp/collect";
 const MP_TIMEOUT_MS = 4000;
@@ -106,12 +111,23 @@ export function gaIdentityFrom(
   return { clientId: buildFallbackClientId(fallbackKey), isFallback: true };
 }
 
+/**
+ * Sipariş anahtarından TÜRETİLMİŞ, zamandan bağımsız client_id.
+ *
+ * Determinizm şart: havale akışında `order_pending_transfer` sipariş anında,
+ * `purchase` ise günler sonra admin onayında üretiliyor. Kimliğin ikinci
+ * parçası zamana bağlı olsaydı aynı sipariş GA4'te iki ayrı kullanıcı sayılır
+ * ve funnel kopardı. client_id'nin timestamp taşıması GA4 için zorunlu değil;
+ * opak ama kararlı bir dize yeterli.
+ */
 function buildFallbackClientId(key: string): string {
-  let hash = 0;
+  let h1 = 0;
+  let h2 = 0;
   for (let i = 0; i < key.length; i += 1) {
-    hash = (hash * 31 + key.charCodeAt(i)) >>> 0;
+    h1 = (h1 * 31 + key.charCodeAt(i)) >>> 0;
+    h2 = (h2 * 131 + key.charCodeAt(i)) >>> 0;
   }
-  return `${hash}.${Math.floor(Date.now() / 1000)}`;
+  return `${h1}.${h2}`;
 }
 
 export interface GaServerEvent {
@@ -180,8 +196,27 @@ export interface GaPurchaseInput {
   paymentMethod: "card" | "transfer";
 }
 
+/**
+ * Kalem fiyatları KDV DAHİL brüt, indirim kalem seviyesinde verilir.
+ *
+ * `value` (total) KDV dahil ve indirim düşülmüş bir tutar; kalemleri net
+ * bırakırsak GA4'te "Item revenue" ile "Purchase revenue" hiçbir zaman tutmaz
+ * ve monetizasyon raporları güvenilmez olur.
+ *
+ * Brüt taban doğrudan `total + discountAmount` üzerinden türetiliyor —
+ * computeOrderQuote'ta `total = grossBase - discountAmount` olduğu için bu
+ * eşitlik birebir kapanır. Kalemleri tek tek KDV'lemek yuvarlama nedeniyle
+ * ±1 TL sapma bırakırdı.
+ */
 function purchaseItems(input: GaPurchaseInput) {
   const variant = [...input.marketplaces].sort().join("+") || "belirsiz";
+
+  const grossBase = input.total + input.discountAmount;
+  const addonGross =
+    input.managementAddon > 0
+      ? Math.round(input.managementAddon * (1 + VAT_RATE))
+      : 0;
+  const setupGross = grossBase - addonGross;
 
   const items = [
     {
@@ -189,18 +224,21 @@ function purchaseItems(input: GaPurchaseInput) {
       item_name: "CPAS Kurulum + İlk Ay Yönetim",
       item_category: "kurulum",
       item_variant: variant,
-      price: input.setupNet,
+      price: setupGross,
+      // Tüm indirim (kod + havale) tek kalemde: sum(price) - sum(discount) === value.
+      discount: input.discountAmount,
       quantity: 1,
     },
   ];
 
-  if (input.managementAddon > 0) {
+  if (addonGross > 0) {
     items.push({
       item_id: "management-addon",
       item_name: "Devam Ayı Yönetim (peşin)",
       item_category: "yonetim",
       item_variant: variant,
-      price: input.managementAddon,
+      price: addonGross,
+      discount: 0,
       quantity: 1,
     });
   }

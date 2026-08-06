@@ -9,6 +9,8 @@
  * olayı sunucudan, Measurement Protocol ile gönderilir (bkz. lib/ga-server.ts).
  */
 
+import { VAT_RATE } from "@/lib/site";
+
 export const GA_ID = process.env.NEXT_PUBLIC_GA_ID ?? "";
 
 /** GA_ID tanımlı değilse (dev/preview) hiçbir şey gönderilmez. */
@@ -28,24 +30,42 @@ export interface GaItem {
   item_name: string;
   item_category: string;
   item_variant: string;
+  /** KDV DAHİL brüt birim fiyat. */
   price: number;
+  /** Kalem indirimi — sum(price) - sum(discount) === event value. */
+  discount: number;
   quantity: number;
 }
 
 export interface CheckoutItemsInput {
   marketplaces: string[];
-  /** Kurulum toplamı (KDV hariç net, 2. pazaryeri indirimi dahil). */
-  setupNet: number;
-  /** Devam ayı eklentisi — seçilmediyse 0. */
+  /** Devam ayı eklentisi (KDV hariç net) — seçilmediyse 0. */
   managementAddon: number;
+  /** Ödenecek KDV dahil tutar (indirimler düşülmüş). */
+  total: number;
+  /** Toplam indirim (kod + havale), KDV dahil tutar üzerinden. */
+  discountAmount: number;
 }
 
 /**
  * Sepet kalemlerini üretir. Pazaryeri kombinasyonu `item_variant` olarak
  * taşınır; GA4'te "hangi pazaryeri ikilisi daha çok satıyor" böyle kırılır.
+ *
+ * Fiyatlar KDV DAHİL: olayın `value` alanı da KDV dahil ve indirimli olduğu
+ * için kalemleri net bırakmak GA4'te Item revenue ile Purchase revenue'yu
+ * kalıcı olarak uyumsuz yapardı. Brüt taban `total + discountAmount`'tan
+ * türetiliyor (computeOrderQuote'ta total = grossBase - discountAmount),
+ * böylece eşitlik yuvarlama sapması olmadan kapanır.
  */
 export function buildCheckoutItems(input: CheckoutItemsInput): GaItem[] {
   const variant = [...input.marketplaces].sort().join("+") || "belirsiz";
+
+  const grossBase = input.total + input.discountAmount;
+  const addonGross =
+    input.managementAddon > 0
+      ? Math.round(input.managementAddon * (1 + VAT_RATE))
+      : 0;
+  const setupGross = grossBase - addonGross;
 
   const items: GaItem[] = [
     {
@@ -53,18 +73,20 @@ export function buildCheckoutItems(input: CheckoutItemsInput): GaItem[] {
       item_name: "CPAS Kurulum + İlk Ay Yönetim",
       item_category: "kurulum",
       item_variant: variant,
-      price: input.setupNet,
+      price: setupGross,
+      discount: input.discountAmount,
       quantity: 1,
     },
   ];
 
-  if (input.managementAddon > 0) {
+  if (addonGross > 0) {
     items.push({
       item_id: "management-addon",
       item_name: "Devam Ayı Yönetim (peşin)",
       item_category: "yonetim",
       item_variant: variant,
-      price: input.managementAddon,
+      price: addonGross,
+      discount: 0,
       quantity: 1,
     });
   }
@@ -85,10 +107,14 @@ export function trackEvent(
   gtag("event", name, params);
 }
 
-export function trackPageView(path: string): void {
+/**
+ * `page_path` bilinçli olarak gönderilmiyor: GA4 sayfa yolunu `page_location`
+ * üzerinden kendisi türetir, `page_path` ise Universal Analytics kalıntısı olarak
+ * boşta bir özel parametreye dönüşür.
+ */
+export function trackPageView(): void {
   if (!isAnalyticsEnabled || typeof window === "undefined") return;
   gtag("event", "page_view", {
-    page_path: path,
     page_location: window.location.href,
     page_title: document.title,
   });
@@ -97,8 +123,6 @@ export function trackPageView(path: string): void {
 /* ───────────────────────── Checkout funnel ───────────────────────── */
 
 export interface CheckoutEventInput extends CheckoutItemsInput {
-  /** Ödenecek KDV dahil tutar. */
-  total: number;
   discountCode?: string | null;
 }
 

@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextResponse, after } from "next/server";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { getOrders, updateOrderStatus, type Order } from "@/lib/db";
 import { createJaleOnboardingInvite } from "@/lib/jaleOnboarding";
@@ -43,18 +43,21 @@ export async function PATCH(req: Request) {
       // Havale siparişi onaylandı → ciro şimdi kesinleşti. Kart siparişleri
       // purchase'ı zaten callback'te gönderdi; tekrar göndermiyoruz.
       // (Gönderilse bile GA4 aynı transaction_id'yi eler, ama niyeti net tut.)
+      // after(): panel yanıtı MP isteğini beklemesin.
       if (order.paymentMethod === "transfer") {
-        await sendGaPurchase(gaIdentityFrom(order, order.id), {
-          transactionId: order.id,
-          total: order.total,
-          vatAmount: order.vatAmount,
-          discountAmount: order.discountAmount,
-          discountCode: order.discountCode,
-          marketplaces: order.marketplaces,
-          setupNet: order.setupNet,
-          managementAddon: order.managementAddon,
-          paymentMethod: "transfer",
-        });
+        after(() =>
+          sendGaPurchase(gaIdentityFrom(order, order.id), {
+            transactionId: order.id,
+            total: order.total,
+            vatAmount: order.vatAmount,
+            discountAmount: order.discountAmount,
+            discountCode: order.discountCode,
+            marketplaces: order.marketplaces,
+            setupNet: order.setupNet,
+            managementAddon: order.managementAddon,
+            paymentMethod: "transfer",
+          })
+        );
       }
 
       try {
