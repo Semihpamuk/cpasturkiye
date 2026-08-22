@@ -20,9 +20,9 @@ export const ORGANIZATION_JSONLD = {
   url: SITE.url,
   logo: {
     "@type": "ImageObject",
-    url: `${SITE.url}/og-image.png`,
-    width: 1200,
-    height: 630,
+    url: `${SITE.url}/brand/icon-512.png`,
+    width: 512,
+    height: 512,
   },
   image: `${SITE.url}/og-image.png`,
   description: SITE.description,
