@@ -130,7 +130,7 @@ export default function ServiceScopePage() {
         ])}
       />
       {/* Hero */}
-      <section className="bg-gradient-to-b from-ink-50 to-white px-4 pb-12 pt-16 sm:px-6 lg:px-8">
+      <section className="bg-gradient-to-b from-ink-50 to-paper px-4 pb-12 pt-16 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-4xl text-center">
           <span className="inline-flex items-center gap-2 rounded-full border border-brand-200 bg-white px-4 py-1.5 text-xs font-semibold text-brand-700 shadow-sm">
             Hizmet kapsamı

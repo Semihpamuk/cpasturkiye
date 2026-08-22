@@ -649,7 +649,7 @@ export default function CheckoutClient() {
   const isTransfer = paymentMethod === "transfer";
 
   return (
-    <section className="bg-gradient-to-b from-ink-50 to-white px-4 py-14 sm:px-6 lg:px-8">
+    <section className="bg-gradient-to-b from-ink-50 to-paper px-4 py-14 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-6xl">
         <div className="max-w-2xl">
           <h1 className="font-display text-3xl font-extrabold tracking-tight text-ink-900 sm:text-4xl">

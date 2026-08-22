@@ -64,7 +64,7 @@ export default async function PricingPage() {
           { name: "Fiyatlandırma", path: "/fiyatlandirma" },
         ])}
       />
-      <section className="bg-gradient-to-b from-ink-50 to-white px-4 pb-12 pt-16 sm:px-6 lg:px-8">
+      <section className="bg-gradient-to-b from-ink-50 to-paper px-4 pb-12 pt-16 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
           <h1 className="font-display text-4xl font-extrabold tracking-tight text-ink-900 sm:text-5xl">
             Tek paket. Sürpriz yok.

@@ -34,8 +34,8 @@ export default function AnimatedBeamFlow({ className = "" }: { className?: strin
           <stop offset="100%" stopColor="#0866ff" stopOpacity="0" />
         </linearGradient>
         <linearGradient id="hub-fill" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#1e293b" />
-          <stop offset="100%" stopColor="#0f172a" />
+          <stop offset="0%" stopColor="#23241c" />
+          <stop offset="100%" stopColor="#14150f" />
         </linearGradient>
         <filter id="node-glow" x="-40%" y="-40%" width="180%" height="180%">
           <feGaussianBlur stdDeviation="8" result="blur" />
@@ -52,13 +52,13 @@ export default function AnimatedBeamFlow({ className = "" }: { className?: strin
           key={`base-${s.label}`}
           d={`M 208 ${s.cy} C 268 ${s.cy}, 260 220, 306 220`}
           fill="none"
-          stroke="#334155"
+          stroke="#3a3b31"
           strokeWidth="1.5"
           strokeOpacity="0.5"
         />
       ))}
-      <path d="M 454 196 C 510 180, 512 152, 552 148" fill="none" stroke="#334155" strokeWidth="1.5" strokeOpacity="0.5" />
-      <path d="M 454 244 C 510 260, 512 288, 552 292" fill="none" stroke="#334155" strokeWidth="1.5" strokeOpacity="0.5" />
+      <path d="M 454 196 C 510 180, 512 152, 552 148" fill="none" stroke="#3a3b31" strokeWidth="1.5" strokeOpacity="0.5" />
+      <path d="M 454 244 C 510 260, 512 288, 552 292" fill="none" stroke="#3a3b31" strokeWidth="1.5" strokeOpacity="0.5" />
 
       {/* ── Işıklı beam hatları ── */}
       {SOURCES.map((s, i) =>
@@ -97,13 +97,13 @@ export default function AnimatedBeamFlow({ className = "" }: { className?: strin
       {/* ── Kaynak düğümleri: pazaryerleri ── */}
       {SOURCES.map((s) => (
         <g key={s.label}>
-          <rect x="28" y={s.cy - 30} width="180" height="60" rx="14" fill="#0f172a" stroke="#334155" strokeWidth="1" />
+          <rect x="28" y={s.cy - 30} width="180" height="60" rx="14" fill="#171812" stroke="#3a3b31" strokeWidth="1" />
           <circle cx="58" cy={s.cy} r="7" fill={s.color} className="flow-node" />
-          <text x="76" y={s.cy + (s.soon ? -2 : 5)} fill="#e2e8f0" fontSize="16" fontWeight="700" fontFamily="var(--font-display), sans-serif">
+          <text x="76" y={s.cy + (s.soon ? -2 : 5)} fill="#eceade" fontSize="16" fontWeight="700" fontFamily="var(--font-sans), sans-serif">
             {s.label}
           </text>
           {s.soon && (
-            <text x="76" y={s.cy + 18} fill="#94a3b8" fontSize="11" fontWeight="600">
+            <text x="76" y={s.cy + 18} fill="#94958a" fontSize="11" fontWeight="600">
               ÇOK YAKINDA
             </text>
           )}
@@ -112,39 +112,37 @@ export default function AnimatedBeamFlow({ className = "" }: { className?: strin
 
       {/* ── Merkez düğüm: CPAS Türkiye ── */}
       <g filter="url(#node-glow)">
-        <rect x="306" y="158" width="148" height="124" rx="20" fill="url(#hub-fill)" stroke="#475569" strokeWidth="1.2" />
+        <rect x="306" y="158" width="148" height="124" rx="20" fill="url(#hub-fill)" stroke="#565749" strokeWidth="1.2" />
       </g>
-      <text x="380" y="212" textAnchor="middle" fontSize="26" fontWeight="800" fontFamily="var(--font-display), sans-serif">
-        <tspan fill="#ffffff">c</tspan>
-        <tspan fill="#4d94ff">p</tspan>
-        <tspan fill="#ffffff">a</tspan>
-        <tspan fill="#fb863c">s</tspan>
+      <text x="380" y="214" textAnchor="middle" fontSize="27" fontWeight="620" fontFamily="var(--font-display), serif">
+        <tspan fill="#f3ecdd">CPAS</tspan>
+        <tspan fill="#e0502c">.</tspan>
       </text>
-      <text x="380" y="234" textAnchor="middle" fill="#94a3b8" fontSize="11" fontWeight="700" letterSpacing="3">
+      <text x="380" y="234" textAnchor="middle" fill="#94958a" fontSize="11" fontWeight="700" letterSpacing="3">
         TÜRKİYE
       </text>
-      <text x="380" y="258" textAnchor="middle" fill="#64748b" fontSize="10" fontWeight="600">
+      <text x="380" y="258" textAnchor="middle" fill="#6e6f64" fontSize="10" fontWeight="600">
         KURULUM + YÖNETİM
       </text>
 
       {/* ── Hedef düğümler: Meta reklamları ── */}
       <g>
-        <rect x="552" y="118" width="180" height="60" rx="14" fill="#0f172a" stroke="#1d4ed8" strokeWidth="1" />
+        <rect x="552" y="118" width="180" height="60" rx="14" fill="#171812" stroke="#1d4ed8" strokeWidth="1" />
         <circle cx="582" cy="148" r="7" fill="#0866ff" className="flow-node" />
-        <text x="600" y="143" fill="#e2e8f0" fontSize="15" fontWeight="700" fontFamily="var(--font-display), sans-serif">
+        <text x="600" y="143" fill="#eceade" fontSize="15" fontWeight="700" fontFamily="var(--font-sans), sans-serif">
           Facebook
         </text>
-        <text x="600" y="161" fill="#94a3b8" fontSize="11" fontWeight="600">
+        <text x="600" y="161" fill="#94958a" fontSize="11" fontWeight="600">
           Katalog reklamları
         </text>
       </g>
       <g>
-        <rect x="552" y="262" width="180" height="60" rx="14" fill="#0f172a" stroke="#1d4ed8" strokeWidth="1" />
+        <rect x="552" y="262" width="180" height="60" rx="14" fill="#171812" stroke="#1d4ed8" strokeWidth="1" />
         <circle cx="582" cy="292" r="7" fill="#4d94ff" className="flow-node" />
-        <text x="600" y="287" fill="#e2e8f0" fontSize="15" fontWeight="700" fontFamily="var(--font-display), sans-serif">
+        <text x="600" y="287" fill="#eceade" fontSize="15" fontWeight="700" fontFamily="var(--font-sans), sans-serif">
           Instagram
         </text>
-        <text x="600" y="305" fill="#94a3b8" fontSize="11" fontWeight="600">
+        <text x="600" y="305" fill="#94958a" fontSize="11" fontWeight="600">
           Dinamik ürün reklamları
         </text>
       </g>

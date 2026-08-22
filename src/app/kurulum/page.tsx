@@ -70,7 +70,7 @@ export default async function SetupPage() {
           { name: "Kurulum Süreci", path: "/kurulum" },
         ])}
       />
-      <section className="bg-gradient-to-b from-ink-50 to-white px-4 pb-12 pt-16 sm:px-6 lg:px-8">
+      <section className="bg-gradient-to-b from-ink-50 to-paper px-4 pb-12 pt-16 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
           <span className="inline-block rounded-full border border-brand-200 bg-white px-4 py-1.5 text-xs font-semibold text-brand-700 shadow-sm">
             1. Ay — Kurulum + İlk Ay Yönetim

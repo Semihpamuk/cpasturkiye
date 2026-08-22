@@ -34,7 +34,7 @@ export default function Footer() {
         <div className="grid grid-cols-2 gap-10 md:grid-cols-4 lg:grid-cols-5">
           <div className="col-span-2 lg:col-span-2">
             <Link href="/">
-              <Logo className="text-2xl" />
+              <Logo className="h-7" />
             </Link>
             <p className="mt-4 max-w-sm text-sm leading-relaxed text-ink-500">
               Trendyol, Hepsiburada ve Amazon mağazaları için Meta CPAS kurulum ve

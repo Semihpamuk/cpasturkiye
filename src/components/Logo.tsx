@@ -1,32 +1,29 @@
+import Image from "next/image";
+
 interface LogoProps {
-  /** Tailwind text-size + spacing classes to control overall scale */
+  /** Yükseklik sınıfı bekler (ör. "h-7"); genişlik orana göre otomatik. */
   className?: string;
-  /** true => açık zemin (koyu harfler), false => koyu zemin (açık harfler) */
+  /** true => açık zemin (yeşil harfler), false => koyu zemin (fildişi harfler) */
   onLight?: boolean;
 }
 
 /**
- * "cpas Türkiye" wordmark — arka planı yok (şeffaf), vektörel gibi
- * ölçeklenir. Marka kimliği: mavi "p" (Meta) + turuncu "s" (Trendyol/brand).
+ * "CPAS." wordmark — "Nokta" kimliği, public/brand/ altındaki vektörden.
+ * Tek satır kilit: CPAS. + sağda TÜRKİYE (viewBox 1901×387).
  */
 export default function Logo({ className, onLight = true }: LogoProps) {
-  const base = onLight ? "text-ink-900" : "text-white";
-  const muted = onLight ? "text-ink-500" : "text-white/60";
-  // Turuncu "s" zemine göre ton değiştirir: açıkta brand-700, koyuda brand-600.
-  const accent = onLight ? "text-brand-700" : "text-brand-600";
+  const src = onLight
+    ? "/brand/cpas-tek-satir-acik-zemin.svg"
+    : "/brand/cpas-tek-satir-koyu-zemin.svg";
 
   return (
-    <span
-      aria-label="CPAS Türkiye"
-      className={`inline-flex items-end font-display font-extrabold leading-none tracking-tight ${className ?? "text-2xl"}`}
-    >
-      <span className={base}>c</span>
-      <span className="text-meta">p</span>
-      <span className={base}>a</span>
-      <span className={accent}>s</span>
-      <span className={`ml-1.5 pb-0.5 text-[0.34em] font-bold uppercase tracking-[0.22em] ${muted}`}>
-        Türkiye
-      </span>
-    </span>
+    <Image
+      src={src}
+      alt="CPAS Türkiye"
+      width={1901}
+      height={387}
+      priority
+      className={`w-auto ${className ?? "h-7"}`}
+    />
   );
 }

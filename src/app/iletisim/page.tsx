@@ -21,7 +21,7 @@ export default function ContactPage() {
           { name: "İletişim", path: "/iletisim" },
         ])}
       />
-      <section className="bg-gradient-to-b from-brand-50/60 to-white px-4 py-16 sm:px-6 lg:px-8">
+      <section className="bg-gradient-to-b from-brand-50/60 to-paper px-4 py-16 sm:px-6 lg:px-8">
         <div className="mx-auto grid max-w-6xl gap-14 lg:grid-cols-2">
         <div>
           <h1 className="font-display text-4xl font-extrabold tracking-tight text-ink-900 sm:text-5xl">

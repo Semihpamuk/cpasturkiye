@@ -59,14 +59,14 @@ export default function AboutPage() {
           { name: "Hakkımızda", path: "/hakkimizda" },
         ])}
       />
-      <section className="bg-gradient-to-b from-brand-50/60 to-white px-4 pb-12 pt-16 sm:px-6 lg:px-8">
+      <section className="bg-gradient-to-b from-brand-50/60 to-paper px-4 pb-12 pt-16 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
           <Image
-            src="/og-image.png"
+            src="/brand/cpas-birincil-acik-zemin.svg"
             alt="CPAS Türkiye"
-            width={320}
-            height={168}
-            className="mx-auto h-20 w-auto rounded-xl"
+            width={1339}
+            height={567}
+            className="mx-auto h-24 w-auto"
             priority
           />
           <h1 className="mt-6 font-display text-4xl font-extrabold tracking-tight text-ink-900 sm:text-5xl">

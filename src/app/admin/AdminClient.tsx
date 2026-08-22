@@ -142,7 +142,7 @@ export default function AdminClient() {
           onSubmit={handleLogin}
           className="w-full max-w-sm rounded-2xl border border-ink-700 bg-ink-800/80 p-8 shadow-2xl backdrop-blur"
         >
-          <Logo className="text-2xl" onLight={false} />
+          <Logo className="h-7" onLight={false} />
           <p className="mt-1 text-xs font-semibold uppercase tracking-wider text-ink-400">Yönetim Paneli</p>
           <p className="mt-5 text-sm text-ink-300">Devam etmek için şifreni gir.</p>
           <input
@@ -187,7 +187,7 @@ export default function AdminClient() {
       <header className="sticky top-0 z-10 border-b border-ink-200 bg-white">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-2.5">
-            <Logo className="text-xl" />
+            <Logo className="h-6" />
             <span className="hidden rounded-full bg-ink-100 px-2 py-0.5 text-[11px] font-semibold text-ink-500 sm:inline">
               Yönetim
             </span>

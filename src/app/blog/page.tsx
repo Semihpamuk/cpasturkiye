@@ -23,7 +23,7 @@ export default function BlogPage() {
         ])}
       />
       {/* Hero */}
-      <section className="bg-gradient-to-b from-brand-50/60 to-white px-4 pb-14 pt-16 sm:px-6 lg:px-8">
+      <section className="bg-gradient-to-b from-brand-50/60 to-paper px-4 pb-14 pt-16 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-5xl">
           <span className="inline-flex items-center gap-2 rounded-full border border-brand-200 bg-white px-4 py-1.5 text-xs font-semibold text-brand-700 shadow-sm">
             <span className="relative flex h-2 w-2">

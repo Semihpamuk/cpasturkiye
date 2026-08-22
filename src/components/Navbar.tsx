@@ -44,12 +44,12 @@ export default function Navbar() {
       className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
         transparent
           ? "border-b border-transparent bg-transparent"
-          : "border-b border-ink-100 bg-white/90 shadow-sm backdrop-blur-md"
+          : "border-b border-ink-100 bg-paper/90 shadow-sm backdrop-blur-md"
       }`}
     >
       <nav className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link href="/" className="flex items-center" aria-label="Ana sayfa">
-          <Logo className="text-2xl" onLight={!transparent} />
+          <Logo className="h-7" onLight={!transparent} />
         </Link>
 
         <div className="hidden items-center gap-7 lg:flex">
