@@ -120,6 +120,8 @@ export interface Lead {
   monthlyOrders: string;
   message: string;
   status: "new" | "contacted" | "closed";
+  /** SatisCRM'e başarıyla iletildiği an (ISO). Yoksa bekliyor — sonraki başvuruda tekrar denenir. */
+  crmSyncedAt?: string;
 }
 
 export interface PricingSettings {
@@ -280,6 +282,16 @@ export async function updateLeadStatus(
   await writeCollection(
     "leads",
     leads.map((l) => (l.id === id ? { ...l, status } : l))
+  );
+}
+
+export async function markLeadCrmSynced(id: string): Promise<void> {
+  const leads = await getLeads();
+  await writeCollection(
+    "leads",
+    leads.map((l) =>
+      l.id === id ? { ...l, crmSyncedAt: new Date().toISOString() } : l
+    )
   );
 }
 

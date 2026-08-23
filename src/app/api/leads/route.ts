@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { addLead, generateId } from "@/lib/db";
+import { syncPendingLeadsToCrm } from "@/lib/crm-sync";
 
 export async function POST(req: Request) {
   try {
@@ -30,6 +31,11 @@ export async function POST(req: Request) {
       message: String(body.message || "").slice(0, 2000),
       status: "new",
     });
+
+    // Lead diske yazıldı — SatisCRM'e iletim başarısız olsa da veri kaybolmaz,
+    // bekleyenler bir sonraki başvuruda tekrar denenir (bkz. lib/crm-sync.ts).
+    // Ziyaretçi CRM'i beklemesin diye await YOK; Node sunucusu yanıttan sonra bitirir.
+    void syncPendingLeadsToCrm();
 
     return NextResponse.json({ success: true });
   } catch {
