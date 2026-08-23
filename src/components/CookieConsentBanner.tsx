@@ -45,9 +45,13 @@ export default function CookieConsentBanner() {
     setIsVisible(false);
   }
 
+  // role="dialog" DEĞİL: bant modal değil, odağı hapsetmiyor ve sayfayla
+  // etkileşimi engellemiyor. Ekran okuyucuya "diyalog açıldı, odak burada"
+  // beklentisi yaratmamak için landmark (region) olarak işaretlenir;
+  // aria-live görünür olduğunda içeriğini bir kez duyurur.
   return (
     <div
-      role="dialog"
+      role="region"
       aria-live="polite"
       aria-label="Çerez tercihi"
       className="fixed inset-x-0 bottom-0 z-50 px-4 pb-4 sm:px-6 sm:pb-6"
