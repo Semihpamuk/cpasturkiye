@@ -9,19 +9,21 @@ interface LogoProps {
 
 /**
  * "CPAS." wordmark — "Nokta" kimliği, public/brand/ altındaki vektörden.
- * Tek satır kilit: CPAS. + sağda TÜRKİYE (viewBox 1901×387).
+ * Kompakt kilit (viewBox 1349×377): küçük boyutlarda "TÜRKİYE" mikro-metni
+ * okunmadığı için navbar/footer/admin sade "CPAS." kullanır; tam kilitler
+ * (tek satır / birincil) büyük yüzeyler için public/brand/ altında durur.
  */
 export default function Logo({ className, onLight = true }: LogoProps) {
   const src = onLight
-    ? "/brand/cpas-tek-satir-acik-zemin.svg"
-    : "/brand/cpas-tek-satir-koyu-zemin.svg";
+    ? "/brand/cpas-kisa-acik-zemin.svg"
+    : "/brand/cpas-kisa-koyu-zemin.svg";
 
   return (
     <Image
       src={src}
       alt="CPAS Türkiye"
-      width={1901}
-      height={387}
+      width={1349}
+      height={377}
       priority
       className={`w-auto ${className ?? "h-7"}`}
     />
