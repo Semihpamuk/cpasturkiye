@@ -4,12 +4,13 @@ const post: BlogPostSource = {
   slug: "cpas-nedir-trendyol-saticilari-icin-rehber",
   title: "CPAS Nedir? Trendyol Satıcıları İçin Eksiksiz Rehber (2026)",
   excerpt:
-    "Meta'nın pazaryeri satıcıları için geliştirdiği CPAS çözümünü Trendyol satıcısı gözünden tüm detaylarıyla anlatıyoruz: nasıl çalışır, kimler kullanabilir, ne kadar bütçe ister, hangi hatalar para yakar?",
+    "CPAS, Meta'nın pazaryeri satıcılarını Facebook ve Instagram reklamlarıyla buluşturan ortak reklam modelidir. Nasıl çalışır, kimler kullanabilir, ne kadar bütçe ister? Trendyol satıcısı gözünden sade bir rehber.",
   date: "2026-05-12",
   updated: "2026-08-06",
   category: "Rehber",
   keywords: [
     "CPAS nedir",
+    "CPAS ne demek",
     "Trendyol CPAS",
     "Collaborative Ads",
     "Meta CPAS",

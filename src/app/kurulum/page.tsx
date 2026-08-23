@@ -10,7 +10,7 @@ import { breadcrumbJsonLd } from "@/lib/seo";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Kurulum Süreci",
+  title: `CPAS Kurulumu: ${DEFAULTS.setupDays} İş Gününde Anahtar Teslim`,
   description: `Meta CPAS kurulumunu uzman ekibimiz yapar: pazaryeri yetkilendirme, Meta Business kurulumu, katalog bağlantısı, ölçümleme ve kampanya mimarisi. ${DEFAULTS.setupDays} iş günü içinde reklamlarınız yayında.`,
   alternates: { canonical: "/kurulum" },
 };
