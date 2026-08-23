@@ -24,12 +24,13 @@ export default function CookieConsentBanner() {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    if (readStoredConsent() === null) setIsVisible(true);
-
-    // Footer'daki "Çerez Tercihleri" tercihi sıfırlayıp bu olayı yayınlar.
-    const show = () => setIsVisible(true);
-    window.addEventListener(CONSENT_CHANGED_EVENT, show);
-    return () => window.removeEventListener(CONSENT_CHANGED_EVENT, show);
+    // Olay artık her tercih değişiminde yayınlanıyor (onay/ret dahil); band
+    // yalnızca ortada karar yokken görünmeli, o yüzden koşulsuz açmak yerine
+    // kayıtlı tercihe bakılır.
+    const sync = () => setIsVisible(readStoredConsent() === null);
+    sync();
+    window.addEventListener(CONSENT_CHANGED_EVENT, sync);
+    return () => window.removeEventListener(CONSENT_CHANGED_EVENT, sync);
   }, []);
 
   if (!isVisible) return null;

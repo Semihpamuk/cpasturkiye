@@ -2,10 +2,14 @@
 
 import Script from "next/script";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { useEffect, useState } from "react";
 import CookieConsentBanner from "@/components/CookieConsentBanner";
 import { GA_ID, isAnalyticsEnabled, trackPageView } from "@/lib/analytics";
-import { CONSENT_STORAGE_KEY } from "@/lib/consent";
+import {
+  CONSENT_CHANGED_EVENT,
+  CONSENT_STORAGE_KEY,
+  readStoredConsent,
+} from "@/lib/consent";
 
 /**
  * Google Consent Mode v2 varsayılanları.
@@ -14,13 +18,10 @@ import { CONSENT_STORAGE_KEY } from "@/lib/consent";
  * `analytics_storage` da varsayılan olarak `denied`: KVKK Kurulu'nun çerez
  * rehberi analitik çerezleri "zorunlu" saymıyor, açık rıza gerekiyor.
  *
- * Kayıtlı tercih inline script'in İÇİNDE okunuyor: gtag consent durumunu
- * hatırlamaz, her sayfa yüklemesinde biz vermek zorundayız. React efektiyle
- * sonradan `update` çekmek, ilk olaylar gönderildikten sonraya kalabileceği
- * için yarış koşulu yaratır.
- *
- * `wait_for_update`, band'dan gelen onayın ilk olayları yakalayabilmesi için
- * gtag'e kısa bir bekleme süresi tanır.
+ * gtag script'leri yalnızca rıza `granted` iken render edilir (aşağıdaki
+ * bileşene bak) — rıza gelmeden Google'a çerezsiz ping dahil hiçbir istek
+ * gitmez. Kayıtlı tercih yine de inline script'in İÇİNDE okunuyor: mount ile
+ * script'in çalışması arasında tercih değişirse son durum geçerli olsun.
  */
 const INIT_SCRIPT = `
 window.dataLayer = window.dataLayer || [];
@@ -73,6 +74,19 @@ const EXCLUDED_PREFIXES = ["/admin"];
 
 export default function Analytics() {
   const pathname = usePathname();
+  // false = rıza yok ya da henüz okumadık (SSR/ilk render). localStorage
+  // yalnızca efekt içinde okunur ki hydration uyuşmazlığı olmasın.
+  const [hasConsent, setHasConsent] = useState(false);
+
+  useEffect(() => {
+    const sync = () => setHasConsent(readStoredConsent() === "granted");
+    sync();
+    // Banddan onay gelince script'ler burada mount olur; ilk page_view'ı
+    // INIT_SCRIPT'teki `config` çağrısı rıza verilmiş durumda atar.
+    window.addEventListener(CONSENT_CHANGED_EVENT, sync);
+    return () => window.removeEventListener(CONSENT_CHANGED_EVENT, sync);
+  }, []);
+
   const isExcluded = EXCLUDED_PREFIXES.some((prefix) =>
     pathname.startsWith(prefix)
   );
@@ -81,18 +95,26 @@ export default function Analytics() {
 
   return (
     <>
-      {/* Sıra önemli: kuyruk (dataLayer) gtag.js yüklenmeden önce hazır olmalı. */}
-      <Script
-        id="ga-init"
-        strategy="afterInteractive"
-        dangerouslySetInnerHTML={{ __html: INIT_SCRIPT }}
-      />
-      <Script
-        id="ga-lib"
-        src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
-        strategy="afterInteractive"
-      />
-      <PageViewTracker />
+      {/* Rıza gelmeden gtag hiç yüklenmez — Google'a sıfır istek (KVKK).
+          Aynı oturumda geri alınırsa script bellekte kalır ama consent.ts'in
+          `denied` güncellemesi ölçümü durdurur; sonraki sayfa yüklemesinde
+          script zaten hiç yüklenmez. */}
+      {hasConsent && (
+        <>
+          {/* Sıra önemli: kuyruk (dataLayer) gtag.js yüklenmeden önce hazır olmalı. */}
+          <Script
+            id="ga-init"
+            strategy="afterInteractive"
+            dangerouslySetInnerHTML={{ __html: INIT_SCRIPT }}
+          />
+          <Script
+            id="ga-lib"
+            src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
+            strategy="afterInteractive"
+          />
+          <PageViewTracker />
+        </>
+      )}
       {/* Band yalnızca ölçüm açıkken ve /admin dışında — üstteki guard'ın altında. */}
       <CookieConsentBanner />
     </>

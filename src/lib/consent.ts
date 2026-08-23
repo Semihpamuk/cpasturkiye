@@ -16,10 +16,12 @@
 export const CONSENT_STORAGE_KEY = "cpas_cookie_consent";
 
 /**
- * Tercih sıfırlandığında bandın tekrar açılması için yayınlanır.
+ * Tercih her değiştiğinde (onay, ret, sıfırlama) yayınlanır.
  *
- * Band ile onu tekrar açan buton (footer) farklı ağaçlarda duruyor; araya
- * context/store koymak yerine tek yönlü bir pencere olayı yeterli.
+ * İki dinleyicisi var: band görünürlüğünü tazeler, Analytics bileşeni gtag
+ * script'lerini yükleyip yüklemeyeceğine karar verir. Farklı ağaçlarda duran
+ * bu parçalar için araya context/store koymak yerine tek yönlü bir pencere
+ * olayı yeterli.
  */
 export const CONSENT_CHANGED_EVENT = "cpas:consent-changed";
 
@@ -44,6 +46,8 @@ function setConsent(value: ConsentValue): void {
     // Storage yazılamıyorsa tercih kalıcı olmaz; gtag güncellemesi yine de geçerli.
   }
   window.gtag?.("consent", "update", { analytics_storage: value });
+  // Analytics bileşeni bu olaya bakarak gtag script'lerini yükler/kaldırır.
+  window.dispatchEvent(new Event(CONSENT_CHANGED_EVENT));
 }
 
 export function grantAnalyticsConsent(): void {
