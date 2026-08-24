@@ -10,7 +10,8 @@ import { getLeads, markLeadCrmSynced, type Lead } from "@/lib/db";
  * kayıt üretmez (409 yerine "skipped" döner).
  *
  * Env yoksa entegrasyon güvenle pasiftir (SatisCRM'in Meta deseniyle aynı ilke).
- * Aynı sunucuda ayrı app'ler: CRM_WEBHOOK_URL Easypanel iç ağ adresi olabilir.
+ * CRM FARKLI bir sunucuda (ayrı Easypanel VPS'i) — CRM_WEBHOOK_URL dış HTTPS
+ * adresidir (https://satis.isimdijital.com/...); token + TLS yeterli koruma.
  */
 
 const TIMEOUT_MS = 5000;
