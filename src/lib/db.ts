@@ -144,9 +144,9 @@ export interface SiteSettings {
 
 export const DEFAULT_SETTINGS: SiteSettings = {
   pricing: {
-    listSetupFee: 39000,
-    setupFee: 25000,
-    managementFee: 16000,
+    listSetupFee: 44900,
+    setupFee: 30000,
+    managementFee: 17000,
     setupDays: 7,
   },
   references: [

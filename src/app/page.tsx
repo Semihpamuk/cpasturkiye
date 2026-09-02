@@ -13,7 +13,11 @@ import CtaSection from "@/components/CtaSection";
 import Reveal from "@/components/Reveal";
 import TrustStats from "@/components/TrustStats";
 import JsonLd from "@/components/JsonLd";
-import { SITE, PRICING, formatTRY } from "@/lib/site";
+import { SITE, PRICING as DEFAULTS, formatTRY, type PricingValues } from "@/lib/site";
+import { getSettings } from "@/lib/db";
+
+// Fiyatlar admin panelinden güncellenebildiği için sayfa istek anında render edilir
+export const dynamic = "force-dynamic";
 
 /* ─────────────────────────── İçerik verileri ─────────────────────────── */
 
@@ -139,7 +143,7 @@ const TESTIMONIALS = [
   },
 ];
 
-const FAQ_ITEMS: FaqItem[] = [
+const buildFaqItems = (PRICING: PricingValues): FaqItem[] => [
   {
     question: "CPAS (Collaborative Ads) tam olarak nedir?",
     answer:
@@ -177,7 +181,7 @@ const FAQ_ITEMS: FaqItem[] = [
 
 /* ─────────────────────────── Yapısal veri (SEO) ─────────────────────────── */
 
-const SERVICE_JSONLD = {
+const buildServiceJsonLd = (PRICING: PricingValues) => ({
   "@context": "https://schema.org",
   "@type": "Service",
   name: "Meta CPAS Kurulum ve Reklam Yönetimi",
@@ -204,25 +208,28 @@ const SERVICE_JSONLD = {
       priceCurrency: "TRY",
     },
   ],
-};
+});
 
-const FAQ_JSONLD = {
+const buildFaqJsonLd = (items: FaqItem[]) => ({
   "@context": "https://schema.org",
   "@type": "FAQPage",
-  mainEntity: FAQ_ITEMS.map((item) => ({
+  mainEntity: items.map((item) => ({
     "@type": "Question",
     name: item.question,
     acceptedAnswer: { "@type": "Answer", text: item.answer },
   })),
-};
+});
 
 /* ─────────────────────────── Sayfa ─────────────────────────── */
 
-export default function HomePage() {
+export default async function HomePage() {
+  const { pricing } = await getSettings();
+  const PRICING = { ...DEFAULTS, ...pricing };
+  const FAQ_ITEMS = buildFaqItems(PRICING);
   return (
     <>
-      <JsonLd data={SERVICE_JSONLD} />
-      <JsonLd data={FAQ_JSONLD} />
+      <JsonLd data={buildServiceJsonLd(PRICING)} />
+      <JsonLd data={buildFaqJsonLd(FAQ_ITEMS)} />
 
       {/* ═══ HERO ═══ */}
       <Hero />

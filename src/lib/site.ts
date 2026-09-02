@@ -32,7 +32,7 @@ export type MarketplaceKey = (typeof MARKETPLACES)[number]["key"];
  *
  * Kurulum paketi (tek seferlik, online/havale ile ödenir):
  *   - Kurulum + İLK AY yönetim dahildir.
- *   - Liste fiyatı 39.000₺, kampanyalı 25.000₺ (çapa fiyat gösterimi).
+ *   - Liste fiyatı 44.900₺, kampanyalı 30.000₺ (çapa fiyat gösterimi).
  *
  * Aylık yönetim (devam) İSTEĞE BAĞLIDIR — taahhüt yok:
  *   - Müşteri sadece kurulumu alıp bırakabilir.
@@ -53,11 +53,11 @@ export type MarketplaceKey = (typeof MARKETPLACES)[number]["key"];
 
 export const PRICING = {
   /** Kurulum paketi liste (çapa) fiyatı — üstü çizili gösterilir. */
-  listSetupFee: 39000,
+  listSetupFee: 44900,
   /** Kurulum paketi kampanyalı fiyatı (kurulum + ilk ay yönetim). */
-  setupFee: 25000,
+  setupFee: 30000,
   /** Aylık yönetim (devam) bedeli — pazaryeri başına. */
-  managementFee: 16000,
+  managementFee: 17000,
   setupDays: 7,
 };
 

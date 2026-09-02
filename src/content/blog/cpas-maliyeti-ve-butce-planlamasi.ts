@@ -85,7 +85,7 @@ const post: BlogPostSource = {
     },
     {
       type: "p",
-      text: "CPAS Türkiye'de kurulum paketi 25.000 ₺ + KDV'dir ve ilk ayın yönetimini de kapsar. İkinci bir pazaryeri eklerseniz %50 indirimli, havale/EFT ile öderseniz %5 indirimli işler.",
+      text: "CPAS Türkiye'de kurulum paketi 30.000 ₺ + KDV'dir ve ilk ayın yönetimini de kapsar. İkinci bir pazaryeri eklerseniz %50 indirimli, havale/EFT ile öderseniz %5 indirimli işler.",
     },
 
     { type: "h2", text: "3. Yönetim maliyeti" },
@@ -106,7 +106,7 @@ const post: BlogPostSource = {
     },
     {
       type: "p",
-      text: "Bu işi kendi ekibinizle yapacaksanız, gerçekçi bir tahmin haftada 4–6 saat uzman zamanıdır. Ajansla yapacaksanız CPAS Türkiye'de aylık yönetim 16.000 ₺ + KDV'dir ve taahhüt yoktur — dilediğiniz ay sonunda durdurabilirsiniz, kurulan altyapı sizin hesaplarınızda kalır.",
+      text: "Bu işi kendi ekibinizle yapacaksanız, gerçekçi bir tahmin haftada 4–6 saat uzman zamanıdır. Ajansla yapacaksanız CPAS Türkiye'de aylık yönetim 17.000 ₺ + KDV'dir ve taahhüt yoktur — dilediğiniz ay sonunda durdurabilirsiniz, kurulan altyapı sizin hesaplarınızda kalır.",
     },
 
     { type: "h2", text: "Bütçeyi kampanyalara nasıl dağıtmalı?" },
@@ -153,7 +153,7 @@ const post: BlogPostSource = {
     },
     {
       type: "p",
-      text: "Bu mağaza için 4,5'in altındaki her ROAS ciroyu artırır ama kârı azaltır. Yönetim ücretini de hesaba katarsanız gerçek hedef biraz daha yukarıdadır: aylık 40.000 ₺ reklam bütçesi ve 16.000 ₺ yönetim ücretiyle çalışan bu mağaza, yönetim dahil başabaş için yaklaşık 6,3 ROAS'a ihtiyaç duyar.",
+      text: "Bu mağaza için 4,5'in altındaki her ROAS ciroyu artırır ama kârı azaltır. Yönetim ücretini de hesaba katarsanız gerçek hedef biraz daha yukarıdadır: aylık 40.000 ₺ reklam bütçesi ve 17.000 ₺ yönetim ücretiyle çalışan bu mağaza, yönetim dahil başabaş için yaklaşık 6,4 ROAS'a ihtiyaç duyar.",
     },
     {
       type: "callout",
@@ -191,9 +191,9 @@ const post: BlogPostSource = {
       type: "table",
       head: ["Ay", "Reklam bütçesi", "Hizmet", "Toplam nakit"],
       rows: [
-        ["1. ay", "30.000 ₺", "25.000 ₺ (kurulum + ilk ay yönetim)", "55.000 ₺"],
-        ["2. ay", "35.000 ₺", "16.000 ₺ (yönetim)", "51.000 ₺"],
-        ["3. ay", "45.000 ₺", "16.000 ₺ (yönetim)", "61.000 ₺"],
+        ["1. ay", "30.000 ₺", "30.000 ₺ (kurulum + ilk ay yönetim)", "60.000 ₺"],
+        ["2. ay", "35.000 ₺", "17.000 ₺ (yönetim)", "52.000 ₺"],
+        ["3. ay", "45.000 ₺", "17.000 ₺ (yönetim)", "62.000 ₺"],
       ],
     },
     {
@@ -219,7 +219,7 @@ const post: BlogPostSource = {
     {
       question: "CPAS kurulum ücreti ne kadar?",
       answer:
-        "CPAS Türkiye'de kurulum paketi 25.000 ₺ + KDV'dir ve ilk ayın yönetimini kapsar. İkinci pazaryeri %50 indirimli eklenir, havale/EFT ödemelerinde %5 indirim uygulanır.",
+        "CPAS Türkiye'de kurulum paketi 30.000 ₺ + KDV'dir ve ilk ayın yönetimini kapsar. İkinci pazaryeri %50 indirimli eklenir, havale/EFT ödemelerinde %5 indirim uygulanır.",
     },
     {
       question: "Başabaş ROAS nasıl hesaplanır?",

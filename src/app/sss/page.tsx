@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import FaqAccordion, { type FaqItem } from "@/components/FaqAccordion";
 import CtaSection from "@/components/CtaSection";
-import { PRICING, formatTRY } from "@/lib/site";
+import { PRICING as DEFAULTS, formatTRY, type PricingValues } from "@/lib/site";
+import { getSettings } from "@/lib/db";
 import JsonLd from "@/components/JsonLd";
 import { breadcrumbJsonLd } from "@/lib/seo";
 
@@ -13,7 +14,12 @@ export const metadata: Metadata = {
   alternates: { canonical: "/sss" },
 };
 
-const FAQ_SECTIONS: { title: string; items: FaqItem[] }[] = [
+// Fiyatlar admin panelinden güncellenebildiği için sayfa istek anında render edilir
+export const dynamic = "force-dynamic";
+
+const buildFaqSections = (
+  PRICING: PricingValues
+): { title: string; items: FaqItem[] }[] => [
   {
     title: "CPAS ve Hizmetimiz",
     items: [
@@ -129,10 +135,10 @@ const FAQ_SECTIONS: { title: string; items: FaqItem[] }[] = [
   },
 ];
 
-const faqJsonLd = {
+const buildFaqJsonLd = (sections: { title: string; items: FaqItem[] }[]) => ({
   "@context": "https://schema.org",
   "@type": "FAQPage",
-  mainEntity: FAQ_SECTIONS.flatMap((section) =>
+  mainEntity: sections.flatMap((section) =>
     section.items.map((item) => ({
       "@type": "Question",
       name: item.question,
@@ -142,9 +148,12 @@ const faqJsonLd = {
       },
     }))
   ),
-};
+});
 
-export default function FaqPage() {
+export default async function FaqPage() {
+  const { pricing } = await getSettings();
+  const FAQ_SECTIONS = buildFaqSections({ ...DEFAULTS, ...pricing });
+  const faqJsonLd = buildFaqJsonLd(FAQ_SECTIONS);
   return (
     <>
       <JsonLd

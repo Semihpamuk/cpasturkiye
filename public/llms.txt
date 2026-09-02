@@ -10,8 +10,8 @@ CPAS (Collaborative Performance Advertising Solution / Collaborative Ads), Meta'
 
 CPAS Türkiye bir yazılım (SaaS) değil, uçtan uca yönetilen bir hizmettir:
 
-- **1. Ay — Kurulum + İlk Ay Yönetim (25.000 TL + KDV, tek seferlik):** Pazaryeri reklam yetkilendirmesi, Meta Business Manager kurulumu, CPAS katalog bağlantısı, piksel/event ölçümleme, kampanya mimarisi (retargeting + prospecting katmanları), test yayını ve canlıya alma. Ortalama 7 iş günü.
-- **2. Ay ve Sonrası — Aylık Yönetim (16.000 TL + KDV/ay):** Haftalık optimizasyon döngüsü (izle → analiz et → optimize et → raporla), bütçe yönetimi, haftalık PDF rapor + WhatsApp özeti, aylık strateji görüşmesi. Taahhüt yoktur.
+- **1. Ay — Kurulum + İlk Ay Yönetim (30.000 TL + KDV, tek seferlik):** Pazaryeri reklam yetkilendirmesi, Meta Business Manager kurulumu, CPAS katalog bağlantısı, piksel/event ölçümleme, kampanya mimarisi (retargeting + prospecting katmanları), test yayını ve canlıya alma. Ortalama 7 iş günü.
+- **2. Ay ve Sonrası — Aylık Yönetim (17.000 TL + KDV/ay):** Haftalık optimizasyon döngüsü (izle → analiz et → optimize et → raporla), bütçe yönetimi, haftalık PDF rapor + WhatsApp özeti, aylık strateji görüşmesi. Taahhüt yoktur.
 - Reklam bütçesi bu tutarlara dahil değildir; satıcı doğrudan Meta'ya kendi hesabından öder.
 
 ## Desteklenen Pazaryerleri
