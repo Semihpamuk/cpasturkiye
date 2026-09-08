@@ -10,6 +10,7 @@ import {
   CONSENT_STORAGE_KEY,
   readStoredConsent,
 } from "@/lib/consent";
+import { META_PIXEL_ID, isPixelEnabled, trackPixelPageView } from "@/lib/metaPixel";
 
 /**
  * Google Consent Mode v2 varsayılanları.
@@ -43,6 +44,27 @@ gtag('config', '${GA_ID}', { send_page_view: true });
 `;
 
 /**
+ * Meta Pixel init script — resmi fbevents.js snippet'inin aynısı.
+ *
+ * GA'nın aksine kendi "Consent Mode"u yok; bu yüzden script'in kendisi de
+ * (aşağıdaki <Script> gibi) yalnızca `hasConsent` true iken render edilir.
+ * Rıza yokken fbq tanımlı bile olmaz — kısmi/varsayılan init yerine script
+ * bütünüyle DOM'a hiç girmez.
+ */
+const PIXEL_INIT_SCRIPT = `
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '${META_PIXEL_ID}');
+fbq('track', 'PageView');
+`;
+
+/**
  * Son ölçülen yol — MODÜL seviyesinde tutuluyor.
  *
  * Bileşen /admin'de unmount olduğu için ref kullanılsaydı her dönüşte sıfırlanır
@@ -64,6 +86,7 @@ function PageViewTracker() {
     if (lastTrackedPath === pathname) return;
     lastTrackedPath = pathname;
     trackPageView();
+    trackPixelPageView();
   }, [pathname]);
 
   return null;
@@ -91,27 +114,53 @@ export default function Analytics() {
     pathname.startsWith(prefix)
   );
 
-  if (!isAnalyticsEnabled || isExcluded) return null;
+  if ((!isAnalyticsEnabled && !isPixelEnabled) || isExcluded) return null;
 
   return (
     <>
-      {/* Rıza gelmeden gtag hiç yüklenmez — Google'a sıfır istek (KVKK).
+      {/* Rıza gelmeden gtag/fbq hiç yüklenmez — üçüncü tarafa sıfır istek (KVKK).
           Aynı oturumda geri alınırsa script bellekte kalır ama consent.ts'in
           `denied` güncellemesi ölçümü durdurur; sonraki sayfa yüklemesinde
           script zaten hiç yüklenmez. */}
       {hasConsent && (
         <>
-          {/* Sıra önemli: kuyruk (dataLayer) gtag.js yüklenmeden önce hazır olmalı. */}
-          <Script
-            id="ga-init"
-            strategy="afterInteractive"
-            dangerouslySetInnerHTML={{ __html: INIT_SCRIPT }}
-          />
-          <Script
-            id="ga-lib"
-            src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
-            strategy="afterInteractive"
-          />
+          {isAnalyticsEnabled && (
+            <>
+              {/* Sıra önemli: kuyruk (dataLayer) gtag.js yüklenmeden önce hazır olmalı. */}
+              <Script
+                id="ga-init"
+                strategy="afterInteractive"
+                dangerouslySetInnerHTML={{ __html: INIT_SCRIPT }}
+              />
+              <Script
+                id="ga-lib"
+                src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
+                strategy="afterInteractive"
+              />
+            </>
+          )}
+          {isPixelEnabled && (
+            <>
+              <Script
+                id="meta-pixel-init"
+                strategy="afterInteractive"
+                dangerouslySetInnerHTML={{ __html: PIXEL_INIT_SCRIPT }}
+              />
+              {/* noscript fallback: JS kapalıyken bile PageView sayılabilsin diye
+                  Meta'nın resmi snippet'i böyle önerir. Rıza yoksa bu blok hiç
+                  render edilmiyor (üstteki hasConsent guard'ı). */}
+              <noscript>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  height="1"
+                  width="1"
+                  alt=""
+                  style={{ display: "none" }}
+                  src={`https://www.facebook.com/tr?id=${META_PIXEL_ID}&ev=PageView&noscript=1`}
+                />
+              </noscript>
+            </>
+          )}
           <PageViewTracker />
         </>
       )}

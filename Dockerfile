@@ -20,6 +20,11 @@ ENV NEXT_PUBLIC_GA_ID=$NEXT_PUBLIC_GA_ID
 ARG NEXT_PUBLIC_GSC_VERIFICATION=""
 ENV NEXT_PUBLIC_GSC_VERIFICATION=$NEXT_PUBLIC_GSC_VERIFICATION
 
+# Meta Pixel ID — aynı build-time kuralı geçerli (bkz. .env.example).
+# Boş bırakılırsa pixel hiç yüklenmez.
+ARG NEXT_PUBLIC_META_PIXEL_ID=""
+ENV NEXT_PUBLIC_META_PIXEL_ID=$NEXT_PUBLIC_META_PIXEL_ID
+
 # Kaynak kodu kopyala ve production derlemesi yap
 # (NODE_ENV burada henüz production değil, böylece devDependencies build sırasında kullanılabilir)
 COPY . .
