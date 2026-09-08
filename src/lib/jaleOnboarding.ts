@@ -8,8 +8,18 @@ import "server-only";
  * (sipariş kaydı / e-posta / yönlendirme) BOZULMAZ — ödeme her hâlükârda tamamlanır.
  *
  * Gerekli env:
- *   JALE_ONBOARDING_URL   → ör. https://panel.cpasturkiye.com/api/public/onboarding-invite
+ *   JALE_ONBOARDING_URL   → https://jale.cpasturkiye.com/api/public/onboarding-invite
  *   JALE_SIGNUP_API_KEY   → Jale .env'indeki PORTAL_SIGNUP_API_KEY ile AYNI değer
+ *
+ * ⚠️ Host `jale.cpasturkiye.com`'dur. Bu satırda daha önce örnek olarak
+ * `panel.cpasturkiye.com` yazıyordu; o alan adı ÇÖZÜLMÜYOR (2026-09-08'de ölçüldü,
+ * bağlantı kurulamıyor) — kopyalanırsa köprü sessizce çalışmaz. Jale tarafındaki uç
+ * canlıda doğrulandı: yanlış anahtarla `401 {"success":false,"error":"Yetkisiz"}`
+ * döner, yani `PORTAL_SIGNUP_API_KEY` orada TANIMLI (tanımsız olsaydı 500 dönerdi).
+ *
+ * BEST-EFFORT ≠ SESSİZ: her düşüş dalı log bırakır. Bu fonksiyon ödemeden SONRA
+ * çalışır; sessizce `null` dönmesi "köprü kurulu" sanılıp müşterilerin kurulum
+ * linkini hiç almadığının aylarca fark edilmemesi demektir.
  */
 
 export interface JaleInviteInput {
@@ -24,7 +34,16 @@ export async function createJaleOnboardingInvite(input: JaleInviteInput): Promis
   const url = process.env.JALE_ONBOARDING_URL;
   const apiKey = process.env.JALE_SIGNUP_API_KEY;
   if (!url || !apiKey) {
-    return null; // entegrasyon yapılandırılmamış — sessizce atla
+    // Tek TAMAMEN sessiz daldı: eskiden hiçbir iz bırakmadan `null` dönüyordu.
+    // Değerler BASILMAZ, yalnız hangi anahtarın eksik olduğu yazılır.
+    const eksik: string[] = [];
+    if (!url) eksik.push("JALE_ONBOARDING_URL");
+    if (!apiKey) eksik.push("JALE_SIGNUP_API_KEY");
+    console.warn(
+      `[jaleOnboarding] Köprü PASİF — eksik env: ${eksik.join(", ")}. ` +
+        `Müşteriye kurulum linki gönderilmeyecek (ödeme etkilenmez).`
+    );
+    return null;
   }
 
   try {
@@ -40,7 +59,11 @@ export async function createJaleOnboardingInvite(input: JaleInviteInput): Promis
       cache: "no-store",
     });
     if (!res.ok) {
-      console.error(`[jaleOnboarding] HTTP ${res.status}`);
+      // Gövde de yazılır: durum kodu tek başına sebebi söylemiyor. Jale tarafında
+      // 401 = anahtarlar UYUŞMUYOR, 500 = orada PORTAL_SIGNUP_API_KEY tanımsız —
+      // ikisi ayrı iş, ayrı yerde düzeltilir. Anahtar gövdeye yansımaz.
+      const govde = await res.text().catch(() => "<okunamadı>");
+      console.error(`[jaleOnboarding] HTTP ${res.status} — ${govde.slice(0, 200)}`);
       return null;
     }
     const data = (await res.json()) as { success?: boolean; url?: string };

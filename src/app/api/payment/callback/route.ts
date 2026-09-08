@@ -115,6 +115,16 @@ async function finalizePaidOrder(
     phone: order.phone,
     plan: order.marketplaces.join(", "),
   });
+  if (!setupUrl) {
+    // Sebebi `createJaleOnboardingInvite` yazıyor (eksik env / HTTP / istisna); burada
+    // KİMİN linksiz kaldığı yazılır. İkisi olmadan konteyner logunda "bir yerde bir
+    // müşteri" kalıyor ve elle telafi edilemiyordu — ödeme alınmış, kurulum başlamamış
+    // olur ve müşteri normal başarı sayfasına düşer.
+    console.warn(
+      `[payment/callback] Jale kurulum linki üretilemedi — sipariş ${order.id}, ` +
+        `${order.email}. Müşteriye davet ELLE gönderilmeli.`
+    );
+  }
 
   // E-posta gönder BEST-EFFORT: ödeme başarılı ve sipariş kaydedildi. Mail
   // gönderimi (SMTP hatası vb.) başarısız olsa bile müşteriyi hata sayfasına
