@@ -15,7 +15,8 @@ import { META_PIXEL_ID, isPixelEnabled, trackPixelPageView } from "@/lib/metaPix
 /**
  * Google Consent Mode v2 varsayılanları.
  *
- * Tüm `ad_*` sinyalleri kapalı — reklam çerezi hiç kullanmıyoruz.
+ * Tüm `ad_*` sinyalleri kapalı — Google'ın kendi reklam/hedefleme özelliklerini
+ * kullanmıyoruz (Meta Pixel ayrı bir mekanizma, bkz. PIXEL_INIT_SCRIPT altında).
  * `analytics_storage` da varsayılan olarak `denied`: KVKK Kurulu'nun çerez
  * rehberi analitik çerezleri "zorunlu" saymıyor, açık rıza gerekiyor.
  *

@@ -55,7 +55,7 @@ export default function PrivacyPolicyPage() {
         {
           heading: "Çerezler",
           paragraphs: [
-            "Platform, hizmetin çalışması için gerekli olan zorunlu çerezlerin yanında ziyaret istatistiklerinin ölçülmesi amacıyla Google Analytics 4 analitik çerezlerini kullanır. Analitik çerezler yalnızca çerez onay bandı üzerinden verdiğiniz açık rıza ile çalıştırılır; onay vermediğiniz takdirde oluşturulmaz. Reklam, hedefleme veya profilleme amaçlı çerez kullanılmaz. Analitik ölçüm kapsamında işlenen veriler Google Ireland Limited tarafından yurt dışındaki sunucularda işlenebilir; sizi doğrudan tanımlayan bilgiler (ad, e-posta, telefon, fatura verileri) bu araca aktarılmaz. Tarayıcı ayarlarınızdan çerezleri reddedebilirsiniz; ancak bu durumda Platformun bazı işlevleri çalışmayabilir. Ayrıntılar Çerez Politikasında açıklanmıştır.",
+            "Platform, hizmetin çalışması için gerekli olan zorunlu çerezlerin yanında ziyaret istatistiklerinin ölçülmesi amacıyla Google Analytics 4 analitik çerezlerini ve reklam performansının ölçülmesi amacıyla Meta Pixel reklam çerezini kullanır. Bu çerezler yalnızca çerez onay bandı üzerinden verdiğiniz açık rıza ile çalıştırılır; onay vermediğiniz takdirde oluşturulmazlar. Analitik ve reklam ölçümü kapsamında işlenen veriler Google Ireland Limited ve Meta Platforms Ireland Limited tarafından yurt dışındaki sunucularda işlenebilir; sizi doğrudan tanımlayan bilgiler (ad, e-posta, telefon, fatura verileri) bu araçlara aktarılmaz. Tarayıcı ayarlarınızdan çerezleri reddedebilirsiniz; ancak bu durumda Platformun bazı işlevleri çalışmayabilir. Ayrıntılar Çerez Politikasında açıklanmıştır.",
           ],
         },
         {

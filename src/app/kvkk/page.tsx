@@ -30,6 +30,7 @@ export default function KvkkPage() {
             "Müşteri işlem verileri: abonelik ve fatura bilgileri, talep ve şikayet kayıtları",
             "İşlem güvenliği verileri: IP adresi, oturum kayıtları, log kayıtları",
             "Pazarlama verileri: açık rızanız olması halinde iletişim tercihleri",
+            "Reklam ölçüm verileri: açık rızanız halinde, Meta Pixel gibi çerez tabanlı araçlarla toplanan tarayıcı/cihaz bilgisi ve reklam performans ölçüm verileri (bkz. Çerez Politikası)",
           ],
         },
         {

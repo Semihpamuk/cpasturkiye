@@ -59,8 +59,9 @@ export default function CookieConsentBanner() {
       <div className="mx-auto flex max-w-3xl flex-col gap-4 rounded-2xl border border-white/10 bg-ink-950/95 p-5 text-white shadow-2xl backdrop-blur sm:flex-row sm:items-center sm:gap-6 sm:p-6">
         <p className="flex-1 text-sm leading-relaxed text-white/80">
           Sitenin çalışması için gerekli zorunlu çerezleri kullanıyoruz. Ziyaret
-          istatistiklerini ölçmek için kullanılan analitik çerezler ise yalnızca
-          onayınızla çalışır; dilerseniz{" "}
+          istatistiklerini ve reklam performansını ölçmek için kullanılan
+          analitik ve reklam çerezleri ise yalnızca onayınızla çalışır;
+          dilerseniz{" "}
           <button
             type="button"
             onClick={reject}
