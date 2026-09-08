@@ -3,6 +3,7 @@ import { addOrder, generateId, getSettings, saveReceipt } from "@/lib/db";
 import { computeOrderQuote, MARKETPLACES } from "@/lib/site";
 import { sendTransferReceived } from "@/lib/mailer";
 import { gaIdentityFrom, readGaCookies, sendGaServerEvent } from "@/lib/ga-server";
+import { readMetaIdentity } from "@/lib/meta-capi";
 
 const VALID_MARKETPLACES = new Set<string>(MARKETPLACES.map((m) => m.key));
 const MAX_RECEIPT_BYTES = 10 * 1024 * 1024; // 10 MB
@@ -120,9 +121,10 @@ export async function POST(req: Request) {
       await saveReceipt(receiptFile, buffer);
     }
 
-    // GA kimliğini sipariş kaydına yaz: havalede purchase olayı günler sonra,
-    // admin onayında gönderilecek — o an müşterinin çerezi elimizde olmaz.
+    // GA/Meta kimliğini sipariş kaydına yaz: havalede purchase olayı günler
+    // sonra, admin onayında gönderilecek — o an müşterinin çerezi/IP'si elimizde olmaz.
     const gaIds = await readGaCookies();
+    const metaIdentity = await readMetaIdentity();
 
     await addOrder({
       id: orderId,
@@ -155,6 +157,10 @@ export async function POST(req: Request) {
       termsAcceptedAt,
       gaClientId: gaIds?.gaClientId,
       gaSessionId: gaIds?.gaSessionId,
+      fbp: metaIdentity.fbp,
+      fbc: metaIdentity.fbc,
+      clientIp: metaIdentity.ip,
+      userAgent: metaIdentity.userAgent,
     });
 
     // BİLEREK purchase DEĞİL: para henüz tahsil edilmedi, dekont kontrol

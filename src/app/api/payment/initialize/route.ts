@@ -3,6 +3,7 @@ import { findValidCode, getSettings, savePendingOrder } from "@/lib/db";
 import { computeOrderQuote } from "@/lib/site";
 import { initializeCheckoutForm, type IyzicoBasketItem } from "@/lib/iyzico";
 import { readGaCookies } from "@/lib/ga-server";
+import { readMetaIdentity } from "@/lib/meta-capi";
 import { SITE, MARKETPLACES } from "@/lib/site";
 
 const VALID_MARKETPLACES = new Set<string>(MARKETPLACES.map((m) => m.key));
@@ -149,9 +150,10 @@ export async function POST(req: Request) {
       );
     }
 
-    // GA kimliğini ŞİMDİ yakala: callback iyzico'dan server-to-server gelir,
-    // orada ziyaretçinin çerezleri yoktur.
+    // GA/Meta kimliğini ŞİMDİ yakala: callback iyzico'dan server-to-server gelir,
+    // orada ziyaretçinin çerezleri/IP'si yoktur.
     const gaIds = await readGaCookies();
+    const metaIdentity = await readMetaIdentity();
 
     // Pending order'ı diske kaydet — callback bu veriye conversationId ile erişir
     await savePendingOrder({
@@ -177,6 +179,10 @@ export async function POST(req: Request) {
       termsAcceptedAt: new Date().toISOString(),
       gaClientId: gaIds?.gaClientId,
       gaSessionId: gaIds?.gaSessionId,
+      fbp: metaIdentity.fbp,
+      fbc: metaIdentity.fbc,
+      clientIp: metaIdentity.ip,
+      userAgent: metaIdentity.userAgent,
     });
 
     return NextResponse.json({

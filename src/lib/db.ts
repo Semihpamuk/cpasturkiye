@@ -78,6 +78,13 @@ export interface Order {
   // için burada saklanmalı; admin'in kendi çerezi kullanılamaz.
   gaClientId?: string;
   gaSessionId?: string;
+  // Meta Conversions API kimliği — aynı gerekçe: havale siparişlerinde Purchase
+  // olayı admin onayında, günler sonra gönderilir; o an ziyaretçinin çerezi/IP'si
+  // elimizde olmaz, bu yüzden sipariş anında yakalanıp saklanır.
+  fbp?: string;
+  fbc?: string;
+  clientIp?: string;
+  userAgent?: string;
 }
 
 export interface PendingOrder {
@@ -108,6 +115,11 @@ export interface PendingOrder {
   /** GA4 kimliği — callback purchase olayını doğru ziyaretçiye bağlamak için. */
   gaClientId?: string;
   gaSessionId?: string;
+  /** Meta Conversions API kimliği — aynı gerekçeyle callback'te kullanılır. */
+  fbp?: string;
+  fbc?: string;
+  clientIp?: string;
+  userAgent?: string;
 }
 
 export interface Lead {

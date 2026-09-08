@@ -40,8 +40,10 @@ export default function CookiePolicyPage() {
           heading: "Analitik ve Reklam Çerezleri ile Yurt Dışına Aktarım",
           paragraphs: [
             "Analitik ölçüm, Google Ireland Limited tarafından sunulan Google Analytics 4 hizmeti ile yapılmaktadır. Bu kapsamda ziyaret edilen sayfa, yaklaşık konum, tarayıcı ve cihaz bilgisi gibi veriler ile çerez üzerinden atanan rastgele bir tanımlayıcı işlenir.",
-            "Reklam performansı ölçümü, Meta Platforms Ireland Limited tarafından sunulan Meta Pixel hizmeti ile yapılmaktadır. Bu kapsamda ziyaret edilen sayfa, tarayıcı ve cihaz bilgisi ile çerez üzerinden atanan rastgele bir tanımlayıcı işlenir; hâlihazırda yalnızca sayfa görüntüleme (PageView) olayı gönderilmektedir.",
-            "Her iki araç için de adınız, e-posta adresiniz, telefonunuz veya fatura bilgileriniz gibi sizi doğrudan tanımlayan veriler tarafımızca aktarılmaz. Söz konusu veriler hizmetin doğası gereği yurt dışında bulunan sunucularda işlenebilmektedir; bu aktarım, ilgili çerez kategorisini onaylamanız halinde açık rızanıza dayanılarak gerçekleştirilir, onay vermediğiniz takdirde ilgili çerez hiç oluşturulmaz.",
+            "Reklam performansı ölçümü, Meta Platforms Ireland Limited tarafından sunulan Meta Pixel hizmeti ile yapılmaktadır. Bu kapsamda ziyaret edilen sayfa, tarayıcı ve cihaz bilgisi ile çerez üzerinden atanan rastgele bir tanımlayıcı işlenir; tarayıcı üzerinden yalnızca sayfa görüntüleme (PageView) olayı gönderilmektedir.",
+            "Google Analytics'e ve Meta Pixel'in tarayıcı üzerinden gönderdiği olaylara adınızı, e-posta adresinizi veya telefonunuzu doğrudan tanımlayan bir veri aktarılmaz.",
+            "Ayrıca, siparişiniz tamamlandığında — yalnızca çerez onayı verdiğiniz hallerde — reklam eşleştirme kalitesini artırmak amacıyla e-posta adresiniz ve telefon numaranız geri döndürülemeyecek biçimde (SHA-256) şifrelenerek Meta Conversions API aracılığıyla Meta Platforms Ireland Limited'e iletilir; okunabilir/düz metin haliyle hiçbir zaman gönderilmez ve yalnızca reklam performansının ölçülmesi amacıyla kullanılır. Çerez onayı vermediyseniz bu aktarım hiç yapılmaz.",
+            "Söz konusu veriler hizmetin doğası gereği yurt dışında bulunan sunucularda işlenebilmektedir; bu aktarım, ilgili çerez kategorisini onaylamanız halinde açık rızanıza dayanılarak gerçekleştirilir, onay vermediğiniz takdirde ilgili çerez hiç oluşturulmaz.",
           ],
         },
         {

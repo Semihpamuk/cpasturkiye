@@ -11,6 +11,7 @@ import {
 import { sendOrderConfirmation } from "@/lib/mailer";
 import { createJaleOnboardingInvite } from "@/lib/jaleOnboarding";
 import { gaIdentityFrom, sendGaPurchase } from "@/lib/ga-server";
+import { sendMetaPurchase } from "@/lib/meta-capi";
 import { SITE } from "@/lib/site";
 
 /**
@@ -70,6 +71,10 @@ async function finalizePaidOrder(
     termsAcceptedAt: pending?.termsAcceptedAt,
     gaClientId: pending?.gaClientId,
     gaSessionId: pending?.gaSessionId,
+    fbp: pending?.fbp,
+    fbc: pending?.fbc,
+    clientIp: pending?.clientIp,
+    userAgent: pending?.userAgent,
   };
 
   await addOrder(order);
@@ -91,6 +96,22 @@ async function finalizePaidOrder(
       setupNet: order.setupNet,
       managementAddon: order.managementAddon,
       paymentMethod: "card",
+    })
+  );
+
+  // Meta Conversions API — aynı gerekçe: istemci tarafında güvenilir bir
+  // Purchase anı yok. sendMetaPurchase throw etmez.
+  after(() =>
+    sendMetaPurchase({
+      eventId: order.id,
+      value: order.total,
+      currency: "TRY",
+      email: order.email,
+      phone: order.phone,
+      fbp: order.fbp,
+      fbc: order.fbc,
+      ip: order.clientIp,
+      userAgent: order.userAgent,
     })
   );
 

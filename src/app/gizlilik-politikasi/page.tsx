@@ -53,9 +53,11 @@ export default function PrivacyPolicyPage() {
           ],
         },
         {
-          heading: "Çerezler",
+          heading: "Çerezler ve Sunucu Taraflı Reklam Ölçümü",
           paragraphs: [
-            "Platform, hizmetin çalışması için gerekli olan zorunlu çerezlerin yanında ziyaret istatistiklerinin ölçülmesi amacıyla Google Analytics 4 analitik çerezlerini ve reklam performansının ölçülmesi amacıyla Meta Pixel reklam çerezini kullanır. Bu çerezler yalnızca çerez onay bandı üzerinden verdiğiniz açık rıza ile çalıştırılır; onay vermediğiniz takdirde oluşturulmazlar. Analitik ve reklam ölçümü kapsamında işlenen veriler Google Ireland Limited ve Meta Platforms Ireland Limited tarafından yurt dışındaki sunucularda işlenebilir; sizi doğrudan tanımlayan bilgiler (ad, e-posta, telefon, fatura verileri) bu araçlara aktarılmaz. Tarayıcı ayarlarınızdan çerezleri reddedebilirsiniz; ancak bu durumda Platformun bazı işlevleri çalışmayabilir. Ayrıntılar Çerez Politikasında açıklanmıştır.",
+            "Platform, hizmetin çalışması için gerekli olan zorunlu çerezlerin yanında ziyaret istatistiklerinin ölçülmesi amacıyla Google Analytics 4 analitik çerezlerini ve reklam performansının ölçülmesi amacıyla Meta Pixel reklam çerezini kullanır. Bu çerezler yalnızca çerez onay bandı üzerinden verdiğiniz açık rıza ile çalıştırılır; onay vermediğiniz takdirde oluşturulmazlar. Analitik ve reklam ölçümü kapsamında işlenen veriler Google Ireland Limited ve Meta Platforms Ireland Limited tarafından yurt dışındaki sunucularda işlenebilir; tarayıcı üzerinden gönderilen bu olaylarda sizi doğrudan tanımlayan bilgiler (ad, e-posta, telefon, fatura verileri) aktarılmaz.",
+            "Ayrıca, siparişinizi tamamladığınızda — yalnızca çerez onayı verdiğiniz hallerde — Meta Conversions API adlı sunucu taraflı bir mekanizma ile reklam eşleştirme kalitesini artırmak amacıyla e-posta adresiniz ve telefon numaranız geri döndürülemeyecek biçimde (SHA-256) şifrelenerek Meta Platforms Ireland Limited'e iletilir. Bu veriler okunabilir/düz metin haliyle hiçbir zaman gönderilmez, yalnızca reklam performansının ölçülmesi amacıyla kullanılır ve çerez onayı vermediğiniz siparişlerde bu aktarım hiç yapılmaz.",
+            "Tarayıcı ayarlarınızdan çerezleri reddedebilirsiniz; ancak bu durumda Platformun bazı işlevleri çalışmayabilir. Ayrıntılar Çerez Politikasında açıklanmıştır.",
           ],
         },
         {

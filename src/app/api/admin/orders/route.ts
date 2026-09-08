@@ -4,6 +4,7 @@ import { getOrders, updateOrderStatus, type Order } from "@/lib/db";
 import { createJaleOnboardingInvite } from "@/lib/jaleOnboarding";
 import { sendOrderConfirmation } from "@/lib/mailer";
 import { gaIdentityFrom, sendGaPurchase } from "@/lib/ga-server";
+import { sendMetaPurchase } from "@/lib/meta-capi";
 
 const STATUSES: Order["status"][] = [
   "new",
@@ -56,6 +57,21 @@ export async function PATCH(req: Request) {
             setupNet: order.setupNet,
             managementAddon: order.managementAddon,
             paymentMethod: "transfer",
+          })
+        );
+        // Meta Conversions API — kart siparişleri Purchase'ı callback'te zaten
+        // gönderdi; burada yalnızca havale onayında (ilk kez "paid"e geçişte) gönderilir.
+        after(() =>
+          sendMetaPurchase({
+            eventId: order.id,
+            value: order.total,
+            currency: "TRY",
+            email: order.email,
+            phone: order.phone,
+            fbp: order.fbp,
+            fbc: order.fbc,
+            ip: order.clientIp,
+            userAgent: order.userAgent,
           })
         );
       }
