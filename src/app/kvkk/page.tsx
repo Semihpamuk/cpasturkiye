@@ -30,7 +30,8 @@ export default function KvkkPage() {
             "Müşteri işlem verileri: abonelik ve fatura bilgileri, talep ve şikayet kayıtları",
             "İşlem güvenliği verileri: IP adresi, oturum kayıtları, log kayıtları",
             "Pazarlama verileri: açık rızanız olması halinde iletişim tercihleri",
-            "Reklam ölçüm verileri: açık rızanız halinde, Meta Pixel gibi çerez tabanlı araçlarla toplanan tarayıcı/cihaz bilgisi; sipariş tamamlandığında ise yine yalnızca açık rızanız halinde, geri döndürülemeyecek biçimde şifrelenmiş (SHA-256) e-posta/telefon verisi (bkz. Çerez Politikası)",
+            "Analitik ölçüm verileri: açık rızanız halinde, Google Analytics 4 çerezleriyle toplanan ziyaret edilen sayfa, yaklaşık konum, tarayıcı ve cihaz bilgisi (bkz. Çerez Politikası)",
+            "Reklam ölçüm verileri: açık rızanız halinde, Meta Pixel ve Google Ads gibi çerez tabanlı araçlarla toplanan tarayıcı/cihaz bilgisi; sipariş tamamlandığında ise yine yalnızca açık rızanız halinde, geri döndürülemeyecek biçimde şifrelenmiş (SHA-256) e-posta/telefon verisi (bkz. Çerez Politikası)",
           ],
         },
         {
@@ -54,7 +55,7 @@ export default function KvkkPage() {
         {
           heading: "Kişisel Verilerin Aktarılması",
           paragraphs: [
-            "Kişisel verileriniz; hizmetin sunulabilmesi için iş birliği yapılan teknoloji sağlayıcılarına (barındırma, bulut altyapı, ödeme kuruluşları), entegrasyon kapsamında Meta Platforms ile Trendyol, Hepsiburada ve Amazon gibi pazaryerlerine, hukuki yükümlülükler kapsamında yetkili kamu kurum ve kuruluşlarına KVKK md. 8 ve 9'da öngörülen şartlara uygun olarak aktarılabilir. Yurt dışına veri aktarımı, KVKK'da öngörülen güvencelere uygun şekilde gerçekleştirilir.",
+            "Kişisel verileriniz; hizmetin sunulabilmesi için iş birliği yapılan teknoloji sağlayıcılarına (barındırma, bulut altyapı, ödeme kuruluşları), analitik ve reklam ölçümü kapsamında açık rızanıza dayanarak Google Ireland Limited ile Meta Platforms Ireland Limited'e, entegrasyon kapsamında Trendyol, Hepsiburada ve Amazon gibi pazaryerlerine, hukuki yükümlülükler kapsamında yetkili kamu kurum ve kuruluşlarına KVKK md. 8 ve 9'da öngörülen şartlara uygun olarak aktarılabilir. Yurt dışına veri aktarımı, KVKK'da öngörülen güvencelere uygun şekilde gerçekleştirilir.",
           ],
         },
         {

@@ -21,10 +21,16 @@ import { META_PIXEL_ID, isPixelEnabled, trackPixelPageView } from "@/lib/metaPix
  * etiketler varsayılan `denied` sinyalini hiç görmez ve rıza kapısı GTM
  * tarafında delinir.
  *
- * Tüm `ad_*` sinyalleri kapalı — Google'ın kendi reklam/hedefleme özelliklerini
- * kullanmıyoruz (Meta Pixel ayrı bir mekanizma, bkz. PIXEL_INIT_SCRIPT altında).
- * `analytics_storage` da varsayılan olarak `denied`: KVKK Kurulu'nun çerez
- * rehberi analitik çerezleri "zorunlu" saymıyor, açık rıza gerekiyor.
+ * Dört sinyal de aynı tek onaya bağlı: `analytics_storage` analitik ölçüm için,
+ * `ad_storage`/`ad_user_data`/`ad_personalization` ise GTM üzerinden yönetilen
+ * Google Ads yeniden pazarlama ve dönüşüm ölçümü için gerekli. Reklam sinyalleri
+ * daha önce rızadan bağımsız olarak kapalıydı; Google Ads devreye alındığında bu
+ * ayar etiketleri sessizce devre dışı bırakıyordu (çerez yazılmıyor, yeniden
+ * pazarlama listeleri boş kalıyordu).
+ *
+ * Hiçbiri varsayılan olarak açık değil: KVKK Kurulu'nun çerez rehberi ne analitik
+ * ne de reklam çerezlerini "zorunlu" saymıyor, ikisi de açık rıza istiyor. Meta
+ * Pixel ayrı bir mekanizma, Consent Mode'u tanımıyor (bkz. PIXEL_INIT_SCRIPT).
  *
  * gtag/gtm script'leri yalnızca rıza `granted` iken render edilir (aşağıdaki
  * bileşene bak) — rıza gelmeden Google'a çerezsiz ping dahil hiçbir istek
@@ -39,11 +45,12 @@ var __cpasConsent = null;
 try { __cpasConsent = localStorage.getItem(${JSON.stringify(
   CONSENT_STORAGE_KEY
 )}); } catch (e) {}
+var __cpasState = __cpasConsent === 'granted' ? 'granted' : 'denied';
 gtag('consent', 'default', {
-  ad_storage: 'denied',
-  ad_user_data: 'denied',
-  ad_personalization: 'denied',
-  analytics_storage: __cpasConsent === 'granted' ? 'granted' : 'denied',
+  ad_storage: __cpasState,
+  ad_user_data: __cpasState,
+  ad_personalization: __cpasState,
+  analytics_storage: __cpasState,
   wait_for_update: 500
 });
 `;

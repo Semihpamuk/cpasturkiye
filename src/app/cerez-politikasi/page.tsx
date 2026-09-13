@@ -25,7 +25,7 @@ export default function CookiePolicyPage() {
         {
           heading: "Sitemizde Kullanılan Çerezler",
           paragraphs: [
-            "Sitemizde hizmetin çalışması için gerekli olan zorunlu çerezler ile ziyaret istatistiklerinin ölçülmesi amacıyla analitik çerezler ve reklam performansının ölçülmesi amacıyla reklam (pazarlama) çerezleri kullanılmaktadır. Analitik ve reklam çerezleri yalnızca onayınız halinde çalışır; onay vermediğiniz sürece hiçbiri oluşturulmaz.",
+            "Sitemizde hizmetin çalışması için gerekli olan zorunlu çerezler ile ziyaret istatistiklerinin ölçülmesi amacıyla analitik çerezler ve reklam performansının ölçülmesi ile size daha alakalı reklam gösterilebilmesi (yeniden pazarlama) amacıyla reklam (pazarlama) çerezleri kullanılmaktadır. Analitik ve reklam çerezleri yalnızca onayınız halinde çalışır; onay vermediğiniz sürece hiçbiri oluşturulmaz.",
           ],
           list: [
             "Yönetim paneli oturum çerezi (zorunlu): yalnızca yetkili yöneticiler panele giriş yaptığında oluşturulur; imzalı bir oturum bilgisi taşır ve süre sonunda geçersiz hale gelir. Site ziyaretçileri için oluşturulmaz.",
@@ -33,7 +33,7 @@ export default function CookiePolicyPage() {
             "_ga (analitik, azami 2 yıl): Google Analytics 4 tarafından ziyaretçilerin birbirinden ayırt edilmesi amacıyla kullanılır. Sağlayıcı: Google Ireland Limited.",
             "_ga_<ölçüm-kimliği> (analitik, azami 2 yıl): Google Analytics 4 tarafından oturum durumunun sürdürülmesi amacıyla kullanılır. Sağlayıcı: Google Ireland Limited.",
             "_fbp (reklam, azami 3 ay): Meta Pixel tarafından tarayıcınızın Meta (Facebook/Instagram) reklam sistemleriyle eşleştirilmesi ve reklam performansının ölçülmesi amacıyla kullanılır. Sağlayıcı: Meta Platforms Ireland Limited.",
-            "Google Analytics'in reklam sinyalleri (ad_storage, ad_user_data, ad_personalization) tarafımızca ayrıca kapalı tutulmaktadır; Google üzerinden reklam/hedefleme amaçlı çerez kullanılmaz.",
+            "_gcl_au (reklam, azami 90 gün): Google Ads tarafından reklam tıklamalarının site üzerindeki sonuçlarla ilişkilendirilmesi ve reklam performansının ölçülmesi amacıyla kullanılır. Sağlayıcı: Google Ireland Limited.",
           ],
         },
         {
@@ -41,7 +41,9 @@ export default function CookiePolicyPage() {
           paragraphs: [
             "Analitik ölçüm, Google Ireland Limited tarafından sunulan Google Analytics 4 hizmeti ile yapılmaktadır. Bu kapsamda ziyaret edilen sayfa, yaklaşık konum, tarayıcı ve cihaz bilgisi gibi veriler ile çerez üzerinden atanan rastgele bir tanımlayıcı işlenir.",
             "Reklam performansı ölçümü, Meta Platforms Ireland Limited tarafından sunulan Meta Pixel hizmeti ile yapılmaktadır. Bu kapsamda ziyaret edilen sayfa, tarayıcı ve cihaz bilgisi ile çerez üzerinden atanan rastgele bir tanımlayıcı işlenir; tarayıcı üzerinden yalnızca sayfa görüntüleme (PageView) olayı gönderilmektedir.",
-            "Google Analytics'e ve Meta Pixel'in tarayıcı üzerinden gönderdiği olaylara adınızı, e-posta adresinizi veya telefonunuzu doğrudan tanımlayan bir veri aktarılmaz.",
+            "Reklam tıklamalarının ölçülmesi ve size daha alakalı reklam gösterilebilmesi (yeniden pazarlama), Google Ireland Limited tarafından sunulan Google Ads hizmeti ile yapılmaktadır. Bu kapsamda ziyaret edilen sayfa, tarayıcı ve cihaz bilgisi ile çerez üzerinden atanan rastgele bir tanımlayıcı işlenir.",
+            "Yukarıdaki Google hizmetlerine ait etiketlerin yönetimi için Google Ireland Limited tarafından sunulan Google Etiket Yöneticisi (Google Tag Manager) kullanılmaktadır. Etiket yöneticisi kendi başına çerez oluşturmaz; yalnızca onayınız sonrasında yüklenir ve yüklenirken IP adresiniz ile bulunduğunuz sayfanın adresi Google'a iletilir.",
+            "Google Analytics'e, Google Ads'e ve Meta Pixel'in tarayıcı üzerinden gönderdiği olaylara adınızı, e-posta adresinizi veya telefonunuzu doğrudan tanımlayan bir veri aktarılmaz.",
             "Ayrıca, siparişiniz tamamlandığında — yalnızca çerez onayı verdiğiniz hallerde — reklam eşleştirme kalitesini artırmak amacıyla e-posta adresiniz ve telefon numaranız geri döndürülemeyecek biçimde (SHA-256) şifrelenerek Meta Conversions API aracılığıyla Meta Platforms Ireland Limited'e iletilir; okunabilir/düz metin haliyle hiçbir zaman gönderilmez ve yalnızca reklam performansının ölçülmesi amacıyla kullanılır. Çerez onayı vermediyseniz bu aktarım hiç yapılmaz.",
             "Söz konusu veriler hizmetin doğası gereği yurt dışında bulunan sunucularda işlenebilmektedir; bu aktarım, ilgili çerez kategorisini onaylamanız halinde açık rızanıza dayanılarak gerçekleştirilir, onay vermediğiniz takdirde ilgili çerez hiç oluşturulmaz.",
           ],
