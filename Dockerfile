@@ -8,9 +8,17 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
 
-# NEXT_PUBLIC_* değişkenleri BUILD ZAMANINDA istemci bundle'ına gömülür; servis
-# (runtime) env'i olarak vermek yetmez. Easypanel'de bu değer "Build Arguments"
-# altına girilmeli. Boş bırakılırsa site normal çalışır, yalnızca ölçüm kapalı olur.
+# NEXT_PUBLIC_* değişkenleri BUILD ZAMANINDA istemci bundle'ına gömülür.
+#
+# Aşağıdaki ARG'lar `docker build --build-arg` ile değer verilebilsin diye duruyor.
+# Bu projenin Easypanel kurulumunda ise "Build Arguments" diye bir alan YOK:
+# servis ayarlarındaki "Create env file" seçeneği açık ve değişkenler build
+# bağlamına `.env` olarak yazılıyor; aşağıdaki `COPY . .` onu imaja alıyor ve
+# `next build` `.env`'i okuyarak değerleri gömüyor. Yani Easypanel'de değişkeni
+# Ortam sayfasına yazmak yeterli — ayrıca build argümanı vermeye gerek yok.
+# (2026-09-13'te canlı bundle incelenerek doğrulandı.)
+#
+# Boş bırakılırsa site normal çalışır, yalnızca ölçüm kapalı olur.
 ARG NEXT_PUBLIC_GA_ID=""
 ENV NEXT_PUBLIC_GA_ID=$NEXT_PUBLIC_GA_ID
 
