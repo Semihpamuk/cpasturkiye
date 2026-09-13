@@ -10,22 +10,28 @@ import {
   CONSENT_STORAGE_KEY,
   readStoredConsent,
 } from "@/lib/consent";
+import { GTM_ID, isGtmEnabled } from "@/lib/gtm";
 import { META_PIXEL_ID, isPixelEnabled, trackPixelPageView } from "@/lib/metaPixel";
 
 /**
- * Google Consent Mode v2 varsayılanları.
+ * dataLayer kuyruğu + Google Consent Mode v2 varsayılanları.
+ *
+ * GA yapılandırmasından AYRI tutuluyor: GTM tek başına açıkken de (GA_ID boş)
+ * dataLayer ve consent varsayılanı hazır olmalı — aksi halde GTM içindeki
+ * etiketler varsayılan `denied` sinyalini hiç görmez ve rıza kapısı GTM
+ * tarafında delinir.
  *
  * Tüm `ad_*` sinyalleri kapalı — Google'ın kendi reklam/hedefleme özelliklerini
  * kullanmıyoruz (Meta Pixel ayrı bir mekanizma, bkz. PIXEL_INIT_SCRIPT altında).
  * `analytics_storage` da varsayılan olarak `denied`: KVKK Kurulu'nun çerez
  * rehberi analitik çerezleri "zorunlu" saymıyor, açık rıza gerekiyor.
  *
- * gtag script'leri yalnızca rıza `granted` iken render edilir (aşağıdaki
+ * gtag/gtm script'leri yalnızca rıza `granted` iken render edilir (aşağıdaki
  * bileşene bak) — rıza gelmeden Google'a çerezsiz ping dahil hiçbir istek
  * gitmez. Kayıtlı tercih yine de inline script'in İÇİNDE okunuyor: mount ile
  * script'in çalışması arasında tercih değişirse son durum geçerli olsun.
  */
-const INIT_SCRIPT = `
+const CONSENT_BOOTSTRAP_SCRIPT = `
 window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
 window.gtag = gtag;
@@ -40,8 +46,34 @@ gtag('consent', 'default', {
   analytics_storage: __cpasConsent === 'granted' ? 'granted' : 'denied',
   wait_for_update: 500
 });
-gtag('js', new Date());
-gtag('config', '${GA_ID}', { send_page_view: true });
+`;
+
+/**
+ * GA4 yapılandırması. CONSENT_BOOTSTRAP_SCRIPT'ten SONRA çalışmalı —
+ * `window.gtag` oradan geliyor.
+ */
+const GA_CONFIG_SCRIPT = `
+window.gtag('js', new Date());
+window.gtag('config', '${GA_ID}', { send_page_view: true });
+`;
+
+/**
+ * Google Tag Manager kapsayıcısı — resmi snippet.
+ *
+ * GA4 ve Meta Pixel bu dosyada doğrudan yükleniyor; aynı etiketleri GTM
+ * arayüzüne DE eklemeyin (çift sayım olur). Kapsayıcı yalnızca yeni üçüncü
+ * taraf etiketleri (Google Ads, LinkedIn, Hotjar…) içindir.
+ *
+ * Resmi snippet'in `<noscript><iframe>` parçası BİLEREK yok: JS kapalıyken
+ * etiketler zaten çalışamaz, ama iframe rıza kapısını atlayıp Google'a istek
+ * atardı (KVKK).
+ */
+const GTM_INIT_SCRIPT = `
+(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','${GTM_ID}');
 `;
 
 /**
@@ -106,7 +138,7 @@ export default function Analytics() {
     const sync = () => setHasConsent(readStoredConsent() === "granted");
     sync();
     // Banddan onay gelince script'ler burada mount olur; ilk page_view'ı
-    // INIT_SCRIPT'teki `config` çağrısı rıza verilmiş durumda atar.
+    // GA_CONFIG_SCRIPT'teki `config` çağrısı rıza verilmiş durumda atar.
     window.addEventListener(CONSENT_CHANGED_EVENT, sync);
     return () => window.removeEventListener(CONSENT_CHANGED_EVENT, sync);
   }, []);
@@ -115,23 +147,33 @@ export default function Analytics() {
     pathname.startsWith(prefix)
   );
 
-  if ((!isAnalyticsEnabled && !isPixelEnabled) || isExcluded) return null;
+  if ((!isAnalyticsEnabled && !isPixelEnabled && !isGtmEnabled) || isExcluded) {
+    return null;
+  }
 
   return (
     <>
-      {/* Rıza gelmeden gtag/fbq hiç yüklenmez — üçüncü tarafa sıfır istek (KVKK).
-          Aynı oturumda geri alınırsa script bellekte kalır ama consent.ts'in
-          `denied` güncellemesi ölçümü durdurur; sonraki sayfa yüklemesinde
-          script zaten hiç yüklenmez. */}
+      {/* Rıza gelmeden gtag/gtm/fbq hiç yüklenmez — üçüncü tarafa sıfır istek
+          (KVKK). Aynı oturumda geri alınırsa script bellekte kalır ama
+          consent.ts'in `denied` güncellemesi ölçümü durdurur; sonraki sayfa
+          yüklemesinde script zaten hiç yüklenmez. */}
       {hasConsent && (
         <>
+          {/* Sıra önemli: kuyruk (dataLayer) ve consent varsayılanı, gtag.js ya
+              da gtm.js yüklenmeden önce hazır olmalı. */}
+          {(isAnalyticsEnabled || isGtmEnabled) && (
+            <Script
+              id="consent-bootstrap"
+              strategy="afterInteractive"
+              dangerouslySetInnerHTML={{ __html: CONSENT_BOOTSTRAP_SCRIPT }}
+            />
+          )}
           {isAnalyticsEnabled && (
             <>
-              {/* Sıra önemli: kuyruk (dataLayer) gtag.js yüklenmeden önce hazır olmalı. */}
               <Script
-                id="ga-init"
+                id="ga-config"
                 strategy="afterInteractive"
-                dangerouslySetInnerHTML={{ __html: INIT_SCRIPT }}
+                dangerouslySetInnerHTML={{ __html: GA_CONFIG_SCRIPT }}
               />
               <Script
                 id="ga-lib"
@@ -139,6 +181,13 @@ export default function Analytics() {
                 strategy="afterInteractive"
               />
             </>
+          )}
+          {isGtmEnabled && (
+            <Script
+              id="gtm-init"
+              strategy="afterInteractive"
+              dangerouslySetInnerHTML={{ __html: GTM_INIT_SCRIPT }}
+            />
           )}
           {isPixelEnabled && (
             <>

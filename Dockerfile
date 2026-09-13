@@ -25,6 +25,12 @@ ENV NEXT_PUBLIC_GSC_VERIFICATION=$NEXT_PUBLIC_GSC_VERIFICATION
 ARG NEXT_PUBLIC_META_PIXEL_ID=""
 ENV NEXT_PUBLIC_META_PIXEL_ID=$NEXT_PUBLIC_META_PIXEL_ID
 
+# Google Tag Manager kapsayıcı kimliği — aynı build-time kuralı geçerli.
+# Boş bırakılırsa gtm.js hiç yüklenmez. GTM burada yalnızca KAPSAYICI:
+# GA4 ve Meta Pixel etiketleri kodda duruyor, GTM'e ayrıca eklenmemeli.
+ARG NEXT_PUBLIC_GTM_ID=""
+ENV NEXT_PUBLIC_GTM_ID=$NEXT_PUBLIC_GTM_ID
+
 # Kaynak kodu kopyala ve production derlemesi yap
 # (NODE_ENV burada henüz production değil, böylece devDependencies build sırasında kullanılabilir)
 COPY . .
