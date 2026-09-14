@@ -1,5 +1,7 @@
 "use client";
 
+import type { CSSProperties } from "react";
+
 import { useSettings, type ReferenceItem } from "@/lib/useSettings";
 
 /* Şerit yalnızca gerçek referans varken görünür. Uydurma marka adlarından
@@ -52,6 +54,12 @@ export default function ReferencesBar() {
   const half = Array.from({ length: repeatCount }, () => references).flat();
   const doubled = [...half, ...half];
 
+  /* Hız, yarımdaki öğe sayısıyla orantılı süre üzerinden sabitlenir: daha çok
+     referans = daha geniş şerit = daha uzun süre, böylece piksel hızı değişmez.
+     Öğe başına ~5,5s okunaklı bir tempo verir. */
+  const SECONDS_PER_ITEM = 5.5;
+  const tickerDuration = `${half.length * SECONDS_PER_ITEM}s`;
+
   return (
     <section
       aria-label="Referans mağazalar"
@@ -63,7 +71,10 @@ export default function ReferencesBar() {
       <div className="relative mt-4 overflow-hidden">
         <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-24 bg-gradient-to-r from-white to-transparent" />
         <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-24 bg-gradient-to-l from-white to-transparent" />
-        <div className="flex w-max animate-ticker items-center gap-12 px-6">
+        <div
+          className="flex w-max animate-ticker items-center gap-12 px-6"
+          style={{ "--ticker-duration": tickerDuration } as CSSProperties}
+        >
           {doubled.map((item, index) => {
             // Şeridi doldurmak için basılan kopyalar yalnızca görseldir; ekran
             // okuyucuya ve klavyeye ilk turdaki mağazalar bir kez sunulur.

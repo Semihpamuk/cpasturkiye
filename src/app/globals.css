@@ -265,7 +265,9 @@ body {
 .animate-float-slow { animation: float-slow 5s ease-in-out infinite; }
 .animate-float-slower { animation: float-slower 7s ease-in-out infinite; }
 .animate-pulse-glow { animation: pulse-glow 6s ease-in-out infinite; }
-.animate-ticker { animation: ticker 30s linear infinite; }
+/* Süre öğe sayısıyla orantılı (--ticker-duration) verilir ki referans
+   eklendikçe piksel hızı sabit kalsın; değişken yoksa 60s'e düşer. */
+.animate-ticker { animation: ticker var(--ticker-duration, 60s) linear infinite; }
 .animate-ping-soft { animation: ping-soft 2.4s cubic-bezier(0, 0, 0.2, 1) infinite; }
 
 .flow-line {
