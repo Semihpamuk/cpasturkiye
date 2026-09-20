@@ -13,33 +13,44 @@
 set -euo pipefail
 
 BLOB="${1:-}"
+# rclone authorize bazı sürümlerde pakete client_id/secret'ı KOYMUYOR; o yüzden
+# 2. ve 3. argüman olarak da verilebilir (pakettekiler varsa onlar öncelikli).
+ARG_CLIENT_ID="${2:-${CLIENT_ID:-}}"
+ARG_CLIENT_SECRET="${3:-${CLIENT_SECRET:-}}"
 REMOTE_NAME="gdrive"
 DRIVE_FOLDER="cpasturkiye-yedek"
 
 if [[ -z "$BLOB" || "$BLOB" == \{* ]]; then
-  echo "Kullanım: bash update-gdrive-client.sh '<rclone authorize çıktısı (eyJ... base64)>'"
+  echo "Kullanım: bash update-gdrive-client.sh '<rclone authorize çıktısı (eyJ...)>' [client_id] [client_secret]"
   echo "Bu script client_id içeren yeni biçimi bekler; ham JSON değil."
   exit 1
 fi
 
 # base64 paket → client_id, client_secret, token (ayrı satırlar)
-mapfile -t PARTS < <(python3 - "$BLOB" <<'PY'
+PARSED="$(python3 - "$BLOB" "$ARG_CLIENT_ID" "$ARG_CLIENT_SECRET" <<'PY'
 import base64, json, sys
-raw = sys.argv[1].strip(); raw += "=" * (-len(raw) % 4)
+raw, arg_id, arg_sec = sys.argv[1].strip(), sys.argv[2], sys.argv[3]
+raw += "=" * (-len(raw) % 4)
 try:
     data = json.loads(base64.b64decode(raw))
 except Exception as e:
     sys.exit(f"HATA: paket açılamadı: {e}")
-cid, sec, tok = data.get("client_id", ""), data.get("client_secret", ""), data.get("token")
+tok = data.get("token")
 if isinstance(tok, str): tok = json.loads(tok)
-if not cid or not sec:
-    sys.exit("HATA: pakette client_id/client_secret yok — authorize'ı kendi istemci bilgilerinle çalıştırdın mı?")
 if not tok or "access_token" not in tok:
-    sys.exit("HATA: pakette token yok.")
-print(cid); print(sec); print(json.dumps(tok))
+    sys.exit("HATA: pakette token yok (anahtarlar: %s)." % ", ".join(data.keys()))
+cid = data.get("client_id") or arg_id
+sec = data.get("client_secret") or arg_sec
+if not cid or not sec:
+    sys.exit("HATA: client_id/client_secret ne pakette ne argümanda var.
+"
+             "Kullanım: bash update-gdrive-client.sh '<eyJ...>' '<client_id>' '<client_secret>'")
+print(json.dumps({"client_id": cid, "client_secret": sec, "token": tok}))
 PY
-)
-CLIENT_ID="${PARTS[0]}"; CLIENT_SECRET="${PARTS[1]}"; TOKEN="${PARTS[2]}"
+)" || { echo "$PARSED"; exit 1; }
+CLIENT_ID="$(printf '%s' "$PARSED" | python3 -c 'import json,sys; print(json.load(sys.stdin)["client_id"])')"
+CLIENT_SECRET="$(printf '%s' "$PARSED" | python3 -c 'import json,sys; print(json.load(sys.stdin)["client_secret"])')"
+TOKEN="$(printf '%s' "$PARSED" | python3 -c 'import json,sys; print(json.dumps(json.load(sys.stdin)["token"]))')"
 
 echo "▶ Eski ayar yedekleniyor"
 CONF="$(rclone config file | tail -1)"
