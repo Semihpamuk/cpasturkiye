@@ -42,8 +42,7 @@ if not tok or "access_token" not in tok:
 cid = data.get("client_id") or arg_id
 sec = data.get("client_secret") or arg_sec
 if not cid or not sec:
-    sys.exit("HATA: client_id/client_secret ne pakette ne argümanda var.
-"
+    sys.exit("HATA: client_id/client_secret ne pakette ne argümanda var. "
              "Kullanım: bash update-gdrive-client.sh '<eyJ...>' '<client_id>' '<client_secret>'")
 print(json.dumps({"client_id": cid, "client_secret": sec, "token": tok}))
 PY
