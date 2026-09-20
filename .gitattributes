@@ -1,0 +1,2 @@
+# Sunucuda calisan scriptler her zaman LF olsun (CRLF -> "bad interpreter")
+*.sh text eol=lf

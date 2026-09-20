@@ -193,6 +193,14 @@ export default function AdminClient() {
             </span>
           </div>
           <div className="flex items-center gap-3">
+            <a
+              href="/api/admin/backup"
+              download
+              title="Tüm siparişleri, başvuruları, kodları ve dekontları .tar.gz olarak indir"
+              className="hidden rounded-lg border border-ink-200 px-3 py-2 text-sm font-semibold text-ink-600 transition-colors hover:border-brand-300 hover:text-brand-700 sm:inline-block"
+            >
+              ⬇ Yedek indir
+            </a>
             <button
               onClick={loadAll}
               className="rounded-lg border border-ink-200 px-3 py-2 text-sm font-semibold text-ink-600 transition-colors hover:border-brand-300 hover:text-brand-700"
