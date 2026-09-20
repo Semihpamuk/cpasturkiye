@@ -6,17 +6,19 @@ export const SITE = {
   description:
     "Trendyol, Hepsiburada ve Amazon mağazanız için Meta CPAS reklamlarını uçtan uca kuruyor ve yönetiyoruz. Profesyonel kurulum, haftalık optimizasyon, gerçek satış verisiyle raporlama.",
   email: "info@cpasturkiye.com",
-  // Gerçek telefon numarasını .env.local veya aşağıdan güncelleyin
-  phone: process.env.NEXT_PUBLIC_SITE_PHONE ?? "+90 (212) 000 00 00",
+  // Gerçek telefon numarasını .env.local veya aşağıdan güncelleyin.
+  // `||` bilerek: Dockerfile ARG'ları geçilmezse env BOŞ STRING olur; `??` onu
+  // gerçek değer sayıp sunucu/istemci arasında hidrasyon farkı yaratırdı.
+  phone: process.env.NEXT_PUBLIC_SITE_PHONE || "+90 (212) 000 00 00",
   address:
     "Balmumcu Mah. Gazi Umur Paşa Sk. İBA Blokları Sitesi No:19/2 Beşiktaş / İstanbul",
   company: "Brother Hustle Danışmanlık ve Tic. Ltd. Şti.",
   // iyzico başvurusu ve yasal uyumluluk için gerekli şirket bilgileri
-  mersis: process.env.NEXT_PUBLIC_SITE_MERSIS ?? "0187173437300001",
-  taxOffice: process.env.NEXT_PUBLIC_SITE_TAX_OFFICE ?? "Beşiktaş Vergi Dairesi",
-  taxId: process.env.NEXT_PUBLIC_SITE_TAX_ID ?? "1871734373",
-  tradeRegistryNo: process.env.NEXT_PUBLIC_SITE_TRADE_REGISTRY ?? "1086253",
-  kep: process.env.NEXT_PUBLIC_SITE_KEP ?? "jale@hs01.kep.tr",
+  mersis: process.env.NEXT_PUBLIC_SITE_MERSIS || "0187173437300001",
+  taxOffice: process.env.NEXT_PUBLIC_SITE_TAX_OFFICE || "Beşiktaş Vergi Dairesi",
+  taxId: process.env.NEXT_PUBLIC_SITE_TAX_ID || "1871734373",
+  tradeRegistryNo: process.env.NEXT_PUBLIC_SITE_TRADE_REGISTRY || "1086253",
+  kep: process.env.NEXT_PUBLIC_SITE_KEP || "jale@hs01.kep.tr",
 };
 
 // Desteklenen pazaryerleri — sitede her yerde bu liste kullanılır.
