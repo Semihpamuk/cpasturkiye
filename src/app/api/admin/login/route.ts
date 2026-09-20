@@ -5,19 +5,16 @@ import {
   createSessionToken,
   getAdminPassword,
 } from "@/lib/admin-auth";
-
-// Basit brute-force koruması: IP başına dakikada 5 deneme
-const attempts = new Map<string, { count: number; resetAt: number }>();
+import { RATE_LIMITS, clientIp, consumeRateLimit, rateLimitHeaders, resetRateLimit } from "@/lib/rate-limit";
 
 export async function POST(req: Request) {
   try {
-    const ip = req.headers.get("x-forwarded-for")?.split(",")[0] || "local";
-    const now = Date.now();
-    const entry = attempts.get(ip);
-    if (entry && entry.resetAt > now && entry.count >= 5) {
+    const ip = clientIp(req);
+    const limit = consumeRateLimit("admin-login", ip, RATE_LIMITS.adminLogin);
+    if (!limit.ok) {
       return NextResponse.json(
         { error: "Çok fazla deneme. 1 dakika bekleyin." },
-        { status: 429 }
+        { status: 429, headers: rateLimitHeaders(limit) }
       );
     }
 
@@ -25,12 +22,10 @@ export async function POST(req: Request) {
     const password = String(body.password || "");
 
     if (password !== getAdminPassword()) {
-      const current = entry && entry.resetAt > now ? entry : { count: 0, resetAt: now + 60_000 };
-      attempts.set(ip, { count: current.count + 1, resetAt: current.resetAt });
       return NextResponse.json({ error: "Hatalı şifre" }, { status: 401 });
     }
 
-    attempts.delete(ip);
+    resetRateLimit("admin-login", ip);
     const response = NextResponse.json({ success: true });
     response.cookies.set(ADMIN_COOKIE, createSessionToken(), {
       httpOnly: true,

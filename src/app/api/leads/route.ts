@@ -1,10 +1,29 @@
 import { NextResponse } from "next/server";
 import { addLead, generateId } from "@/lib/db";
 import { syncPendingLeadsToCrm } from "@/lib/crm-sync";
+import { RATE_LIMITS, clientIp, consumeRateLimit, rateLimitHeaders } from "@/lib/rate-limit";
+import { HONEYPOT_FIELD, checkSpam } from "@/lib/spam-guard";
 
 export async function POST(req: Request) {
   try {
+    const ip = clientIp(req);
+    const limit = consumeRateLimit("leads", ip, RATE_LIMITS.leads);
+    if (!limit.ok) {
+      return NextResponse.json(
+        { error: "Çok fazla başvuru gönderildi. Lütfen biraz sonra tekrar deneyin." },
+        { status: 429, headers: rateLimitHeaders(limit) }
+      );
+    }
+
     const body = await req.json();
+
+    // Bot sinyali: kayıt yazmadan "başarılı" dön — bot neyin yakaladığını öğrenmesin,
+    // SatisCRM havuzuna da çöp düşmesin.
+    const spam = checkSpam({ honeypot: body[HONEYPOT_FIELD], startedAt: body.startedAt });
+    if (spam.spam) {
+      console.warn(`[leads] spam engellendi (${spam.reason}) ip=${ip}`);
+      return NextResponse.json({ success: true });
+    }
 
     const name = String(body.name || "").trim();
     const phone = String(body.phone || "").trim();

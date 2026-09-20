@@ -1,11 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { HONEYPOT_FIELD } from "@/lib/spam-guard";
 
 type FormStatus = "idle" | "submitting" | "success" | "error";
 
 export default function ContactForm() {
   const [status, setStatus] = useState<FormStatus>("idle");
+  // Formun ekrana geldiği an — sunucu 3 sn'den hızlı gönderimi bot sayar (lib/spam-guard).
+  const startedAt = useRef(Date.now());
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -22,6 +25,8 @@ export default function ContactForm() {
           storeUrl: formData.get("storeUrl"),
           monthlyOrders: formData.get("monthlyOrders"),
           message: formData.get("message"),
+          [HONEYPOT_FIELD]: formData.get(HONEYPOT_FIELD),
+          startedAt: startedAt.current,
         }),
       });
       setStatus(res.ok ? "success" : "error");
@@ -49,7 +54,7 @@ export default function ContactForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
+    <form onSubmit={handleSubmit} className="relative space-y-5">
       <div className="grid gap-5 sm:grid-cols-2">
         <div>
           <label htmlFor="name" className="mb-1.5 block text-sm font-medium text-ink-800">
@@ -141,6 +146,19 @@ export default function ContactForm() {
           rows={4}
           className="w-full rounded-lg border border-ink-300 px-4 py-2.5 text-sm text-ink-900 placeholder:text-ink-500 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
           placeholder="Sorularınızı veya talebinizi yazın..."
+        />
+      </div>
+
+      {/* Honeypot: insanlar görmez (ekran okuyucu dahil), botlar doldurur. */}
+      <div aria-hidden="true" className="absolute -left-[9999px] top-0 h-px w-px overflow-hidden">
+        <label htmlFor={HONEYPOT_FIELD}>Web siteniz</label>
+        <input
+          id={HONEYPOT_FIELD}
+          name={HONEYPOT_FIELD}
+          type="text"
+          tabIndex={-1}
+          autoComplete="off"
+          defaultValue=""
         />
       </div>
 

@@ -5,11 +5,20 @@ import { initializeCheckoutForm, type IyzicoBasketItem } from "@/lib/iyzico";
 import { readGaCookies } from "@/lib/ga-server";
 import { readMetaIdentity } from "@/lib/meta-capi";
 import { SITE, MARKETPLACES } from "@/lib/site";
+import { RATE_LIMITS, clientIp, consumeRateLimit, rateLimitHeaders } from "@/lib/rate-limit";
 
 const VALID_MARKETPLACES = new Set<string>(MARKETPLACES.map((m) => m.key));
 
 export async function POST(req: Request) {
   try {
+    const limit = consumeRateLimit("payment-initialize", clientIp(req), RATE_LIMITS.paymentInitialize);
+    if (!limit.ok) {
+      return NextResponse.json(
+        { error: "Çok fazla deneme yapıldı. Lütfen birkaç dakika sonra tekrar deneyin." },
+        { status: 429, headers: rateLimitHeaders(limit) }
+      );
+    }
+
     const body = await req.json();
 
     const name = String(body.name || "").trim();

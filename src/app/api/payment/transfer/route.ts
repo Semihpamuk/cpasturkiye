@@ -4,6 +4,7 @@ import { computeOrderQuote, MARKETPLACES } from "@/lib/site";
 import { sendTransferReceived } from "@/lib/mailer";
 import { gaIdentityFrom, readGaCookies, sendGaServerEvent } from "@/lib/ga-server";
 import { readMetaIdentity } from "@/lib/meta-capi";
+import { RATE_LIMITS, clientIp, consumeRateLimit, rateLimitHeaders } from "@/lib/rate-limit";
 
 const VALID_MARKETPLACES = new Set<string>(MARKETPLACES.map((m) => m.key));
 const MAX_RECEIPT_BYTES = 10 * 1024 * 1024; // 10 MB
@@ -24,6 +25,15 @@ function extFor(type: string, name: string): string {
 
 export async function POST(req: Request) {
   try {
+    // Sınır formData okunmadan ÖNCE: reddedilen istek 10 MB'lık dekontu bile ayrıştırmasın.
+    const limit = consumeRateLimit("payment-transfer", clientIp(req), RATE_LIMITS.paymentTransfer);
+    if (!limit.ok) {
+      return NextResponse.json(
+        { error: "Çok fazla deneme yapıldı. Lütfen birkaç dakika sonra tekrar deneyin." },
+        { status: 429, headers: rateLimitHeaders(limit) }
+      );
+    }
+
     const formData = await req.formData();
     const receiptRaw = formData.get("receipt");
     const payloadRaw = formData.get("payload");
