@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { findValidCode, getSettings, savePendingOrder } from "@/lib/db";
 import { computeOrderQuote } from "@/lib/site";
-import { initializeCheckoutForm, type IyzicoBasketItem } from "@/lib/iyzico";
+import { IyzicoTimeoutError, initializeCheckoutForm, type IyzicoBasketItem } from "@/lib/iyzico";
 import { readGaCookies } from "@/lib/ga-server";
 import { readMetaIdentity } from "@/lib/meta-capi";
 import { SITE, MARKETPLACES } from "@/lib/site";
@@ -201,6 +201,13 @@ export async function POST(req: Request) {
     });
   } catch (err) {
     console.error("payment/initialize error:", err);
+    // iyzico ulaşılamaz/yanıtsız: müşteriyi kilitlemek yerine havale yoluna yönlendir.
+    if (err instanceof IyzicoTimeoutError) {
+      return NextResponse.json(
+        { error: "Kart ödemesi şu an yanıt vermiyor. Lütfen havale/EFT ile deneyin veya bizimle iletişime geçin." },
+        { status: 503 }
+      );
+    }
     return NextResponse.json({ error: "Ödeme başlatılamadı" }, { status: 500 });
   }
 }

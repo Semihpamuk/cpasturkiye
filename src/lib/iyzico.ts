@@ -122,14 +122,55 @@ export interface IyzicoRetrieveResult {
   [key: string]: unknown;
 }
 
-export function initializeCheckoutForm(request: IyzicoCheckoutRequest): Promise<IyzicoCheckoutResult> {
-  return new Promise((resolve, reject) => {
-    const client = getClient();
-    client.checkoutFormInitialize.create(request, (err: Error | null, result: IyzicoCheckoutResult) => {
+/**
+ * iyzico'ya giden çağrılar için üst sınır. SDK'nın (postman-request) kendi
+ * zaman aşımı yok: api.iyzipay.com yanıt vermezse istek sonsuza kadar asılı
+ * kalır, müşteri "Ödeme başlatılıyor..." ekranında kilitlenirdi (2026-09-20'de
+ * sunucu IP'si iyzico canlı API'sine ulaşamayınca yaşandı). Zaman aşımında
+ * kullanıcıya havale/EFT önerilir.
+ */
+export const IYZICO_TIMEOUT_MS = 15_000;
+
+export class IyzicoTimeoutError extends Error {
+  constructor(operation: string, ms: number) {
+    super(`iyzico ${operation} ${ms} ms içinde yanıt vermedi`);
+    this.name = "IyzicoTimeoutError";
+  }
+}
+
+/** SDK'nın callback tabanlı çağrısını zaman sınırlı Promise'e çevirir. */
+export function withIyzicoTimeout<T>(
+  operation: string,
+  run: (done: (err: Error | null, result: T) => void) => void,
+  ms: number = IYZICO_TIMEOUT_MS
+): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    let settled = false;
+    const timer = setTimeout(() => {
+      if (settled) return;
+      settled = true;
+      reject(new IyzicoTimeoutError(operation, ms));
+    }, ms);
+    const done = (err: Error | null, result: T) => {
+      if (settled) return; // zaman aşımından sonra gelen geç yanıt yok sayılır
+      settled = true;
+      clearTimeout(timer);
       if (err) reject(err);
       else resolve(result);
-    });
+    };
+    try {
+      run(done);
+    } catch (err) {
+      done(err instanceof Error ? err : new Error(String(err)), undefined as T);
+    }
   });
+}
+
+export function initializeCheckoutForm(request: IyzicoCheckoutRequest): Promise<IyzicoCheckoutResult> {
+  const client = getClient();
+  return withIyzicoTimeout<IyzicoCheckoutResult>("checkoutFormInitialize", (done) =>
+    client.checkoutFormInitialize.create(request, done)
+  );
 }
 
 /**
@@ -144,18 +185,13 @@ export function retrieveCheckoutForm(
   token: string,
   conversationId?: string
 ): Promise<IyzicoRetrieveResult> {
-  return new Promise((resolve, reject) => {
-    const client = getClient();
-    if (!client.checkoutForm || typeof client.checkoutForm.retrieve !== "function") {
-      reject(new Error("iyzipay paketinde checkoutForm.retrieve bulunamadı (paket sürümü uyumsuz)."));
-      return;
-    }
-    client.checkoutForm.retrieve(
-      { locale: "tr", conversationId, token },
-      (err: Error | null, result: IyzicoRetrieveResult) => {
-        if (err) reject(err);
-        else resolve(result);
-      }
+  const client = getClient();
+  if (!client.checkoutForm || typeof client.checkoutForm.retrieve !== "function") {
+    return Promise.reject(
+      new Error("iyzipay paketinde checkoutForm.retrieve bulunamadı (paket sürümü uyumsuz).")
     );
-  });
+  }
+  return withIyzicoTimeout<IyzicoRetrieveResult>("checkoutForm.retrieve", (done) =>
+    client.checkoutForm.retrieve({ locale: "tr", conversationId, token }, done)
+  );
 }
