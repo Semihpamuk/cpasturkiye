@@ -14,8 +14,9 @@
 #   winget install Rclone.Rclone
 #   rclone authorize "drive" "eyJzY29wZSI6ImRyaXZlLmZpbGUifQ"
 #   → tarayıcı açılır, Google hesabına izin ver → terminalde
-#     "Paste the following into your remote machine --->" altındaki
-#     {"access_token":...} satırını kopyala.
+#     "Paste the following into your remote machine --->" altındaki satırı
+#     kopyala ({"access_token":...} JSON'u ya da eyJ... ile başlayan base64
+#     paketi — ikisi de kabul edilir).
 #
 # SONRA sunucuda:
 #   curl -sSL https://raw.githubusercontent.com/Semihpamuk/cpasturkiye/master/scripts/setup-gdrive-backup.sh -o setup-gdrive-backup.sh
@@ -42,6 +43,31 @@ Token'ı almak için kendi bilgisayarında:
 ve çıkan {"access_token":...} satırını tek tırnak içinde bu scripte ver.
 USAGE
   exit 1
+fi
+
+# rclone authorize iki biçimde çıktı verebilir:
+#   eski: {"access_token":...}                     → doğrudan token
+#   yeni (>=1.64): eyJjbGllbnRf... (base64, padding'siz) → {"client_id":"","client_secret":"","token":{...}}
+if [[ "$TOKEN" != \{* ]]; then
+  if ! command -v python3 >/dev/null 2>&1; then
+    echo "HATA: base64 token'ı açmak için python3 gerekli (apt install python3)."; exit 1
+  fi
+  TOKEN="$(python3 - "$TOKEN" <<'PY'
+import base64, json, sys
+raw = sys.argv[1].strip()
+raw += "=" * (-len(raw) % 4)
+try:
+    data = json.loads(base64.b64decode(raw))
+except Exception as e:
+    sys.exit(f"HATA: token base64/JSON olarak açılamadı: {e}")
+tok = data.get("token", data)
+if isinstance(tok, str):
+    tok = json.loads(tok)
+if "access_token" not in tok:
+    sys.exit("HATA: paketin içinde access_token yok — rclone authorize çıktısını tamamen kopyaladın mı?")
+print(json.dumps(tok))
+PY
+)"
 fi
 
 if [[ "$TOKEN" != \{*access_token* ]]; then
