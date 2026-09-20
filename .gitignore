@@ -28,3 +28,7 @@ next-env.d.ts
 
 # Yayin rehberi — GERCEK sirlar icerir (ADMIN_PASSWORD/ADMIN_SECRET), repoya girmez
 YAYIN-REHBERI.md
+
+# Yerel çalışma dosyaları (referans listesi vb.) — canlı veri sunucudaki data/ altında
+/*.xlsx
+/*.csv
