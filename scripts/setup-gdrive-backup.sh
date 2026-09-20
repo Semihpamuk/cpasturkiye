@@ -12,7 +12,7 @@
 #
 # ÖNCE bilgisayarında (Windows PowerShell):
 #   winget install Rclone.Rclone
-#   rclone authorize "drive" "eyJzY29wZSI6ImRyaXZlLmZpbGUifQ=="
+#   rclone authorize "drive" "eyJzY29wZSI6ImRyaXZlLmZpbGUifQ"
 #   → tarayıcı açılır, Google hesabına izin ver → terminalde
 #     "Paste the following into your remote machine --->" altındaki
 #     {"access_token":...} satırını kopyala.
@@ -38,7 +38,7 @@ Kullanım: bash setup-gdrive-backup.sh '<rclone-authorize-token-json>'
 
 Token'ı almak için kendi bilgisayarında:
   winget install Rclone.Rclone
-  rclone authorize "drive" "eyJzY29wZSI6ImRyaXZlLmZpbGUifQ=="
+  rclone authorize "drive" "eyJzY29wZSI6ImRyaXZlLmZpbGUifQ"
 ve çıkan {"access_token":...} satırını tek tırnak içinde bu scripte ver.
 USAGE
   exit 1
