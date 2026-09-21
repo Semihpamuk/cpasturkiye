@@ -35,7 +35,6 @@ export default async function PreliminaryInfoPage() {
             `Adres: ${SITE.address}`,
             `Telefon: ${SITE.phone}`,
             `E-posta: ${SITE.email}`,
-            `KEP adresi: ${SITE.kep}`,
             `MERSİS No: ${SITE.mersis}`,
             `Ticaret Sicil No: ${SITE.tradeRegistryNo}`,
             `Vergi Dairesi / No: ${SITE.taxOffice} / ${SITE.taxId}`,

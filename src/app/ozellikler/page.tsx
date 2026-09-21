@@ -21,6 +21,9 @@ interface ServiceDetail {
   icon: ReactNode;
 }
 
+// Vurgu renkleri yalnızca marka paleti: kiremit (brand), orman yeşili (forest)
+// ve mürekkep (ink) dönüşümlü. Önceden altı ayrı renkti (mor/mavi/pembe/amber) ve
+// sayfa sitenin geri kalanından kopuk, "şablon" görünüyordu (inceleme G, 21 Eyl).
 const SERVICE_DETAILS: ServiceDetail[] = [
   {
     badge: "Kurulum",
@@ -49,7 +52,7 @@ const SERVICE_DETAILS: ServiceDetail[] = [
       "Prospecting: benzer alışveriş davranışındaki yeni kitlelere keşif",
       "Bütçe dağılımı ve teklif stratejisinin mağazaya özel kurulması",
     ],
-    accent: "from-violet-500 to-violet-700",
+    accent: "from-forest to-ink-900",
     icon: (
       <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
     ),
@@ -65,7 +68,7 @@ const SERVICE_DETAILS: ServiceDetail[] = [
       "Zarar eden setlerin kapatılması, kazananların ölçeklenmesi",
       "Yeni segment ve kitle testlerinin planlı yürütülmesi",
     ],
-    accent: "from-green-500 to-green-700",
+    accent: "from-ink-700 to-ink-900",
     icon: (
       <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" />
     ),
@@ -81,7 +84,7 @@ const SERVICE_DETAILS: ServiceDetail[] = [
       "Yapılan her optimizasyonun gerekçesiyle listelenmesi",
       "Aylık birebir strateji görüşmesi",
     ],
-    accent: "from-sky-500 to-sky-700",
+    accent: "from-brand-500 to-brand-700",
     icon: (
       <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25z" />
     ),
@@ -97,7 +100,7 @@ const SERVICE_DETAILS: ServiceDetail[] = [
       "Fiyat değişikliklerinin Meta kataloğuna otomatik yansıması",
       "Kritik durumlarda aynı gün telefonla bilgilendirme",
     ],
-    accent: "from-rose-500 to-rose-700",
+    accent: "from-forest to-ink-900",
     icon: (
       <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
     ),
@@ -113,7 +116,7 @@ const SERVICE_DETAILS: ServiceDetail[] = [
       "Bütçenin kanallar arasında veriyle dağıtılması",
       "Amazon entegrasyonu çok yakında — mevcut müşterilere öncelik",
     ],
-    accent: "from-amber-500 to-amber-700",
+    accent: "from-ink-700 to-ink-900",
     icon: (
       <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 21v-7.5a.75.75 0 01.75-.75h3a.75.75 0 01.75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349m-16.5 11.65V9.35m0 0a3.001 3.001 0 003.75-.615A2.993 2.993 0 009.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 002.25 1.016c.896 0 1.7-.393 2.25-1.016a3.001 3.001 0 003.75.614m-16.5 0a3.004 3.004 0 01-.621-4.72L4.318 3.44A1.5 1.5 0 015.378 3h13.243a1.5 1.5 0 011.06.44l1.19 1.189a3 3 0 01-.621 4.72m-13.5 8.65h3.75a.75.75 0 00.75-.75V13.5a.75.75 0 00-.75-.75H6.75a.75.75 0 00-.75.75v3.75c0 .415.336.75.75.75z" />
     ),

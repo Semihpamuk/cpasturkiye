@@ -166,7 +166,6 @@ export default function AboutPage() {
             <p><span className="font-semibold text-ink-800">Adres:</span> {SITE.address}</p>
             <p><span className="font-semibold text-ink-800">E-posta:</span> {SITE.email}</p>
             <p><span className="font-semibold text-ink-800">Telefon:</span> {SITE.phone}</p>
-            <p><span className="font-semibold text-ink-800">KEP:</span> {SITE.kep}</p>
           </div>
           <p className="mt-4 text-xs text-ink-500">
             Yasal belgeler:{" "}

@@ -137,10 +137,15 @@ function toCard(cat: CategoryStat, index: number): CaseCard {
     badge: cat.name,
     badgeColor: color,
     color,
-    subLabel: `${cat.firmCount} mağaza`,
+    // Tek mağazalı kategoride "1 mağaza" yazmak inandırıcılığı zedeliyordu
+    // (kullanıcı kararı, 21 Eyl 2026): kart sektör verisi olarak sunulur.
+    subLabel: cat.firmCount > 1 ? `${cat.firmCount} mağaza` : "sektör verisi",
     curve: normalizeCurve(revenueCurve),
     metrics,
-    note: `${cat.firmCount} aktif mağazanın son ${cat.monthly.length} aydaki toplam Meta CPAS performansı.`,
+    note:
+      cat.firmCount > 1
+        ? `${cat.firmCount} aktif mağazanın son ${cat.monthly.length} aydaki toplam Meta CPAS performansı.`
+        : `Bu sektörde yönettiğimiz hesabın son ${cat.monthly.length} aydaki Meta CPAS performansı.`,
   };
 }
 

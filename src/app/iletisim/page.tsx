@@ -115,7 +115,6 @@ export default function ContactPage() {
             <p><strong>Vergi Dairesi / No:</strong> {SITE.taxOffice} / {SITE.taxId}</p>
             <p><strong>E-posta:</strong> <a href={`mailto:${SITE.email}`} className="hover:underline">{SITE.email}</a></p>
             <p><strong>Telefon:</strong> <a href={telHref()} className="hover:underline">{SITE.phone}</a></p>
-            <p><strong>KEP:</strong> {SITE.kep}</p>
             <p className="pt-2">
               <Link href="/mesafeli-satis-sozlesmesi" className="underline hover:text-brand-700">Mesafeli Satış Sözleşmesi</Link>
               {" · "}
