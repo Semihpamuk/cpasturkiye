@@ -36,7 +36,6 @@ export default function TestimonialsSpotlight({ testimonials }: TestimonialsSpot
               key={testimonial.name}
               onClick={() => setActiveIndex(index)}
               aria-pressed={isActive}
-              aria-label={`${testimonial.name} yorumunu odakla`}
               className={`text-left transition-all duration-500 ease-out focus:outline-none ${
                 isActive
                   ? "md:z-10 md:scale-105 md:opacity-100 md:blur-0"
@@ -63,6 +62,9 @@ export default function TestimonialsSpotlight({ testimonials }: TestimonialsSpot
                 <figcaption className="mt-6 border-t border-ink-100 pt-4">
                   <p className="text-sm font-semibold text-ink-900">{testimonial.name}</p>
                   <p className="text-xs text-ink-500">{testimonial.role}</p>
+                  {/* Erişilebilir ad görünen metni (alıntı + ad) içermeli; eylem
+                      ipucu yalnızca ekran okuyucuya. aria-label bunu bozuyordu. */}
+                  <span className="sr-only">— yorumu odakla</span>
                 </figcaption>
               </figure>
             </button>

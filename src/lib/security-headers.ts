@@ -71,7 +71,9 @@ export function buildCsp(isDev: boolean): string {
     "object-src": ["'none'"],
     "report-uri": ["/api/csp-report"],
   };
-  if (!isDev) directives["upgrade-insecure-requests"] = [];
+  // Rapor modunda tarayıcı bu direktifi yok sayar ve her sayfada konsola hata
+  // basar (Lighthouse "errors-in-console"); yalnızca zorunlu modda eklenir.
+  if (!isDev && CSP_ENFORCE) directives["upgrade-insecure-requests"] = [];
 
   return Object.entries(directives)
     .map(([name, values]) => (values.length ? `${name} ${values.join(" ")}` : name))

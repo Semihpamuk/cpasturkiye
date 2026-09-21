@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
 import { motion, useReducedMotion } from "motion/react";
 import {
   computeOrderQuote,
@@ -299,9 +298,22 @@ function TransferPending({ orderId }: { orderId: string }) {
 
 /* ─────────────────────────────── Checkout ─────────────────────────────── */
 
-export default function CheckoutClient() {
+/**
+ * Ödeme dönüşü query'si — sunucu sayfasından prop olarak gelir.
+ *
+ * Neden useSearchParams DEĞİL: o hook Suspense içinde istemci render'ına
+ * düşürüyordu; sunucu HTML'inde form hiç yoktu, form mount olunca footer
+ * aşağı kayıp CLS 0,93 üretiyordu (Lighthouse, 2026-09-21). Sunucu sayfası
+ * query'yi okuyup geçince form SSR'da basılır, kayma olmaz.
+ */
+export interface CheckoutQuery {
+  payment?: string;
+  orderId?: string;
+  reason?: string;
+}
+
+export default function CheckoutClient({ query }: { query: CheckoutQuery }) {
   const { pricing, loaded: settingsLoaded } = useSettings();
-  const searchParams = useSearchParams();
 
   const [step, setStep] = useState<Step>("details");
   const [marketplaces, setMarketplaces] = useState<string[]>(["trendyol"]);
@@ -338,8 +350,8 @@ export default function CheckoutClient() {
 
   // URL paramları: ?payment=success|failure → sonuç ekranı
   useEffect(() => {
-    const payment = searchParams.get("payment");
-    const oid = searchParams.get("orderId");
+    const payment = query.payment ?? null;
+    const oid = query.orderId ?? null;
     if (payment === "success") {
       // orderId olmayabilir: ödeme alındı ama kayıt adımı hata verdiyse
       // callback ?payment=success&pending=1 ile döner — yine başarı ekranı göster.
@@ -352,12 +364,12 @@ export default function CheckoutClient() {
       setStep("failed");
       // `reason` URL'den geliyor: doğrulanmazsa herkes GA4'e keyfi metin sokabilir.
       // Whitelist yerine biçim kontrolü — iyzico errorCode'ları korunsun.
-      const rawReason = searchParams.get("reason") ?? payment;
+      const rawReason = query.reason ?? payment;
       trackPaymentFailed(
         SAFE_FAILURE_REASON.test(rawReason) ? rawReason : "invalid_reason"
       );
     }
-  }, [searchParams]);
+  }, [query.payment, query.orderId, query.reason]);
 
   // iyzico ödeme formu scriptlerini DOM'a enjekte et
   useEffect(() => {
@@ -783,7 +795,7 @@ export default function CheckoutClient() {
                     isTransfer ? "border-brand-500 bg-brand-50" : "border-ink-200 hover:border-ink-300"
                   }`}
                 >
-                  <span className="absolute -top-2.5 right-3 rounded-full bg-green-600 px-2.5 py-0.5 text-[10px] font-bold text-white">
+                  <span className="absolute -top-2.5 right-3 rounded-full bg-green-700 px-2.5 py-0.5 text-[11px] font-bold text-white">
                     %5 İNDİRİM
                   </span>
                   <span className="font-display text-sm font-bold text-ink-900">Havale / EFT</span>

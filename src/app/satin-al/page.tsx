@@ -1,4 +1,3 @@
-import { Suspense } from "react";
 import type { Metadata } from "next";
 import CheckoutClient from "./CheckoutClient";
 import JsonLd from "@/components/JsonLd";
@@ -11,7 +10,15 @@ export const metadata: Metadata = {
   alternates: { canonical: "/satin-al" },
 };
 
-export default function CheckoutPage() {
+type SearchParams = Promise<Record<string, string | string[] | undefined>>;
+
+const first = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v);
+
+// searchParams sunucuda okunur ve prop olarak geçer; böylece form SSR'da
+// basılır (bkz. CheckoutClient içindeki CheckoutQuery açıklaması).
+export default async function CheckoutPage({ searchParams }: { searchParams: SearchParams }) {
+  const sp = await searchParams;
+  const query = { payment: first(sp.payment), orderId: first(sp.orderId), reason: first(sp.reason) };
   return (
     <>
       <JsonLd
@@ -20,9 +27,7 @@ export default function CheckoutPage() {
           { name: "Satın Al", path: "/satin-al" },
         ])}
       />
-      <Suspense>
-        <CheckoutClient />
-      </Suspense>
+      <CheckoutClient query={query} />
     </>
   );
 }

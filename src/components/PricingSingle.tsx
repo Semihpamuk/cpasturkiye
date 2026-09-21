@@ -19,8 +19,14 @@ const INCLUDED = [
  * Tek paket fiyatlandırma: 1. ay kurulum + ilk ay yönetim,
  * 2. aydan itibaren aylık yönetim.
  */
-export default function PricingSingle() {
+interface PricingSingleProps {
+  /** Kart başlıklarının seviyesi: ana sayfada h2 bölümünün altında h3, /fiyatlandirma'da doğrudan h1 altında h2 */
+  cardHeading?: "h2" | "h3";
+}
+
+export default function PricingSingle({ cardHeading = "h3" }: PricingSingleProps) {
   const { pricing } = useSettings();
+  const CardHeading = cardHeading;
 
   return (
     <div className="mx-auto max-w-4xl">
@@ -34,9 +40,9 @@ export default function PricingSingle() {
             <span className="inline-flex rounded-full bg-brand-50 px-3 py-1 text-xs font-bold uppercase tracking-wider text-brand-700 ring-1 ring-brand-200">
               Başlangıç · Tek seferlik
             </span>
-            <h3 className="mt-4 font-display text-xl font-bold text-ink-900">
+            <CardHeading className="mt-4 font-display text-xl font-bold text-ink-900">
               Kurulum + İlk Ay Yönetim
-            </h3>
+            </CardHeading>
             <p className="mt-2 text-sm leading-relaxed text-ink-600">
               Yetkilendirmeden kampanyaların yayına alınmasına kadar tüm teknik
               kurulum ve <strong className="text-ink-800">ilk ayın yönetimi dahildir.</strong>
@@ -70,9 +76,9 @@ export default function PricingSingle() {
             <span className="inline-flex rounded-full bg-ink-100 px-3 py-1 text-xs font-bold uppercase tracking-wider text-ink-600 ring-1 ring-ink-200">
               İsteğe bağlı · Devam
             </span>
-            <h3 className="mt-4 font-display text-xl font-bold text-ink-900">
+            <CardHeading className="mt-4 font-display text-xl font-bold text-ink-900">
               Aylık Yönetim
-            </h3>
+            </CardHeading>
             <p className="mt-2 text-sm leading-relaxed text-ink-600">
               İlk ay pakete dahil. Sonrasında <strong className="text-ink-800">dilerseniz</strong>{" "}
               aylık yönetimle devam edersiniz — <strong className="text-ink-800">taahhüt yok</strong>,

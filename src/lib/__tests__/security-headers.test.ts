@@ -27,9 +27,10 @@ describe("buildCsp", () => {
     expect(directive(prod, "base-uri")).toEqual(["'self'"]);
   });
 
-  test("production'da eval yok, HTTP→HTTPS yükseltme var", () => {
+  test("production'da eval yok; HTTP→HTTPS yükseltme yalnızca zorunlu modda", () => {
     expect(directive(prod, "script-src")).not.toContain("'unsafe-eval'");
-    expect(prod).toContain("upgrade-insecure-requests");
+    // Rapor modunda tarayıcı direktifi yok sayıp konsola hata basar.
+    expect(prod.includes("upgrade-insecure-requests")).toBe(CSP_ENFORCE);
   });
 
   test("dev'de Next HMR için eval ve websocket açık, yükseltme yok", () => {

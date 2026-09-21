@@ -78,7 +78,7 @@ export default async function PricingPage() {
 
       <section className="px-4 pb-20 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
-          <PricingSingle />
+          <PricingSingle cardHeading="h2" />
         </div>
       </section>
 

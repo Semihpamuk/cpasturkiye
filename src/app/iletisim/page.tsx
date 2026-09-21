@@ -40,7 +40,7 @@ export default function ContactPage() {
                 </svg>
               </div>
               <div>
-                <h3 className="text-sm font-semibold text-ink-900">E-posta</h3>
+                <h2 className="text-sm font-semibold text-ink-900">E-posta</h2>
                 <p className="mt-0.5 text-sm text-ink-600">{SITE.email}</p>
               </div>
             </div>
@@ -53,7 +53,7 @@ export default function ContactPage() {
                 </svg>
               </div>
               <div>
-                <h3 className="text-sm font-semibold text-ink-900">Adres</h3>
+                <h2 className="text-sm font-semibold text-ink-900">Adres</h2>
                 <p className="mt-0.5 text-sm text-ink-600">{SITE.address}</p>
               </div>
             </div>
@@ -65,7 +65,7 @@ export default function ContactPage() {
                 </svg>
               </div>
               <div>
-                <h3 className="text-sm font-semibold text-ink-900">Telefon</h3>
+                <h2 className="text-sm font-semibold text-ink-900">Telefon</h2>
                 <p className="mt-0.5 text-sm text-ink-600">{SITE.phone}</p>
               </div>
             </div>
@@ -77,7 +77,7 @@ export default function ContactPage() {
                 </svg>
               </div>
               <div>
-                <h3 className="text-sm font-semibold text-ink-900">Yanıt süresi</h3>
+                <h2 className="text-sm font-semibold text-ink-900">Yanıt süresi</h2>
                 <p className="mt-0.5 text-sm text-ink-600">
                   Hafta içi 09:00 – 18:00, en geç 1 iş günü içinde dönüş
                 </p>
