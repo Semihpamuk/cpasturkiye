@@ -33,20 +33,35 @@ export function isFetchableLogoUrl(value: string): boolean {
 
 export type LogoFetcher = (url: string) => Promise<{ data: Buffer; ext: string }>;
 
+/**
+ * Dosya türünü ilk baytlardan tanır. Bazı CDN'ler (ör. Trendyol'un cdn.dsmcdn.com'u)
+ * görsele yanlış Content-Type (application/x-www-form-urlencoded) veriyor;
+ * başlığa güvenmek geçerli logoları reddettiriyordu.
+ */
+export function sniffImageExt(data: Buffer): string | null {
+  if (data.length >= 3 && data[0] === 0xff && data[1] === 0xd8 && data[2] === 0xff) return "jpg";
+  if (data.length >= 8 && data.subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]))) return "png";
+  if (data.length >= 12 && data.subarray(0, 4).toString("ascii") === "RIFF" && data.subarray(8, 12).toString("ascii") === "WEBP") return "webp";
+  const head = data.subarray(0, 512).toString("utf-8").trimStart().toLowerCase();
+  if (head.startsWith("<svg") || (head.startsWith("<?xml") && head.includes("<svg"))) return "svg";
+  return null;
+}
+
 async function fetchLogo(url: string): Promise<{ data: Buffer; ext: string }> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
   try {
     const res = await fetch(url, { signal: controller.signal, redirect: "follow" });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const type = (res.headers.get("content-type") ?? "").split(";")[0].trim().toLowerCase();
-    const ext = LOGO_MIME_EXT[type];
-    if (!ext) throw new Error(`desteklenmeyen içerik tipi: ${type || "bilinmiyor"}`);
     const declared = Number(res.headers.get("content-length") ?? 0);
     if (declared > MAX_LOGO_BYTES) throw new Error("2 MB üstü");
     const data = Buffer.from(await res.arrayBuffer());
     if (data.byteLength === 0) throw new Error("boş yanıt");
     if (data.byteLength > MAX_LOGO_BYTES) throw new Error("2 MB üstü");
+    // Önce başlık, o tanınmıyorsa dosyanın kendisi
+    const type = (res.headers.get("content-type") ?? "").split(";")[0].trim().toLowerCase();
+    const ext = LOGO_MIME_EXT[type] ?? sniffImageExt(data);
+    if (!ext) throw new Error(`görsel olarak tanınamadı (içerik tipi: ${type || "bilinmiyor"})`);
     return { data, ext };
   } finally {
     clearTimeout(timer);

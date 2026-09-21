@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { isFetchableLogoUrl, localizeReferenceLogos } from "../logo-localize";
+import { isFetchableLogoUrl, localizeReferenceLogos, sniffImageExt } from "../logo-localize";
 import type { ReferenceItem } from "../references";
 
 const ref = (name: string, logo: string): ReferenceItem => ({ name, url: "", logo });
@@ -51,5 +51,20 @@ describe("localizeReferenceLogos", () => {
     const r = await localizeReferenceLogos(refs, async () => { calls++; return fetchOk(); }, store);
     expect(calls).toBe(0);
     expect(r.failed.map((f) => f.name)).toEqual(["Http", "Ip"]);
+  });
+});
+
+describe("sniffImageExt", () => {
+  test("yanlış Content-Type gelse de JPEG/PNG/WEBP/SVG'yi baytlardan tanır", () => {
+    expect(sniffImageExt(Buffer.from([0xff, 0xd8, 0xff, 0xe0, 0x00]))).toBe("jpg");
+    expect(sniffImageExt(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00]))).toBe("png");
+    expect(sniffImageExt(Buffer.concat([Buffer.from("RIFF"), Buffer.alloc(4), Buffer.from("WEBPVP8 ")]))).toBe("webp");
+    expect(sniffImageExt(Buffer.from('<?xml version="1.0"?><svg xmlns="http://www.w3.org/2000/svg"/>'))).toBe("svg");
+    expect(sniffImageExt(Buffer.from("  <svg viewBox='0 0 1 1'/>"))).toBe("svg");
+  });
+  test("görsel olmayan veriyi reddeder", () => {
+    expect(sniffImageExt(Buffer.from("<html><body>404</body></html>"))).toBeNull();
+    expect(sniffImageExt(Buffer.from([0x00, 0x01]))).toBeNull();
+    expect(sniffImageExt(Buffer.alloc(0))).toBeNull();
   });
 });
