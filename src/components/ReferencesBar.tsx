@@ -15,6 +15,11 @@ const MIN_REFERENCES = 3;
    ve dönüşte boşluk görünür; bu yüzden yarım şerit bu sayıya ulaşana kadar
    tekrarlanır, sonra ikiye katlanır. */
 const MIN_ITEMS_PER_HALF = 8;
+/* Üst sınır: 50 referans × 2 kopya = 100 <img> ve ~300 DOM düğümü, mobil ana
+   sayfanın en ağır parçasıydı (Lighthouse: 1.170 eleman, ana iş parçacığı
+   4,9 s). Şerit zaten sonsuz döndüğü için ziyaretçi farkı görmez; listedeki
+   ilk MAX_ITEMS_PER_HALF referans gösterilir (panelde sıra = öncelik). */
+const MAX_ITEMS_PER_HALF = 20;
 
 /* Logo + mağaza adı birlikte gösterilir. Pazaryeri satıcı logoları kendi
    arka planı olan kare avatarlar; grayscale altında üçü de gri kutuya
@@ -50,8 +55,9 @@ export default function ReferencesBar() {
   if (references.length < MIN_REFERENCES) return null;
 
   // Kesintisiz kayan şerit: yarım şerit doldurulur, sonra iki kez render edilir
-  const repeatCount = Math.ceil(MIN_ITEMS_PER_HALF / references.length);
-  const half = Array.from({ length: repeatCount }, () => references).flat();
+  const shown = references.slice(0, MAX_ITEMS_PER_HALF);
+  const repeatCount = Math.ceil(MIN_ITEMS_PER_HALF / shown.length);
+  const half = Array.from({ length: repeatCount }, () => shown).flat();
   const doubled = [...half, ...half];
 
   /* Hız, yarımdaki öğe sayısıyla orantılı süre üzerinden sabitlenir: daha çok
@@ -78,7 +84,7 @@ export default function ReferencesBar() {
           {doubled.map((item, index) => {
             // Şeridi doldurmak için basılan kopyalar yalnızca görseldir; ekran
             // okuyucuya ve klavyeye ilk turdaki mağazalar bir kez sunulur.
-            const isDuplicate = index >= references.length;
+            const isDuplicate = index >= shown.length;
 
             return item.url ? (
               <a

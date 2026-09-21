@@ -76,6 +76,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="tr">
+      <head>
+        {/* Kritik fontlar: CSS ayrıştırılmadan keşfedilsin (Lighthouse: fontlar
+            ~630 ms'de başlıyordu). Yalnızca ilk ekranın ihtiyacı — Fraunces (başlık)
+            ve Inter (metin) latin altkümeleri + Türkçe glif dosyaları (ğ/ş/İ, 3–6 KB).
+            Jakarta ilk ekranda yok. */}
+        <link rel="preload" href="/fonts/fraunces-latin.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
+        <link rel="preload" href="/fonts/fraunces-tr.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
+        <link rel="preload" href="/fonts/inter-latin.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
+        <link rel="preload" href="/fonts/inter-tr.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
+      </head>
       <body className="font-sans">
         <JsonLd data={ORGANIZATION_JSONLD} />
         <JsonLd data={WEBSITE_JSONLD} />

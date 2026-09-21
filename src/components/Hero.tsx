@@ -1,8 +1,5 @@
-"use client";
-
-import { Fragment } from "react";
+import { Fragment, type CSSProperties } from "react";
 import Link from "next/link";
-import { motion, useReducedMotion } from "motion/react";
 import AnimatedBeamFlow from "./AnimatedBeamFlow";
 
 const HEADLINE_LINES = [
@@ -16,24 +13,19 @@ const MARKETPLACE_CHIPS = [
   { label: "Amazon", color: "#ff9900", soon: true },
 ];
 
+/**
+ * Giriş animasyonu CSS ile (globals.css: .hero-in / .hero-rise / .hero-scale).
+ *
+ * Önceden `motion` ile initial="hidden" kullanılıyordu: sunucu HTML'i başlığa ve
+ * paragrafa opacity:0 basıyor, JS yüklenip hidrasyon bitene kadar (mobilde
+ * ~2,3 s) LCP metni görünmüyordu (Lighthouse "element render delay").
+ * CSS animasyonu ilk boyamayla başlar; LCP elemanı olan paragraf yalnızca
+ * yükselir (opacity'ye dokunulmaz) ki ilk karede sayılsın. Hero artık
+ * istemci bileşeni değil, motion paketi bu sayfadan çıktı.
+ */
+const delay = (ms: number): CSSProperties => ({ "--hero-delay": `${ms}ms` } as CSSProperties);
+
 export default function Hero() {
-  const reduceMotion = useReducedMotion();
-
-  const container = {
-    hidden: {},
-    show: {
-      transition: { staggerChildren: reduceMotion ? 0 : 0.08 },
-    },
-  };
-  const item = {
-    hidden: reduceMotion ? { opacity: 1 } : { opacity: 0, y: 24 },
-    show: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] as const },
-    },
-  };
-
   return (
     <section className="section-dark relative overflow-hidden">
       <div className="bg-dot-grid-dark absolute inset-0" aria-hidden="true" />
@@ -48,18 +40,18 @@ export default function Hero() {
       />
 
       <div className="relative mx-auto grid max-w-7xl items-center gap-14 px-4 pb-20 pt-16 sm:px-6 lg:grid-cols-[1.05fr_1fr] lg:gap-10 lg:px-8 lg:pb-28 lg:pt-24">
-        <motion.div variants={container} initial="hidden" animate="show">
+        <div>
           {/* Rozet */}
-          <motion.p
-            variants={item}
-            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-xs font-semibold text-ink-300"
+          <p
+            style={delay(0)}
+            className="hero-in inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-xs font-semibold text-ink-300"
           >
             <span className="relative flex h-2 w-2">
               <span className="absolute inline-flex h-full w-full animate-ping-soft rounded-full bg-emerald-400" />
               <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
             </span>
             Meta CPAS Kurulum & Yönetim Hizmeti
-          </motion.p>
+          </p>
 
           {/* Başlık — kelime kelime giriş */}
           {/* Kelime kelime giriş için her kelime inline-block'tur. Kelimeler
@@ -72,31 +64,32 @@ export default function Hero() {
                 {line.map((word, wi) => (
                   <Fragment key={`${li}-${wi}`}>
                     {wi > 0 && " "}
-                    <motion.span
-                      variants={item}
-                      className={`inline-block ${
+                    <span
+                      style={delay(60 + (li * 2 + wi) * 60)}
+                      className={`hero-in inline-block ${
                         word === "Meta'da" ? "text-meta-light" : ""
                       }`}
                     >
                       {word}
-                    </motion.span>
+                    </span>
                   </Fragment>
                 ))}
               </span>
             ))}
           </h1>
 
-          <motion.p
-            variants={item}
-            className="mt-6 max-w-xl text-base leading-relaxed text-ink-300 sm:text-lg"
+          {/* LCP elemanı: yalnızca yükselir, hiç saydam olmaz */}
+          <p
+            style={delay(200)}
+            className="hero-rise mt-6 max-w-xl text-base leading-relaxed text-ink-300 sm:text-lg"
           >
             Mağazanızın kataloğunu Meta&apos;ya bağlıyor, Facebook ve Instagram
             reklamlarınızı <strong className="font-semibold text-white">gerçek satış verisiyle</strong>{" "}
             biz kuruyor, biz yönetiyoruz. Siz satışa odaklanın.
-          </motion.p>
+          </p>
 
           {/* Pazaryeri çipleri */}
-          <motion.div variants={item} className="mt-7 flex flex-wrap items-center gap-3">
+          <div style={delay(320)} className="hero-in mt-7 flex flex-wrap items-center gap-3">
             {MARKETPLACE_CHIPS.map((m) => (
               <span
                 key={m.label}
@@ -111,10 +104,10 @@ export default function Hero() {
                 )}
               </span>
             ))}
-          </motion.div>
+          </div>
 
           {/* CTA'lar */}
-          <motion.div variants={item} className="mt-9 flex flex-wrap items-center gap-4">
+          <div style={delay(400)} className="hero-in mt-9 flex flex-wrap items-center gap-4">
             <Link
               href="/satin-al"
               className="group relative overflow-hidden rounded-xl bg-brand-700 px-8 py-3.5 text-sm font-bold text-white shadow-lg shadow-brand-600/25 transition-all hover:bg-brand-800 hover:shadow-brand-500/30"
@@ -128,23 +121,21 @@ export default function Hero() {
             >
               Ücretsiz Ön Analiz
             </Link>
-          </motion.div>
+          </div>
 
           {/* Koyu zemin: ink-500 burada 4.0:1'de kalıyor, ink-400 7.5:1 verir. */}
-          <motion.p variants={item} className="mt-6 text-xs text-ink-400">
+          <p style={delay(480)} className="hero-in mt-6 text-xs text-ink-400">
             Kurulum ortalama 7 iş günü · Her hafta performans raporu · Sözleşmeli çalışma
-          </motion.p>
-        </motion.div>
+          </p>
+        </div>
 
         {/* Akış animasyonu */}
-        <motion.div
-          initial={reduceMotion ? { opacity: 1 } : { opacity: 0, scale: 0.96 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-          className="relative rounded-3xl border border-white/10 bg-ink-900/60 p-4 shadow-2xl shadow-black/40 backdrop-blur-sm sm:p-6"
+        <div
+          style={delay(300)}
+          className="hero-scale relative rounded-3xl border border-white/10 bg-ink-900/60 p-4 shadow-2xl shadow-black/40 backdrop-blur-sm sm:p-6"
         >
           <AnimatedBeamFlow />
-        </motion.div>
+        </div>
       </div>
     </section>
   );

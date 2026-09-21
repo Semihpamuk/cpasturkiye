@@ -67,8 +67,10 @@
   font-style: normal;
   font-weight: 100 900;
   font-display: swap;
-  src: url("/fonts/inter-latin-ext.woff2") format("woff2");
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+  src: url("/fonts/inter-tr.woff2") format("woff2");
+  /* Yalnızca Türkçe'ye özgü glifler (ğ Ğ İ ş Ş) + ₺; ı latin dosyasında. Tam latin-ext
+     (inter-latin-ext) 80+ KB idi ve LCP'yi font gelene kadar erteliyordu. */
+  unicode-range: U+011E-011F, U+0130, U+015E-015F, U+20BA;
 }
 @font-face {
   font-family: "Inter";
@@ -99,8 +101,10 @@
   font-style: normal;
   font-weight: 100 900;
   font-display: swap;
-  src: url("/fonts/fraunces-latin-ext.woff2") format("woff2");
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+  src: url("/fonts/fraunces-tr.woff2") format("woff2");
+  /* Yalnızca Türkçe'ye özgü glifler (ğ Ğ İ ş Ş) + ₺; ı latin dosyasında. Tam latin-ext
+     (fraunces-latin-ext) 80+ KB idi ve LCP'yi font gelene kadar erteliyordu. */
+  unicode-range: U+011E-011F, U+0130, U+015E-015F, U+20BA;
 }
 @font-face {
   font-family: "Fraunces";
@@ -186,6 +190,35 @@ body {
 .bg-dot-grid-light {
   background-image: radial-gradient(circle, rgba(25, 26, 20, 0.07) 1px, transparent 1px);
   background-size: 26px 26px;
+}
+
+/* ===== Hero giriş animasyonu (JS'siz; bkz. components/Hero.tsx) ===== */
+.hero-in,
+.hero-rise,
+.hero-scale {
+  animation-duration: 0.6s;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  animation-fill-mode: both;
+  animation-delay: var(--hero-delay, 0ms);
+}
+.hero-in { animation-name: hero-in; }
+/* LCP metni: opacity'ye dokunma, yalnızca yüksel */
+.hero-rise { animation-name: hero-rise; }
+.hero-scale { animation-name: hero-scale; animation-duration: 0.8s; }
+@keyframes hero-in {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes hero-rise {
+  from { transform: translateY(16px); }
+  to { transform: translateY(0); }
+}
+@keyframes hero-scale {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-in, .hero-rise, .hero-scale { animation: none; }
 }
 
 /* ===== Scroll-reveal animasyonları ===== */
