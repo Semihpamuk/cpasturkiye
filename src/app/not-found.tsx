@@ -10,6 +10,11 @@ const QUICK_LINKS = [
 
 export default function NotFound() {
   return (
+    <>
+      {/* not-found.tsx metadata dışa aktaramaz; React 19 bu <title>'ı <head>'e taşır.
+          Aksi halde 404 sayfası ana sayfanın uzun başlığını kullanıyordu. */}
+      <title>Sayfa bulunamadı | CPAS Türkiye</title>
+      <meta name="robots" content="noindex" />
     <section className="flex min-h-[70vh] items-center justify-center px-4 py-20">
       <div className="text-center">
         <p className="font-display text-8xl font-extrabold text-brand-100">404</p>
@@ -41,5 +46,6 @@ export default function NotFound() {
         </Link>
       </div>
     </section>
+    </>
   );
 }

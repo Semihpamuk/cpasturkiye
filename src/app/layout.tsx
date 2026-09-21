@@ -4,6 +4,7 @@ import JsonLd from "@/components/JsonLd";
 import SiteChrome from "@/components/SiteChrome";
 import { ORGANIZATION_JSONLD, WEBSITE_JSONLD } from "@/lib/organization-schema";
 import { SITE } from "@/lib/site";
+import { metaDescription } from "@/lib/seo";
 import "./globals.css";
 
 /**
@@ -18,10 +19,11 @@ const GSC_VERIFICATION = process.env.NEXT_PUBLIC_GSC_VERIFICATION;
 export const metadata: Metadata = {
   metadataBase: new URL(SITE.url),
   title: {
-    default: `${SITE.name} — Trendyol, Hepsiburada ve Amazon için Meta CPAS Reklam Yönetimi`,
+    // ≤60 karakter: Google başlığı ~60'ta keser; anahtar kelimeler önde, marka sonda.
+    default: `Trendyol & Hepsiburada için Meta CPAS Yönetimi | ${SITE.name}`,
     template: `%s | ${SITE.name}`,
   },
-  description: SITE.description,
+  description: metaDescription(SITE.description),
   keywords: [
     "CPAS",
     "CPAS nedir",
@@ -45,7 +47,7 @@ export const metadata: Metadata = {
     url: SITE.url,
     siteName: SITE.name,
     title: `${SITE.name} — Pazaryeri Reklamlarınızı Meta'da Biz Yönetiyoruz`,
-    description: SITE.description,
+    description: metaDescription(SITE.description),
     images: [
       {
         url: `${SITE.url}/og-image.png`,
@@ -58,7 +60,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: `${SITE.name} — Pazaryeri Reklamlarınızı Meta'da Biz Yönetiyoruz`,
-    description: SITE.description,
+    description: metaDescription(SITE.description),
     images: [`${SITE.url}/og-image.png`],
   },
   alternates: {

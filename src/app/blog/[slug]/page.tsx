@@ -1,3 +1,4 @@
+import { metaDescription } from "@/lib/seo";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -29,13 +30,13 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
 
   return {
     title: post.title,
-    description: post.excerpt,
+    description: metaDescription(post.excerpt),
     keywords: post.keywords,
     alternates: { canonical: `/blog/${slug}` },
     openGraph: {
       type: "article",
       title: post.title,
-      description: post.excerpt,
+      description: metaDescription(post.excerpt),
       url: `${SITE.url}/blog/${slug}`,
       publishedTime: post.date,
       modifiedTime: lastModified(post),
@@ -47,7 +48,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
     twitter: {
       card: "summary_large_image",
       title: post.title,
-      description: post.excerpt,
+      description: metaDescription(post.excerpt),
     },
   };
 }
@@ -67,7 +68,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
     headline: post.title,
-    description: post.excerpt,
+    description: metaDescription(post.excerpt),
     datePublished: post.date,
     dateModified: lastModified(post),
     inLanguage: "tr-TR",

@@ -4,7 +4,8 @@ import { SITE } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "KVKK Aydınlatma Metni",
-  description: "CPAS Türkiye (cpasturkiye.com) 6698 sayılı KVKK kapsamında aydınlatma metni.",
+  description:
+    "CPAS Türkiye'nin 6698 sayılı KVKK aydınlatma metni: hangi kişisel verileri hangi amaçla işlediğimiz, saklama süreleri, aktarım ve başvuru haklarınız.",
   alternates: { canonical: "/kvkk" },
 };
 

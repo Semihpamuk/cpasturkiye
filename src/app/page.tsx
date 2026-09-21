@@ -88,37 +88,31 @@ const TECH_CARDS = [
     title: "Katalog Segmentasyonu",
     description:
       "Tüm katalogla tek kampanya açmayız. Kâr marjı, stok derinliği ve satış hızına göre ürün setleri ayrıştırılır; her set kendi bütçe ve teklif stratejisini alır.",
-    wide: false,
   },
   {
     title: "Retargeting + Prospecting Katmanları",
     description:
       "Ürününüzü görüp almayanlara dinamik hatırlatma (retargeting), benzer alışveriş davranışı gösteren yeni kitlelere keşif (prospecting). İki katman birbirini besler: keşfin getirdiği trafik, retargeting havuzunu büyütür.",
-    wide: true,
   },
   {
     title: "Event ve Dönüşüm Ölçümleme",
     description:
       "Satış verisinin Meta'ya doğru dönmesi CPAS'ın kalbidir. Kurulumda her event tek tek test edilir; veri kopukluğu anında alarm üretir.",
-    wide: false,
   },
   {
     title: "Bütçe Kaydırma Disiplini",
     description:
       "Bütçe kararları haftalık veriyle alınır: hedef ROAS'ın altında kalan setler küçülür, kazananlar ölçeklenir. Duyguyla değil, kuralla.",
-    wide: false,
   },
   {
     title: "Stok ve Fiyat Senkronu",
     description:
       "Pazaryerinde stok bitti mi, fiyat değişti mi? Meta kataloğu otomatik güncellenir — stokta olmayan ürüne tek kuruş reklam harcanmaz.",
-    wide: false,
   },
   {
     title: "Anomali İzleme",
     description:
       "ROAS düşüşü, harcama sıçraması, satış sıfırlanması gibi durumlar aynı gün tespit edilir ve müdahale edilir. Sorunlar haftalık raporu beklemez.",
-    wide: false,
   },
 ];
 
@@ -421,11 +415,7 @@ export default async function HomePage() {
           </Reveal>
           <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
             {TECH_CARDS.map((card, i) => (
-              <Reveal
-                key={card.title}
-                delay={i * 55}
-                className={card.wide ? "md:col-span-2" : ""}
-              >
+              <Reveal key={card.title} delay={i * 55}>
                 <div className="group h-full rounded-2xl border border-white/10 bg-white/[0.04] p-6 transition-all duration-300 hover:border-brand-500/30 hover:bg-white/[0.07]">
                   <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-600/15 font-display text-sm font-extrabold text-brand-400 ring-1 ring-brand-500/20">
                     {String(i + 1).padStart(2, "0")}
