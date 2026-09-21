@@ -1,7 +1,8 @@
 import Link from "next/link";
 import Logo from "./Logo";
 import CookieSettingsLink from "./CookieSettingsLink";
-import { SITE } from "@/lib/site";
+import { SITE, hasRealPhone, telHref, whatsappHref } from "@/lib/site";
+import WhatsAppIcon from "./WhatsAppIcon";
 
 const PRODUCT_LINKS = [
   { href: "/satin-al", label: "Hemen Başla" },
@@ -40,9 +41,27 @@ export default function Footer() {
               Trendyol, Hepsiburada ve Amazon mağazaları için Meta CPAS kurulum ve
               reklam yönetim hizmeti. {SITE.slogan}
             </p>
-            <p className="mt-4 text-sm text-ink-500">{SITE.email}</p>
-            {SITE.phone && !SITE.phone.includes("000 00 00") && (
-              <p className="mt-1 text-sm text-ink-500">{SITE.phone}</p>
+            {/* Tıklanabilir: mobilde dokun-ara / dokun-yaz */}
+            <p className="mt-4 text-sm text-ink-500">
+              <a href={`mailto:${SITE.email}`} className="transition-colors hover:text-brand-700">
+                {SITE.email}
+              </a>
+            </p>
+            {hasRealPhone() && (
+              <p className="mt-1 flex flex-wrap items-center gap-x-3 text-sm text-ink-500">
+                <a href={telHref()} className="transition-colors hover:text-brand-700">
+                  {SITE.phone}
+                </a>
+                <a
+                  href={whatsappHref()}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 font-semibold text-green-700 transition-colors hover:text-green-800"
+                >
+                  <WhatsAppIcon className="h-4 w-4" />
+                  WhatsApp
+                </a>
+              </p>
             )}
             {/* iyzico ödeme güveni */}
             <div className="mt-5 flex items-center gap-2">

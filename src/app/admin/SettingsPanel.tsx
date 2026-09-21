@@ -36,6 +36,38 @@ export default function SettingsPanel() {
   const [status, setStatus] = useState<"loading" | "idle" | "saving" | "saved" | "error">("loading");
   const [uploadingRow, setUploadingRow] = useState<number | null>(null);
   const [uploadError, setUploadError] = useState("");
+  const [localizeMsg, setLocalizeMsg] = useState("");
+  const [localizing, setLocalizing] = useState(false);
+
+  // Adres olarak yapıştırılmış (https://...) logoları sunucuya kopyalar; sonuç
+  // listeye yansır. Kaydedilmemiş satır değişiklikleri varsa önce kaydetmeli.
+  async function localizeLogos() {
+    setLocalizing(true);
+    setLocalizeMsg("");
+    try {
+      const res = await fetch("/api/admin/logo/localize", { method: "POST" });
+      const data = await res.json().catch(() => null);
+      if (!res.ok) {
+        setLocalizeMsg(data?.error ?? "Kopyalanamadı");
+        return;
+      }
+      const failed: { name: string; reason: string }[] = data.failed ?? [];
+      setLocalizeMsg(
+        `${data.localized.length} logo sunucuya kopyalandı` +
+          (failed.length ? ` · başarısız: ${failed.map((f) => `${f.name} (${f.reason})`).join(", ")}` : "")
+      );
+      if (data.localized.length > 0) {
+        const fresh = await fetch("/api/admin/settings").then((r) => (r.ok ? r.json() : null));
+        if (Array.isArray(fresh?.references)) {
+          setRefs(fresh.references.map((r: RefRow) => ({ name: r.name ?? "", url: r.url ?? "", logo: r.logo ?? "" })));
+        }
+      }
+    } catch {
+      setLocalizeMsg("Kopyalanamadı, bağlantını kontrol et");
+    } finally {
+      setLocalizing(false);
+    }
+  }
 
   // Logo dosyasını sunucuya yükler ve satırın logo alanını dönen yolla doldurur.
   // Dosya anında diske yazılır; referans satırı ise "Ayarları Kaydet" ile kalıcılaşır.
@@ -234,13 +266,27 @@ export default function SettingsPanel() {
             <p className="px-1 text-xs font-semibold text-red-600">{uploadError}</p>
           )}
 
-          <button
-            type="button"
-            onClick={() => setRefs([...refs, { ...EMPTY_REF }])}
-            className="mt-2 flex items-center gap-1.5 rounded-lg border border-dashed border-brand-300 px-4 py-2 text-xs font-semibold text-brand-700 transition-colors hover:border-brand-500 hover:bg-brand-50"
-          >
-            + Referans Ekle
-          </button>
+          <div className="mt-2 flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setRefs([...refs, { ...EMPTY_REF }])}
+              className="flex items-center gap-1.5 rounded-lg border border-dashed border-brand-300 px-4 py-2 text-xs font-semibold text-brand-700 transition-colors hover:border-brand-500 hover:bg-brand-50"
+            >
+              + Referans Ekle
+            </button>
+            {refs.some((r) => /^https?:\/\//i.test(r.logo)) && (
+              <button
+                type="button"
+                onClick={localizeLogos}
+                disabled={localizing}
+                title="Adres olarak yapıştırılan logolar her ziyarette dış siteden çekiliyor; sunucuya kopyalanınca hem hızlı hem kalıcı olur (yedeğe girer)"
+                className="rounded-lg border border-ink-200 px-4 py-2 text-xs font-semibold text-ink-600 transition-colors hover:border-brand-300 hover:text-brand-700 disabled:opacity-60"
+              >
+                {localizing ? "Kopyalanıyor..." : "⬇ Uzak logoları sunucuya kopyala"}
+              </button>
+            )}
+          </div>
+          {localizeMsg && <p className="px-1 text-xs font-semibold text-ink-600">{localizeMsg}</p>}
         </div>
       </div>
 

@@ -340,6 +340,11 @@ export default function CheckoutClient({ query }: { query: CheckoutQuery }) {
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
 
   const [submitting, setSubmitting] = useState(false);
+  // Mobilde sipariş özeti formun ALTINDA kalıyor; müşteri toplam tutarı formu
+  // bitirene kadar görmüyordu. Yapışkan alt şerit tutarı hep gösterir, gönder
+  // düğmesi ekrana girince kendini gizler (üst üste binmesin).
+  const submitRef = useRef<HTMLButtonElement>(null);
+  const [submitInView, setSubmitInView] = useState(false);
   const [submitError, setSubmitError] = useState("");
   // Mesafeli Sözleşmeler Yönetmeliği: sipariş öncesi ön bilgilendirmenin
   // teyidi zorunlu. Onaylanmadan ödeme başlatılmaz (sunucuda da doğrulanır).
@@ -370,6 +375,16 @@ export default function CheckoutClient({ query }: { query: CheckoutQuery }) {
       );
     }
   }, [query.payment, query.orderId, query.reason]);
+
+  useEffect(() => {
+    const el = submitRef.current;
+    if (!el || typeof IntersectionObserver === "undefined") return;
+    const io = new IntersectionObserver(([entry]) => setSubmitInView(entry.isIntersecting), {
+      rootMargin: "0px 0px -72px 0px",
+    });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [step]);
 
   // iyzico ödeme formu scriptlerini DOM'a enjekte et
   useEffect(() => {
@@ -661,7 +676,7 @@ export default function CheckoutClient({ query }: { query: CheckoutQuery }) {
   const isTransfer = paymentMethod === "transfer";
 
   return (
-    <section className="bg-gradient-to-b from-ink-50 to-paper px-4 py-14 sm:px-6 lg:px-8">
+    <section className="bg-gradient-to-b from-ink-50 to-paper px-4 py-14 pb-28 sm:px-6 lg:px-8 lg:pb-14">
       <div className="mx-auto max-w-6xl">
         <div className="max-w-2xl">
           <h1 className="font-display text-3xl font-extrabold tracking-tight text-ink-900 sm:text-4xl">
@@ -763,8 +778,8 @@ export default function CheckoutClient({ query }: { query: CheckoutQuery }) {
                     <span className="block text-xs text-ink-500">%10 indirimli peşin — 2 ayı birden kilitle</span>
                   </span>
                 </span>
-                <span className="text-right">
-                  <span className="block font-display text-sm font-extrabold text-brand-700">
+                <span className="shrink-0 text-right">
+                  <span className="block whitespace-nowrap font-display text-sm font-extrabold text-brand-700">
                     +{formatTRY(quote.managementAddon || Math.round(quote.managementMonthly * 0.9))}
                   </span>
                   <span className="block text-[10px] text-ink-500 line-through">
@@ -1153,6 +1168,7 @@ export default function CheckoutClient({ query }: { query: CheckoutQuery }) {
             </label>
 
             <button
+              ref={submitRef}
               type="submit"
               disabled={submitting || !termsAccepted}
               className="w-full rounded-xl bg-brand-700 px-6 py-4 text-sm font-bold text-white shadow-md transition-all hover:bg-brand-800 disabled:opacity-60"
@@ -1304,6 +1320,31 @@ export default function CheckoutClient({ query }: { query: CheckoutQuery }) {
               </p>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Mobil yapışkan özet — lg ve üstünde özet zaten yan sütunda sabit */}
+      <div
+        aria-hidden={submitInView}
+        className={`fixed inset-x-0 bottom-0 z-30 border-t border-ink-200 bg-white/95 px-4 py-3 shadow-[0_-8px_24px_rgba(0,0,0,0.08)] backdrop-blur transition-transform duration-300 lg:hidden ${
+          submitInView ? "translate-y-full" : "translate-y-0"
+        }`}
+      >
+        <div className="mx-auto flex max-w-2xl items-center justify-between gap-4">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-ink-500">Bugün ödenecek</p>
+            <p className="font-display text-xl font-extrabold leading-tight text-ink-900">
+              {formatTRY(quote.total)}
+              <span className="ml-1 text-xs font-medium text-ink-500">KDV dahil</span>
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => submitRef.current?.scrollIntoView({ behavior: "smooth", block: "center" })}
+            className="shrink-0 rounded-xl bg-brand-700 px-5 py-3 text-sm font-bold text-white shadow-md transition-colors hover:bg-brand-800"
+          >
+            {isTransfer ? "Siparişi tamamla ↓" : "Ödemeye geç ↓"}
+          </button>
         </div>
       </div>
     </section>

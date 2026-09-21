@@ -21,6 +21,30 @@ export const SITE = {
   kep: process.env.NEXT_PUBLIC_SITE_KEP || "jale@hs01.kep.tr",
 };
 
+/** Telefonu yalnızca rakam + ülke koduna indirger: "+90 530 388 03 77" → "905303880377" */
+export function phoneDigits(phone: string = SITE.phone): string {
+  const digits = phone.replace(/\D/g, "");
+  if (digits.startsWith("90")) return digits;
+  if (digits.startsWith("0")) return `90${digits.slice(1)}`;
+  return digits;
+}
+
+/** Tıklanınca arayan bağlantı (mobilde dokun-ara) */
+export function telHref(phone: string = SITE.phone): string {
+  return `tel:+${phoneDigits(phone)}`;
+}
+
+/** WhatsApp sohbeti — hedef kitle (pazaryeri satıcısı) en çok bu kanalı kullanır. */
+export function whatsappHref(phone: string = SITE.phone, text?: string): string {
+  const base = `https://wa.me/${phoneDigits(phone)}`;
+  return text ? `${base}?text=${encodeURIComponent(text)}` : base;
+}
+
+/** Telefon gerçek bir numara mı (placeholder değil) */
+export function hasRealPhone(phone: string = SITE.phone): boolean {
+  return Boolean(phone) && !phone.includes("000 00 00");
+}
+
 // Desteklenen pazaryerleri — sitede her yerde bu liste kullanılır.
 export const MARKETPLACES = [
   { key: "trendyol", label: "Trendyol", color: "#f27a1a", status: "active" },

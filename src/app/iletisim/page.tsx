@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import ContactForm from "@/components/ContactForm";
-import { SITE } from "@/lib/site";
+import { SITE, hasRealPhone, telHref, whatsappHref } from "@/lib/site";
+import WhatsAppIcon from "@/components/WhatsAppIcon";
 import Link from "next/link";
 import JsonLd from "@/components/JsonLd";
 import { breadcrumbJsonLd } from "@/lib/seo";
@@ -41,7 +42,11 @@ export default function ContactPage() {
               </div>
               <div>
                 <h2 className="text-sm font-semibold text-ink-900">E-posta</h2>
-                <p className="mt-0.5 text-sm text-ink-600">{SITE.email}</p>
+                <p className="mt-0.5 text-sm text-ink-600">
+                  <a href={`mailto:${SITE.email}`} className="hover:text-brand-700 hover:underline">
+                    {SITE.email}
+                  </a>
+                </p>
               </div>
             </div>
 
@@ -66,7 +71,22 @@ export default function ContactPage() {
               </div>
               <div>
                 <h2 className="text-sm font-semibold text-ink-900">Telefon</h2>
-                <p className="mt-0.5 text-sm text-ink-600">{SITE.phone}</p>
+                <p className="mt-0.5 text-sm text-ink-600">
+                  <a href={telHref()} className="hover:text-brand-700 hover:underline">
+                    {SITE.phone}
+                  </a>
+                </p>
+                {hasRealPhone() && (
+                  <a
+                    href={whatsappHref(SITE.phone, "Merhaba, mağazam için CPAS hakkında bilgi almak istiyorum.")}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-2 inline-flex items-center gap-1.5 rounded-lg bg-green-600 px-3 py-1.5 text-xs font-bold text-white transition-colors hover:bg-green-700"
+                  >
+                    <WhatsAppIcon className="h-3.5 w-3.5" />
+                    WhatsApp&apos;tan yazın
+                  </a>
+                )}
               </div>
             </div>
 
@@ -93,8 +113,8 @@ export default function ContactPage() {
             <p><strong>MERSİS No:</strong> {SITE.mersis}</p>
             <p><strong>Ticaret Sicil No:</strong> {SITE.tradeRegistryNo}</p>
             <p><strong>Vergi Dairesi / No:</strong> {SITE.taxOffice} / {SITE.taxId}</p>
-            <p><strong>E-posta:</strong> {SITE.email}</p>
-            <p><strong>Telefon:</strong> {SITE.phone}</p>
+            <p><strong>E-posta:</strong> <a href={`mailto:${SITE.email}`} className="hover:underline">{SITE.email}</a></p>
+            <p><strong>Telefon:</strong> <a href={telHref()} className="hover:underline">{SITE.phone}</a></p>
             <p><strong>KEP:</strong> {SITE.kep}</p>
             <p className="pt-2">
               <Link href="/mesafeli-satis-sozlesmesi" className="underline hover:text-brand-700">Mesafeli Satış Sözleşmesi</Link>
