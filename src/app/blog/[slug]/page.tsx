@@ -1,4 +1,5 @@
 import { metaDescription } from "@/lib/seo";
+import BlogCover from "@/components/BlogCover";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -133,6 +134,11 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           <span className="mt-6 inline-block w-fit rounded-full bg-brand-50 px-3 py-1 text-xs font-bold uppercase tracking-wider text-brand-700">
             {post.category}
           </span>
+          <BlogCover
+            slug={post.slug}
+            category={post.category}
+            className="mb-8 h-40 w-full overflow-hidden rounded-2xl sm:h-52"
+          />
           <h1 className="mt-4 font-display text-3xl font-extrabold leading-tight tracking-tight text-ink-900 sm:text-4xl">
             {post.title}
           </h1>

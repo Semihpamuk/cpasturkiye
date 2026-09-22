@@ -35,6 +35,8 @@ export const ORGANIZATION_JSONLD = {
     addressCountry: "TR",
   },
   areaServed: { "@type": "Country", name: "Türkiye" },
+  // Google'ın bilgi panelinde resmi hesabı markayla eşleştirir.
+  sameAs: [SITE.instagram],
   knowsAbout: [
     "Meta CPAS",
     "Collaborative Ads",

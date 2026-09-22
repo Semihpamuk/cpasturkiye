@@ -19,6 +19,8 @@ export const SITE = {
   taxId: process.env.NEXT_PUBLIC_SITE_TAX_ID || "1871734373",
   tradeRegistryNo: process.env.NEXT_PUBLIC_SITE_TRADE_REGISTRY || "1086253",
   kep: process.env.NEXT_PUBLIC_SITE_KEP || "jale@hs01.kep.tr",
+  /** Sosyal hesaplar — footer bağlantıları ve Organization JSON-LD sameAs */
+  instagram: "https://www.instagram.com/cpasturkiye/",
 };
 
 /** Telefonu yalnızca rakam + ülke koduna indirger: "+90 530 388 03 77" → "905303880377" */

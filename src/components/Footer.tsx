@@ -3,6 +3,7 @@ import Logo from "./Logo";
 import CookieSettingsLink from "./CookieSettingsLink";
 import { SITE, hasRealPhone, telHref, whatsappHref } from "@/lib/site";
 import WhatsAppIcon from "./WhatsAppIcon";
+import InstagramIcon from "./InstagramIcon";
 
 const PRODUCT_LINKS = [
   { href: "/satin-al", label: "Hemen Başla" },
@@ -63,6 +64,16 @@ export default function Footer() {
                 </a>
               </p>
             )}
+
+            <a
+              href={SITE.instagram}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-3 inline-flex items-center gap-1.5 text-sm text-ink-500 transition-colors hover:text-brand-700"
+            >
+              <InstagramIcon className="h-4 w-4" />
+              @cpasturkiye
+            </a>
             {/* iyzico ödeme güveni */}
             <div className="mt-5 flex items-center gap-2">
               <span className="flex items-center gap-1 rounded-md border border-[#1A1A2E]/20 bg-[#1A1A2E] px-2 py-0.5">

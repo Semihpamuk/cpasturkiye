@@ -52,6 +52,51 @@ const TIMELINE = [
   },
 ];
 
+/* Kurulum öncesi müşteriden istenenler.
+ *
+ * Bu sayfa daha önce ana sayfadaki 7 günlük süreci tekrarlıyordu; ziyaretçinin
+ * burada bulup başka yerde bulamayacağı bilgi yoktu (site incelemesi, 21 Eyl).
+ * Bu bölüm sürecin MÜŞTERİ tarafını anlatıyor — kaynak: blog "Trendyol CPAS
+ * reklam yetkisi nasıl alınır" ve SSS. */
+const PREP_ITEMS = [
+  {
+    title: "Aktif ve onaylı satıcı hesabı",
+    detail:
+      "Trendyol veya Hepsiburada mağazanız açık ve satışta olmalı. Askıya alınmış ya da kısıtlı hesaplarla reklam yetkisi başvurusu sonuçlanmaz.",
+    who: "Sizde",
+  },
+  {
+    title: "İşletme doğrulama belgeleri",
+    detail:
+      "Vergi levhası ve faaliyet belgesi. Kozmetik, gıda takviyesi, elektronik ve oyuncak gibi kategorilerde ayrıca marka tescil belgesi veya yetkili satıcı/distribütör belgesi isteniyor — eksik belge en sık gecikme nedeni.",
+    who: "Sizde",
+  },
+  {
+    title: "Reklam yetkisi onayı",
+    detail:
+      "Başvuruyu pazaryeri panelinden siz onaylıyorsunuz; süreci biz takip ediyor, eksikleri size bildiriyoruz. Onay genelde birkaç iş günü sürer.",
+    who: "Birlikte",
+  },
+  {
+    title: "Meta Business Manager erişimi",
+    detail:
+      "Hesabınız varsa yönetici erişimi verirsiniz; yoksa kurulumu biz yaparız. Reklam hesabı ve ödeme yöntemi sizin adınıza tanımlanır — hesaplar her zaman sizin mülkiyetinizde kalır.",
+    who: "Birlikte",
+  },
+  {
+    title: "Reklam bütçesi",
+    detail:
+      "Bütçe pakete dahil değildir, doğrudan Meta'ya kendi kartınızdan ödenir. Öğrenme aşamasının tamamlanabilmesi için aylık en az 25.000–30.000 ₺ öneriyoruz.",
+    who: "Sizde",
+  },
+  {
+    title: "Ürün ve marj bilgisi",
+    detail:
+      "Hangi ürünlerde kâr marjınız yüksek, hangilerinde stok derin — kampanya mimarisi buna göre kuruluyor. Tanışma görüşmesinde 15 dakikada konuşuyoruz.",
+    who: "Sizde",
+  },
+];
+
 const INCLUDED = [
   "Pazaryeri reklam yetkilendirme sürecinin uçtan uca yönetimi",
   "Meta Business Manager kurulumu veya mevcut hesap düzenlemesi",
@@ -146,6 +191,53 @@ export default async function SetupPage() {
               </li>
             ))}
           </ol>
+        </div>
+      </section>
+
+      <section className="px-4 py-16 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-4xl">
+          <p className="text-center text-xs font-bold uppercase tracking-widest text-brand-700">
+            Başlamadan önce
+          </p>
+          <h2 className="mt-3 text-center font-display text-3xl font-bold tracking-tight text-ink-900">
+            Sizden ne isteniyor?
+          </h2>
+          <p className="mx-auto mt-4 max-w-2xl text-center text-base leading-relaxed text-ink-600">
+            Teknik işin tamamı bizde. Sizden istenen altı şey var — çoğu zaten
+            mağazanızda hazırdır. Eksikler kurulumu geciktiren tek şeydir, o
+            yüzden baştan netleştiriyoruz.
+          </p>
+
+          <ul className="mt-10 grid gap-4 sm:grid-cols-2">
+            {PREP_ITEMS.map((item) => (
+              <li
+                key={item.title}
+                className="rounded-2xl border border-ink-200 bg-white p-5 shadow-sm"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <h3 className="font-display text-base font-bold text-ink-900">{item.title}</h3>
+                  <span
+                    className={`shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider ${
+                      item.who === "Sizde"
+                        ? "bg-brand-50 text-brand-700"
+                        : "bg-ink-100 text-ink-600"
+                    }`}
+                  >
+                    {item.who}
+                  </span>
+                </div>
+                <p className="mt-2 text-sm leading-relaxed text-ink-600">{item.detail}</p>
+              </li>
+            ))}
+          </ul>
+
+          <p className="mt-8 text-center text-sm text-ink-500">
+            Belgeleriniz eksikse ya da emin değilseniz{" "}
+            <Link href="/iletisim" className="font-semibold text-brand-700 underline">
+              ücretsiz ön analiz
+            </Link>{" "}
+            isteyin — mağazanıza bakıp neyin gerektiğini söyleyelim.
+          </p>
         </div>
       </section>
 

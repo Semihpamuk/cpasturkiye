@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import BlogCover from "@/components/BlogCover";
 import { BLOG_POSTS, formatDate } from "@/lib/blog";
 import JsonLd from "@/components/JsonLd";
 import { breadcrumbJsonLd } from "@/lib/seo";
@@ -74,12 +75,12 @@ export default function BlogPage() {
                   </svg>
                 </span>
               </div>
-              {/* Dekoratif kart */}
-              <div className="hidden h-48 w-64 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-brand-500 to-brand-700 shadow-xl lg:flex">
-                <svg className="h-20 w-20 text-white/30" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
-                </svg>
-              </div>
+              {/* Kapak — kategoriye göre üretilen SVG (components/BlogCover) */}
+              <BlogCover
+                slug={featured.slug}
+                category={featured.category}
+                className="hidden h-48 w-72 shrink-0 overflow-hidden rounded-2xl shadow-xl lg:block"
+              />
             </Link>
           </div>
         </section>
@@ -99,6 +100,12 @@ export default function BlogPage() {
                   href={`/blog/${post.slug}`}
                   className="group flex flex-col rounded-2xl border border-ink-200 bg-white p-6 shadow-sm transition-all hover:-translate-y-1 hover:border-brand-200 hover:shadow-lg"
                 >
+                  <BlogCover
+                    slug={post.slug}
+                    category={post.category}
+                    compact
+                    className="-mx-6 -mt-6 mb-5 h-28 w-[calc(100%+3rem)] overflow-hidden rounded-t-2xl"
+                  />
                   <div className="flex items-center justify-between">
                     <span className="inline-block rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider text-brand-700">
                       {post.category}
