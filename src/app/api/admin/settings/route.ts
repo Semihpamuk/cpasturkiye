@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { getSettings, saveSettings, type SiteSettings } from "@/lib/db";
 import { normalizeReferences } from "@/lib/references";
@@ -44,6 +45,22 @@ export async function PUT(req: Request) {
     };
 
     await saveSettings(updated);
+
+    // Fiyat/referans gösteren sayfalar ISR ile cache'leniyor (revalidate = 300).
+    // Panelden kayıt anında yeniden üretilsinler — "anında güncellendi" sözü
+    // korunur, ziyaretçi yine hazır HTML alır.
+    for (const path of [
+      "/",
+      "/fiyatlandirma",
+      "/kurulum",
+      "/sss",
+      "/hizmet-sozlesmesi",
+      "/iptal-iade-politikasi",
+      "/mesafeli-satis-sozlesmesi",
+      "/on-bilgilendirme-formu",
+    ]) {
+      revalidatePath(path);
+    }
     return NextResponse.json(updated);
   } catch {
     return NextResponse.json({ error: "Ayarlar kaydedilemedi" }, { status: 500 });

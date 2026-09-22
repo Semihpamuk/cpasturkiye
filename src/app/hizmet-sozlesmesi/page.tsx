@@ -9,8 +9,9 @@ export const metadata: Metadata = {
   alternates: { canonical: "/hizmet-sozlesmesi" },
 };
 
-// Bedeller admin panelindeki güncel fiyatlardan okunur.
-export const dynamic = "force-dynamic";
+// Bedeller admin panelindeki güncel fiyatlardan okunur; sayfa ISR ile
+// cache'lenir ve panelden kayıt anında yeniden üretilir (api/admin/settings).
+export const revalidate = 300;
 
 export default async function ServiceAgreementPage() {
   const price = await getLegalPricing();

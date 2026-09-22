@@ -130,9 +130,12 @@ export default function Hero() {
         </div>
 
         {/* Akış animasyonu */}
+        {/* Diyagram mobilde GİZLİ: 760×440 SVG telefonda okunmuyordu (etiketler
+            ~8px) ve sürekli CSS animasyonlarıyla mobil ana iş parçacığını
+            meşgul ediyordu. sm (640px) ve üstünde görünür. */}
         <div
           style={delay(300)}
-          className="hero-scale relative rounded-3xl border border-white/10 bg-ink-900/60 p-4 shadow-2xl shadow-black/40 backdrop-blur-sm sm:p-6"
+          className="hero-scale relative hidden rounded-3xl sm:block border border-white/10 bg-ink-900/60 p-4 shadow-2xl shadow-black/40 backdrop-blur-sm sm:p-6"
         >
           <AnimatedBeamFlow />
         </div>

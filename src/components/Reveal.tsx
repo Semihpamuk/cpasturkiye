@@ -23,6 +23,37 @@ const ROOT_MARGIN = "0px 0px 25% 0px";
 /** Kademeli girişlerde son öğe bu süreden fazla gecikmez. */
 const MAX_DELAY_MS = 240;
 
+/**
+ * TEK paylaşılan IntersectionObserver.
+ *
+ * Her Reveal kendi gözlemcisini kuruyordu; ana sayfada 16 blok = 16 gözlemci,
+ * her biri ayrı ayrı yerleşim (layout) hesabı tetikliyordu. Tarayıcı tek
+ * gözlemciyi tek geçişte işler — mobilde ana iş parçacığı maliyeti belirgin
+ * düşer (Lighthouse: Style & Layout 1,7 s).
+ */
+type RevealCallback = () => void;
+
+let sharedObserver: IntersectionObserver | null = null;
+const callbacks = new WeakMap<Element, RevealCallback>();
+
+function getObserver(): IntersectionObserver | null {
+  if (typeof IntersectionObserver === "undefined") return null;
+  if (!sharedObserver) {
+    sharedObserver = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          callbacks.get(entry.target)?.();
+          callbacks.delete(entry.target);
+          sharedObserver?.unobserve(entry.target);
+        }
+      },
+      { threshold: 0, rootMargin: ROOT_MARGIN }
+    );
+  }
+  return sharedObserver;
+}
+
 export default function Reveal({ children, delay = 0, className = "" }: RevealProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
@@ -31,24 +62,19 @@ export default function Reveal({ children, delay = 0, className = "" }: RevealPr
     const element = ref.current;
     if (!element) return;
 
+    const observer = getObserver();
     // IntersectionObserver yoksa içerik gizli kalmamalı.
-    if (typeof IntersectionObserver === "undefined") {
+    if (!observer) {
       setIsVisible(true);
       return;
     }
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          setIsVisible(true);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0, rootMargin: ROOT_MARGIN }
-    );
-
+    callbacks.set(element, () => setIsVisible(true));
     observer.observe(element);
-    return () => observer.disconnect();
+    return () => {
+      callbacks.delete(element);
+      observer.unobserve(element);
+    };
   }, []);
 
   const style: CSSProperties = {

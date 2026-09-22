@@ -7,15 +7,19 @@ import { getSettings } from "@/lib/db";
 import JsonLd from "@/components/JsonLd";
 import { breadcrumbJsonLd } from "@/lib/seo";
 
+// Fiyatlar admin panelinden değişebildiği için bu sayfa her istekte yeniden
+// render ediliyordu (dinamik SSR + her istekte disk okuması; HTML no-store).
+// ISR: 5 dakikada bir yeniden üretilir, arada hazır HTML servis edilir.
+// Panelden yapılan değişiklik istemci tarafında useSettings ile zaten anında
+// yansıyor; SSR kopyası en geç 5 dk içinde eşitlenir.
+export const revalidate = 300;
+
 export const metadata: Metadata = {
   title: "Sık Sorulan Sorular — CPAS, Kurulum ve Yönetim",
   description:
     "CPAS nedir? Kurulum nasıl işler? Reklam bütçesi kimde? Hangi pazaryerleri destekleniyor? CPAS Türkiye'nin kurulum ve yönetim hizmeti hakkında sık sorulan tüm sorular.",
   alternates: { canonical: "/sss" },
 };
-
-// Fiyatlar admin panelinden güncellenebildiği için sayfa istek anında render edilir
-export const dynamic = "force-dynamic";
 
 const buildFaqSections = (
   PRICING: PricingValues

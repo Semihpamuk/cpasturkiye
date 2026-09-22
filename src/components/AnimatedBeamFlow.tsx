@@ -1,11 +1,10 @@
-"use client";
-
 /**
  * Hero akış animasyonu: Trendyol + Hepsiburada + Amazon kataloglarından
  * CPAS Türkiye'ye, oradan Meta'ya (Facebook/Instagram) akan ışıklı veri
  * hatları ve Meta'dan dönen "gerçek satış verisi" hattı.
  *
  * Salt SVG — responsive, JS animasyon döngüsü yok (CSS keyframes).
+ * Sunucu bileşeni: "use client" YOKTUR, istemci bundle'ına girmez.
  */
 
 const SOURCES = [

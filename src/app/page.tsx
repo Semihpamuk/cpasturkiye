@@ -16,8 +16,12 @@ import JsonLd from "@/components/JsonLd";
 import { SITE, PRICING as DEFAULTS, formatTRY, type PricingValues } from "@/lib/site";
 import { getSettings } from "@/lib/db";
 
-// Fiyatlar admin panelinden güncellenebildiği için sayfa istek anında render edilir
-export const dynamic = "force-dynamic";
+// Fiyatlar admin panelinden değişebildiği için bu sayfa her istekte yeniden
+// render ediliyordu (dinamik SSR + her istekte disk okuması; HTML no-store).
+// ISR: 5 dakikada bir yeniden üretilir, arada hazır HTML servis edilir.
+// Panelden yapılan değişiklik istemci tarafında useSettings ile zaten anında
+// yansıyor; SSR kopyası en geç 5 dk içinde eşitlenir.
+export const revalidate = 300;
 
 /* ─────────────────────────── İçerik verileri ─────────────────────────── */
 
