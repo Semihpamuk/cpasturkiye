@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { CSP_ENFORCE, buildCsp, securityHeaders } from "../security-headers";
+import { CSP_ENFORCE, CSP_REPORT_ONLY_PATHS, buildCsp, securityHeaders } from "../security-headers";
 
 function directive(csp: string, name: string): string[] {
   const part = csp.split("; ").find((d) => d.startsWith(`${name} `) || d === name);
@@ -72,5 +72,21 @@ describe("securityHeaders", () => {
     const expected = CSP_ENFORCE ? "Content-Security-Policy" : "Content-Security-Policy-Report-Only";
     expect(get(expected)).toBe(buildCsp(false));
     expect(headers.filter((h) => h.key.startsWith("Content-Security-Policy"))).toHaveLength(1);
+  });
+
+  test("reportOnly=true çağrısı aynı politikayı rapor başlığıyla verir (ödeme sayfası)", () => {
+    const ro = securityHeaders(false, true);
+    expect(ro.find((h) => h.key === "Content-Security-Policy-Report-Only")?.value).toBe(buildCsp(false));
+    expect(ro.some((h) => h.key === "Content-Security-Policy")).toBe(false);
+  });
+
+  test("ödeme sayfası muaf listesinde", () => {
+    expect(CSP_REPORT_ONLY_PATHS).toContain("/satin-al");
+  });
+
+  test("iyzico formunun yüklediği Hotjar'a izin verilir", () => {
+    const csp = buildCsp(false);
+    expect(directive(csp, "script-src")).toContain("https://*.hotjar.com");
+    expect(directive(csp, "connect-src")).toContain("https://*.hotjar.io");
   });
 });

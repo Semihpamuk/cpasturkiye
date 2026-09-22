@@ -1,5 +1,5 @@
 import type { NextConfig } from "next";
-import { securityHeaders } from "./src/lib/security-headers";
+import { CSP_REPORT_ONLY_PATHS, securityHeaders } from "./src/lib/security-headers";
 
 const nextConfig: NextConfig = {
   // iyzipay, "postman-request" (deprecated "request" fork'u) bağımlısıdır ve
@@ -9,11 +9,13 @@ const nextConfig: NextConfig = {
 
   // Güvenlik başlıkları — tanımlar ve gerekçeler src/lib/security-headers.ts'te.
   async headers() {
+    const isDev = process.env.NODE_ENV !== "production";
+    // Next eşleşen TÜM kuralları BİRLEŞTİRİR (ezmez): muaf yola hem zorunlu hem
+    // rapor başlığı giderdi. Bu yüzden ana kural muaf yolları dışarıda bırakır.
+    const excluded = CSP_REPORT_ONLY_PATHS.map((p) => p.replace(/^\//, "")).join("|");
     return [
-      {
-        source: "/:path*",
-        headers: securityHeaders(process.env.NODE_ENV !== "production"),
-      },
+      { source: `/((?!${excluded}).*)`, headers: securityHeaders(isDev) },
+      ...CSP_REPORT_ONLY_PATHS.map((source) => ({ source, headers: securityHeaders(isDev, true) })),
     ];
   },
 };

@@ -5,7 +5,17 @@
 // Ödeme akışı (iyzico iframe + 3D Secure) dahil birkaç gün temiz log görülünce
 // `CSP_ENFORCE` true yapılır. Yanlış bir satır ödeme formunu sessizce
 // kırabileceği için körlemesine zorunlu kılınmadı.
-export const CSP_ENFORCE = false;
+export const CSP_ENFORCE = true;
+
+/**
+ * Ödeme sayfası (/satin-al) CSP'den MUAF — rapor modunda kalır.
+ *
+ * Neden: iyzico'nun kart formu bizim belgemize inline gömülüyor ve 3D Secure'da
+ * bankanın ACS adresine form POST'u yapıyor. Türkiye'deki tüm banka alan
+ * adlarını `form-action`'a yazmak mümkün değil; zorunlu CSP ödemeyi sessizce
+ * kırardı. Sayfa yine rapor gönderir, ihlaller loglanır.
+ */
+export const CSP_REPORT_ONLY_PATHS = ["/satin-al"];
 
 // Üçüncü taraf kökenler — her biri kodda gerçekten kullanılıyor:
 //   googletagmanager: GA4 gtag.js + GTM kapsayıcısı (components/Analytics.tsx)
@@ -30,7 +40,10 @@ const GOOGLE_CONNECT = [
 ];
 const META_SCRIPTS = ["https://connect.facebook.net"];
 const META_CONNECT = ["https://www.facebook.com", "https://connect.facebook.net"];
-const IYZICO = ["https://*.iyzipay.com"];
+// iyzico'nun kendi checkout formu Hotjar yüklüyor (22 Eyl 2026'da canlı formda
+// doğrulandı). Bizim ölçümümüz değil ama engellenirse iyzico'nun scripti hata
+// verebilir; ödeme yolunu riske atmamak için izin veriliyor.
+const IYZICO = ["https://*.iyzipay.com", "https://*.hotjar.com", "https://*.hotjar.io"];
 
 /**
  * CSP dizesi. `isDev` iken Next'in HMR'ı için 'unsafe-eval' ve ws: eklenir.
@@ -85,7 +98,7 @@ export interface HeaderEntry {
   value: string;
 }
 
-export function securityHeaders(isDev: boolean): HeaderEntry[] {
+export function securityHeaders(isDev: boolean, reportOnly: boolean = !CSP_ENFORCE): HeaderEntry[] {
   return [
     // 1 yıl HTTPS zorunluluğu; www alt alanı dahil. `preload` bilerek yok — geri alınamaz.
     { key: "Strict-Transport-Security", value: "max-age=31536000; includeSubDomains" },
@@ -98,7 +111,7 @@ export function securityHeaders(isDev: boolean): HeaderEntry[] {
     // `payment` bilerek kısıtlanmadı: iyzico iframe'i Payment Request API kullanabilir.
     { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(), interest-cohort=()" },
     {
-      key: CSP_ENFORCE ? "Content-Security-Policy" : "Content-Security-Policy-Report-Only",
+      key: reportOnly ? "Content-Security-Policy-Report-Only" : "Content-Security-Policy",
       value: buildCsp(isDev),
     },
   ];
