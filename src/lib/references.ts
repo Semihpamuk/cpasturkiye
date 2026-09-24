@@ -9,6 +9,26 @@ export interface ReferenceItem {
   logo: string;
 }
 
+/**
+ * Şeritte kullanılacak küçük logo adresini üretir.
+ *
+ * Sunucudaki dosyalar 320-1559 piksel arasındayken şerit 44 CSS pikselinde
+ * çiziyordu: 20 logo 392 KB ediyor ve mobilde LCP'yi bant genişliğinde
+ * yarışa sokuyordu. `w` parametresi rotaya 96 piksellik WebP ürettirir
+ * (ölçüldü: 392 KB → 19 KB).
+ *
+ * Ayrı bir adres üretmesi bilinçli: eski tam boy yanıtlar `immutable`
+ * başlığıyla önbelleğe alınmıştı, aynı adres kullanılsa tarayıcılar bir yıl
+ * boyunca eski dosyayı servis etmeye devam ederdi.
+ *
+ * Uzaktan (admin panelinden yapıştırılmış) adresler bizim rotamızdan
+ * geçmediği için olduğu gibi döner.
+ */
+export function logoThumbnailUrl(logo: string, width: number): string {
+  if (!logo.startsWith("/api/logo?")) return logo;
+  return `${logo}&w=${width}`;
+}
+
 const MAX_NAME = 80;
 const MAX_URL = 300;
 const MAX_LOGO = 500;

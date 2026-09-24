@@ -4,6 +4,12 @@ FROM node:20-alpine
 
 WORKDIR /app
 
+# sharp'ın yerel ikilisi (referans logolarını 96 piksel WebP'ye küçültüyor)
+# Alpine'in musl libc'siyle gelir; libc6-compat uyumluluk katmanı olmadan
+# bazı ortamlarda yüklenemiyor. Yüklenemezse /api/logo orijinal dosyaya
+# düşer, yani site kırılmaz — ama küçültme de yapılmaz.
+RUN apk add --no-cache libc6-compat
+
 # Bağımlılıkları önce kopyala (katman önbelleği için)
 COPY package.json package-lock.json ./
 RUN npm ci

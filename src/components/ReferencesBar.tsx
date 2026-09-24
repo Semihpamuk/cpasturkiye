@@ -3,6 +3,7 @@
 import type { CSSProperties } from "react";
 
 import { useSettings, type ReferenceItem } from "@/lib/useSettings";
+import { logoThumbnailUrl } from "@/lib/references";
 
 /* Şerit yalnızca gerçek referans varken görünür. Uydurma marka adlarından
    oluşan bir fallback listesi TUTULMAZ — admin'de liste boşaltıldığında
@@ -26,16 +27,21 @@ const MAX_ITEMS_PER_HALF = 20;
    dönüşüp okunmuyordu, bu yüzden renk korunur ve kare zemin yuvarlatılıp
    ince bir çerçeveyle beyaz şeritten ayrılır. Adın yazıyla tekrarlanması
    logo okunmadığında da referansın kim olduğunu bırakır. */
+/* Şeritteki logolar 44 CSS pikselinde çiziliyor; 96 retina karşılığı.
+   Ayrıntı ve ölçüm için bkz. lib/references.ts → logoThumbnailUrl. */
+const THUMBNAIL_WIDTH = 96;
+
 function ReferenceMark({ item }: { item: ReferenceItem }) {
   return (
     <>
       {item.logo && (
         // eslint-disable-next-line @next/next/no-img-element -- logo kaynakları admin panelinden serbest domain
         <img
-          src={item.logo}
+          src={logoThumbnailUrl(item.logo, THUMBNAIL_WIDTH)}
           // Ad hemen yanında yazıyla da geçtiği için logo dekoratiftir;
           // alt dolu olsaydı ekran okuyucu adı iki kez seslendirirdi.
           alt=""
+          width={44}
           height={44}
           loading="lazy"
           decoding="async"
