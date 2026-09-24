@@ -59,15 +59,64 @@ export function lastModified(post: BlogPost): string {
  * Kategori eşleşmesi yetmezse listeden tamamlanır — iç linkler taranabilirlik
  * için önemli, yazının ilgili yazısı olmaması kabul edilebilir değil.
  */
+/** Aynı kategori, anahtar kelime örtüşmesine eşdeğer bir yakınlık sayılır. */
+const SAME_CATEGORY_BONUS = 1;
+
+function normalizeKeyword(keyword: string): string {
+  return keyword.toLocaleLowerCase("tr").trim();
+}
+
+/**
+ * "İlgili yazılar" bloğunu doldurur.
+ *
+ * Eskiden sıralama yoktu: aynı kategoridekiler + kalanlar birleştirilip ilk
+ * 3'ü alınıyordu. Sonuç, SOURCES dizisindeki konuma göre belirleniyordu —
+ * dizinin başındaki yazı 10 iç bağlantı alırken sonundaki yazılar sıfır
+ * alıyordu. En çok gösterim alan yazı (trendyol-meta-reklam-entegrasyonu-nedir,
+ * 236 gösterim) hiçbir yazıdan bağlantı almıyordu.
+ *
+ * Artık yakınlık anahtar kelime örtüşmesinden hesaplanıyor; hem bağlantılar
+ * konuya göre anlamlı oluyor hem de dizideki konum belirleyici olmaktan çıkıyor.
+ */
 export function getRelatedPosts(slug: string, limit = 3): BlogPost[] {
   const current = getPostBySlug(slug);
   if (!current) return [];
 
-  const others = BLOG_POSTS.filter((post) => post.slug !== slug);
-  const sameCategory = others.filter((post) => post.category === current.category);
-  const rest = others.filter((post) => post.category !== current.category);
+  const currentKeywords = new Set(current.keywords.map(normalizeKeyword));
 
-  return [...sameCategory, ...rest].slice(0, limit);
+  const others = BLOG_POSTS.filter((post) => post.slug !== slug);
+
+  const byRelevance = others
+    .map((post) => {
+      const shared = post.keywords.filter((keyword) =>
+        currentKeywords.has(normalizeKeyword(keyword))
+      ).length;
+      const score = shared + (post.category === current.category ? SAME_CATEGORY_BONUS : 0);
+      return { post, score };
+    })
+    .sort((a, b) => b.score - a.score || lastModified(b.post).localeCompare(lastModified(a.post)))
+    .map((entry) => entry.post);
+
+  // Son slot sırayla "bir sonraki yazı"ya ayrılır. Yalnızca benzerliğe göre
+  // seçince birkaç yazı tüm bağlantıları topluyor, bazıları hiç bağlantı
+  // alamıyordu; bu dönüşüm tüm yazıları kapsayan bir halka oluşturduğu için
+  // her yazı en az bir iç bağlantı almış olur.
+  const currentIndex = BLOG_POSTS.findIndex((post) => post.slug === slug);
+  const rotationPick = BLOG_POSTS[(currentIndex + 1) % BLOG_POSTS.length];
+
+  const picked: BlogPost[] = [];
+  const add = (post: BlogPost | undefined) => {
+    if (!post || post.slug === slug) return;
+    if (picked.some((existing) => existing.slug === post.slug)) return;
+    if (picked.length >= limit) return;
+    picked.push(post);
+  };
+
+  byRelevance.slice(0, Math.max(0, limit - 1)).forEach(add);
+  add(rotationPick);
+  byRelevance.forEach(add); // limit dolmadıysa tamamla
+
+  return picked;
 }
 
 export function formatDate(isoDate: string): string {
