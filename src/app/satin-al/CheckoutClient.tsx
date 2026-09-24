@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { motion, useReducedMotion } from "motion/react";
 import {
   computeOrderQuote,
   formatTRY,
@@ -11,6 +10,16 @@ import {
   type PaymentMethod,
 } from "@/lib/site";
 import { useSettings } from "@/lib/useSettings";
+import {
+  initializeCardPayment,
+  submitTransferOrder,
+  validateDiscountCode,
+  validateTransferInput,
+  type AppliedDiscount,
+} from "./checkout-api";
+import Field from "./CheckoutField";
+import SuccessJourney from "./SuccessJourney";
+import TransferPending from "./TransferPending";
 import {
   trackAddPaymentInfo,
   trackBeginCheckout,
@@ -23,280 +32,10 @@ import {
 type InvoiceType = "individual" | "company";
 type Step = "details" | "payment" | "done" | "failed" | "transfer_pending";
 
-interface AppliedDiscount {
-  code: string;
-  type: "percent" | "fixed";
-  value: number;
-}
-
 const MAX_RECEIPT_MB = 10;
 
 /** GA4'e gönderilecek hata sebebi için kabul edilen biçim (iyzico errorCode uyumlu). */
 const SAFE_FAILURE_REASON = /^[A-Za-z0-9_-]{1,32}$/;
-
-/* ─────────────────────────── Form alanı ───────────────────────────
- *
- * Alanlar daha önce yalnızca placeholder ile etiketleniyordu. Bunun iki
- * somut sonucu vardı:
- *   1) Ekran okuyucu için alanın erişilebilir adı yoktu (WCAG 4.1.2) ve
- *      kullanıcı yazmaya başlayınca alanın ne olduğu ekrandan siliniyordu
- *      (WCAG 3.3.2).
- *   2) name/autoComplete olmadığı için tarayıcı otomatik doldurma hiç
- *      devreye girmiyordu — mobil ödeme formunda doğrudan kayıp.
- * Bu bileşen her alana kalıcı bir <label>, name ve autoComplete verir.
- * ------------------------------------------------------------------- */
-
-const FIELD_CLASS =
-  "w-full rounded-lg border border-ink-300 px-4 py-2.5 text-sm text-ink-900 placeholder:text-ink-500 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100";
-
-interface FieldProps {
-  id: string;
-  label: string;
-  name: string;
-  value: string;
-  onChange: (value: string) => void;
-  type?: React.HTMLInputTypeAttribute;
-  autoComplete?: string;
-  inputMode?: React.HTMLAttributes<HTMLInputElement>["inputMode"];
-  placeholder?: string;
-  required?: boolean;
-  multiline?: boolean;
-  className?: string;
-}
-
-function Field({
-  id,
-  label,
-  name,
-  value,
-  onChange,
-  type = "text",
-  autoComplete,
-  inputMode,
-  placeholder,
-  required = false,
-  multiline = false,
-  className = "",
-}: FieldProps) {
-  const shared = {
-    id,
-    name,
-    value,
-    required,
-    autoComplete,
-    placeholder,
-    "aria-required": required || undefined,
-    onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
-      onChange(e.target.value),
-    className: FIELD_CLASS,
-  };
-
-  return (
-    <div className={className}>
-      <label htmlFor={id} className="mb-1.5 block text-xs font-semibold text-ink-700">
-        {label}
-        {required && (
-          <span className="ml-0.5 text-brand-700" aria-hidden="true">
-            *
-          </span>
-        )}
-      </label>
-      {multiline ? (
-        <textarea rows={2} {...shared} />
-      ) : (
-        <input type={type} inputMode={inputMode} {...shared} />
-      )}
-    </div>
-  );
-}
-
-/* ─────────────── Kart ödemesi sonrası: "ekibimiz sizi arayacak" ─────────────── */
-
-function SuccessJourney({ orderId }: { orderId: string }) {
-  const reduceMotion = useReducedMotion();
-
-  const steps = [
-    {
-      title: "Ödemeniz alındı",
-      description: orderId
-        ? `Sipariş numaranız: ${orderId}. Onay e-postanız yola çıktı.`
-        : "Ödemeniz başarıyla alındı. Sipariş kaydınız ekibimizce tamamlanıp e-posta ile iletilecek.",
-      icon: <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />,
-      state: "done" as const,
-    },
-    {
-      title: "Ekip arkadaşımız sizi arayacak",
-      description:
-        "24 saat içinde (iş günü) kayıtlı telefonunuzdan aranacaksınız. Bu görüşmede hedefler netleşir ve kurulum planınız çıkarılır.",
-      icon: (
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z"
-        />
-      ),
-      state: "next" as const,
-    },
-    {
-      title: "Kurulum başlıyor",
-      description:
-        "Yetkilendirmelerin ardından ortalama 7 iş günü içinde katalog bağlantınız, ölçümlemeniz ve kampanyalarınız yayında olur.",
-      icon: (
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.631 8.41m5.96 5.96a14.926 14.926 0 01-5.841 2.58m-.119-8.54a6 6 0 00-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 00-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 01-2.448-2.448 14.9 14.9 0 01.06-.312m-2.24 2.39a4.493 4.493 0 00-1.757 4.306 4.493 4.493 0 004.306-1.758M16.5 9a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"
-        />
-      ),
-      state: "upcoming" as const,
-    },
-  ];
-
-  const container = {
-    hidden: {},
-    show: { transition: { staggerChildren: reduceMotion ? 0 : 0.35, delayChildren: 0.3 } },
-  };
-  const item = {
-    hidden: reduceMotion ? { opacity: 1 } : { opacity: 0, y: 20 },
-    show: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.55, ease: [0.16, 1, 0.3, 1] as const },
-    },
-  };
-
-  return (
-    <section className="flex min-h-[75vh] items-center justify-center px-4 py-20">
-      <div className="w-full max-w-xl">
-        <motion.div
-          initial={reduceMotion ? { scale: 1 } : { scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ type: "spring", stiffness: 260, damping: 18 }}
-          className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-green-100 ring-8 ring-green-50"
-        >
-          <svg className="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-          </svg>
-        </motion.div>
-
-        <motion.h1
-          initial={reduceMotion ? { opacity: 1 } : { opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15, duration: 0.5 }}
-          className="mt-6 text-center font-display text-3xl font-extrabold text-ink-900"
-        >
-          Teşekkürler — başlıyoruz! 🎉
-        </motion.h1>
-
-        <motion.ol variants={container} initial="hidden" animate="show" className="relative mt-10 space-y-0">
-          {steps.map((step, i) => (
-            <motion.li key={step.title} variants={item} className="relative flex gap-4 pb-10 last:pb-0">
-              {i < steps.length - 1 && (
-                <span className="absolute left-[23px] top-12 h-[calc(100%-3rem)] w-0.5 bg-ink-200" aria-hidden="true" />
-              )}
-              <span
-                className={`relative flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-2 ${
-                  step.state === "done"
-                    ? "border-green-500 bg-green-50 text-green-700"
-                    : step.state === "next"
-                      ? "border-brand-500 bg-brand-50 text-brand-700"
-                      : "border-ink-200 bg-white text-ink-500"
-                }`}
-              >
-                {step.state === "next" && (
-                  <span className="absolute inset-0 animate-ping-soft rounded-full bg-brand-400/30" aria-hidden="true" />
-                )}
-                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  {step.icon}
-                </svg>
-              </span>
-              <div className="pt-1">
-                <p className={`font-display text-base font-bold ${step.state === "upcoming" ? "text-ink-500" : "text-ink-900"}`}>
-                  {step.title}
-                  {step.state === "next" && (
-                    <span className="ml-2 rounded-full bg-brand-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-brand-700">
-                      Sıradaki adım
-                    </span>
-                  )}
-                </p>
-                <p className="mt-1 text-sm leading-relaxed text-ink-600">{step.description}</p>
-              </div>
-            </motion.li>
-          ))}
-        </motion.ol>
-
-        <motion.div
-          initial={reduceMotion ? { opacity: 1 } : { opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.5, duration: 0.6 }}
-          className="mt-10 rounded-2xl border border-ink-200 bg-ink-50 p-5 text-center"
-        >
-          <p className="text-sm text-ink-600">
-            Bu arada aklınıza bir şey takılırsa:{" "}
-            <Link href="/iletisim" className="font-semibold text-brand-700 underline">
-              iletişim sayfası
-            </Link>{" "}
-            ya da onay e-postasındaki numaradan bize ulaşın.
-          </p>
-          <Link
-            href="/"
-            className="mt-4 inline-block rounded-xl bg-ink-900 px-8 py-3 text-sm font-semibold text-white transition-colors hover:bg-ink-700"
-          >
-            Anasayfaya Dön
-          </Link>
-        </motion.div>
-      </div>
-    </section>
-  );
-}
-
-/* ─────────────── Havale sonrası: "dekontunuz alındı, onay bekliyor" ─────────────── */
-
-function TransferPending({ orderId }: { orderId: string }) {
-  const reduceMotion = useReducedMotion();
-  return (
-    <section className="flex min-h-[75vh] items-center justify-center px-4 py-20">
-      <div className="w-full max-w-xl text-center">
-        <motion.div
-          initial={reduceMotion ? { scale: 1 } : { scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ type: "spring", stiffness: 260, damping: 18 }}
-          className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-brand-100 ring-8 ring-brand-50"
-        >
-          <svg className="h-8 w-8 text-brand-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-        </motion.div>
-
-        <h1 className="mt-6 font-display text-3xl font-extrabold text-ink-900">
-          Dekontunuz alındı — teşekkürler!
-        </h1>
-        <p className="mt-4 leading-relaxed text-ink-600">
-          Sipariş numaranız: <strong className="text-ink-900">{orderId}</strong>. Ödemeniz kontrol
-          ediliyor; havale/EFT hesabımıza ulaştığı doğrulanınca siparişiniz onaylanır ve
-          ekip arkadaşımız <strong>24 saat içinde (iş günü)</strong> sizi arayarak kurulum
-          planınızı netleştirir.
-        </p>
-        <div className="mt-8 rounded-2xl border border-ink-200 bg-ink-50 p-5 text-left text-sm text-ink-600">
-          <p className="font-bold text-ink-900">Sırada ne var?</p>
-          <ul className="mt-3 space-y-2">
-            <li className="flex gap-2"><span className="text-brand-700">1.</span> Ödemenizi doğrularız (genelde aynı iş günü).</li>
-            <li className="flex gap-2"><span className="text-brand-700">2.</span> Onay e-postanız gönderilir.</li>
-            <li className="flex gap-2"><span className="text-brand-700">3.</span> Ekip sizi arar, kurulum başlar.</li>
-          </ul>
-        </div>
-        <Link
-          href="/"
-          className="mt-8 inline-block rounded-xl bg-ink-900 px-8 py-3 text-sm font-semibold text-white transition-colors hover:bg-ink-700"
-        >
-          Anasayfaya Dön
-        </Link>
-      </div>
-    </section>
-  );
-}
-
-/* ─────────────────────────────── Checkout ─────────────────────────────── */
 
 /**
  * Ödeme dönüşü query'si — sunucu sayfasından prop olarak gelir.
@@ -506,24 +245,17 @@ export default function CheckoutClient({ query }: { query: CheckoutQuery }) {
   async function applyCode() {
     if (!codeInput.trim()) return;
     setCodeStatus("checking");
-    try {
-      const res = await fetch("/api/discount/validate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code: codeInput }),
-      });
-      const data = await res.json();
-      if (data.valid) {
-        setDiscount({ code: data.code, type: data.type, value: data.value });
-        setCodeStatus("idle");
-        trackDiscountApplied(String(data.code));
-      } else {
-        setDiscount(null);
-        setCodeStatus("invalid");
-      }
-    } catch {
+
+    const result = await validateDiscountCode(codeInput);
+    if (!result.ok) {
+      setDiscount(null);
       setCodeStatus("invalid");
+      return;
     }
+
+    setDiscount(result.discount);
+    setCodeStatus("idle");
+    trackDiscountApplied(result.discount.code);
   }
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -551,73 +283,58 @@ export default function CheckoutClient({ query }: { query: CheckoutQuery }) {
   async function startCardPayment() {
     setSubmitting(true);
     setSubmitError("");
-    try {
-      const res = await fetch("/api/payment/initialize", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...form,
-          marketplaces,
-          addManagement,
-          discountCode: discount?.code || "",
-          invoiceType,
-          ...invoice,
-          termsAccepted,
-        }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setSubmitError(data.error || "Ödeme başlatılamadı, lütfen tekrar deneyin.");
-        return;
-      }
-      setCheckoutFormContent(data.checkoutFormContent as string);
-      setStep("payment");
-    } catch {
-      setSubmitError("Bağlantı hatası — lütfen tekrar deneyin.");
-    } finally {
-      setSubmitting(false);
+
+    const result = await initializeCardPayment({
+      ...form,
+      marketplaces,
+      addManagement,
+      discountCode: discount?.code || "",
+      invoiceType,
+      ...invoice,
+      termsAccepted,
+    });
+    setSubmitting(false);
+
+    if (!result.ok) {
+      setSubmitError(result.error);
+      return;
     }
+
+    setCheckoutFormContent(result.checkoutFormContent);
+    setStep("payment");
   }
 
   async function submitTransfer() {
-    if (!receipt && !receiptAccountName.trim()) {
-      setSubmitError("Dekont yükleyin veya ödeme yapılan hesabın resmi ismini yazın.");
+    const inputError = validateTransferInput(receipt, receiptAccountName, MAX_RECEIPT_MB);
+    if (inputError) {
+      setSubmitError(inputError);
       return;
     }
-    if (receipt && receipt.size > MAX_RECEIPT_MB * 1024 * 1024) {
-      setSubmitError(`Dekont dosyası ${MAX_RECEIPT_MB} MB'den küçük olmalıdır.`);
-      return;
-    }
+
     setSubmitting(true);
     setSubmitError("");
-    try {
-      const fd = new FormData();
-      if (receipt) fd.append("receipt", receipt);
-      fd.append(
-        "payload",
-        JSON.stringify({
-          ...form,
-          marketplaces,
-          addManagement,
-          invoiceType,
-          ...invoice,
-          receiptAccountName: receiptAccountName.trim(),
-          termsAccepted,
-        })
-      );
-      const res = await fetch("/api/payment/transfer", { method: "POST", body: fd });
-      const data = await res.json();
-      if (!res.ok) {
-        setSubmitError(data.error || "Sipariş oluşturulamadı, lütfen tekrar deneyin.");
-        return;
-      }
-      setOrderId(data.orderId as string);
-      setStep("transfer_pending");
-    } catch {
-      setSubmitError("Bağlantı hatası — lütfen tekrar deneyin.");
-    } finally {
-      setSubmitting(false);
+
+    const result = await submitTransferOrder(
+      {
+        ...form,
+        marketplaces,
+        addManagement,
+        invoiceType,
+        ...invoice,
+        receiptAccountName: receiptAccountName.trim(),
+        termsAccepted,
+      },
+      receipt
+    );
+    setSubmitting(false);
+
+    if (!result.ok) {
+      setSubmitError(result.error);
+      return;
     }
+
+    setOrderId(result.orderId);
+    setStep("transfer_pending");
   }
 
   /* ── Sonuç ekranları ── */
