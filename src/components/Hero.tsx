@@ -88,6 +88,26 @@ export default function Hero() {
             biz kuruyor, biz yönetiyoruz. Siz satışa odaklanın.
           </p>
 
+          {/* Kelime köprüsü: sitenin ticari sayfaları yalnızca "CPAS" terimiyle
+              yazılmıştı. GSC (24 Eyl 2026): "cpas" ailesinde 1,8-3,9. sıradayız
+              ama "trendyol meta reklamı" aramasında hiçbir hizmet sayfamız
+              çıkmıyor — yalnızca blog yazısı, o da 8,7'de. Bu satır terimi
+              bilmeyen satıcıya ne sattığımızı anlatır ve iki kelime dağarcığını
+              birbirine bağlar.
+
+              LCP elemanının ALTINDA ve ondan küçük tutuldu: üstteki paragraf
+              LCP olarak kalmalı. */}
+          <p
+            style={delay(260)}
+            className="hero-in mt-4 max-w-xl text-sm leading-relaxed text-ink-400"
+          >
+            Sektörde CPAS (Collaborative Ads) deniyor; düz anlatımıyla{" "}
+            <strong className="font-semibold text-ink-200">
+              Trendyol ve Hepsiburada mağazanız için Meta reklamları
+            </strong>
+            .
+          </p>
+
           {/* Pazaryeri çipleri */}
           <div style={delay(320)} className="hero-in mt-7 flex flex-wrap items-center gap-3">
             {MARKETPLACE_CHIPS.map((m) => (

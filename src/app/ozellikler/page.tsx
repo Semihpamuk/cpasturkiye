@@ -148,6 +148,14 @@ export default function ServiceScopePage() {
             Kurulumdan haftalık optimizasyona, raporlamadan anomali müdahalesine —
             paketin içinde ne var, madde madde.
           </p>
+          {/* Kelime köprüsü — gerekçesi Hero.tsx'te. */}
+          <p className="mx-auto mt-3 max-w-2xl text-base leading-relaxed text-ink-500">
+            Hizmetin adı CPAS; yaptığı iş{" "}
+            <strong className="font-semibold text-ink-700">
+              Trendyol ve Hepsiburada mağazanız için Meta reklamlarını
+            </strong>{" "}
+            kurmak ve yönetmek.
+          </p>
         </div>
 
         {/* Kapsam bandı */}
