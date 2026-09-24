@@ -2,88 +2,17 @@
 
 import { useEffect, useRef, useState } from "react";
 import CountUp from "./CountUp";
-import type { CategoryStat } from "@/types/categoryStats";
+import type { CaseCardData } from "@/lib/caseCards";
 
 /**
- * Vaka çalışmaları — Jale panelinden KATEGORİ BAZLI canlı veri çeker.
+ * Vaka çalışmaları — Jale panelinden KATEGORİ BAZLI canlı veri gösterir.
  * Firma adı hiçbir zaman gösterilmez; yalnızca sektör kategorisi + "N mağaza".
- * "0 çeken" firmalar Jale tarafında zaten ayıklanmıştır.
  *
- * Canlı veri yoksa (API kapalı / Jale henüz redeploy edilmemiş) statik
- * örneklere düşer — bölüm asla boş kalmaz.
+ * Veri SUNUCUDA seçilir (bkz. lib/caseCards.ts) ve prop olarak gelir; bu bileşen
+ * yalnızca çizim yapar. Daha önce veriyi istemcide çekiyordu — canlı veri
+ * gelene kadar "temsili örnek" kartlar görünüyor, sonra yerlerine gerçekleri
+ * geçiyordu. Temsili kartlar tamamen kaldırıldı: veri yoksa bölüm hiç çizilmez.
  */
-
-interface Metric {
-  label: string;
-  value: React.ReactNode;
-  accent?: boolean;
-}
-
-interface CaseCard {
-  key: string;
-  badge: string;
-  badgeColor: string;
-  subLabel: string;
-  curve: number[]; // 0-100 normalize
-  color: string;
-  metrics: Metric[];
-  note: string;
-}
-
-const PALETTE = ["#f27a1a", "#0866ff", "#16a34a", "#9333ea", "#ea580c", "#0891b2"];
-
-// Vaka kartına layık "gerçekten performans gösteren" kategori eşikleri.
-// Bu değerlerin altındaki (ör. 0 çeken, cılız) kategoriler gösterilmez.
-const MIN_REVENUE = 10_000; // toplam ciro (TL)
-const MIN_SPEND = 1_000; // toplam harcama (TL)
-const MIN_ROAS = 3; // vaka-değer ROAS tabanı
-const MAX_CARDS = 3;
-
-// ── Statik fallback (Jale verisi yokken) ──────────────────────────────────
-const FALLBACK: CaseCard[] = [
-  {
-    key: "ev-tekstili",
-    badge: "Ev Tekstili",
-    badgeColor: "#f27a1a",
-    color: "#f27a1a",
-    subLabel: "temsili örnek",
-    curve: [18, 22, 30, 46, 58, 74, 88],
-    metrics: [
-      { label: "Önce", value: "3,8x" },
-      { label: "Sonra", value: <CountUp end={11.2} decimals={1} suffix="x" />, accent: true },
-      { label: "Ciro", value: <CountUp end={186} decimals={0} prefix="₺" suffix="K" />, accent: true },
-    ],
-    note: "Katalog segmentasyonu + retargeting katmanı sonrası reklam kaynaklı ciro 3 kattan fazla arttı.",
-  },
-  {
-    key: "kozmetik",
-    badge: "Kozmetik",
-    badgeColor: "#0866ff",
-    color: "#0866ff",
-    subLabel: "temsili örnek",
-    curve: [26, 24, 38, 52, 70, 82, 92],
-    metrics: [
-      { label: "Önce", value: "5,1x" },
-      { label: "Sonra", value: <CountUp end={14.6} decimals={1} suffix="x" />, accent: true },
-      { label: "Ciro", value: <CountUp end={142} decimals={0} prefix="₺" suffix="K" />, accent: true },
-    ],
-    note: "Zarar eden geniş hedeflemeler kapatıldı; bütçe kazanan ürün setlerine kaydırıldı.",
-  },
-  {
-    key: "zuccaciye",
-    badge: "Züccaciye",
-    badgeColor: "#16a34a",
-    color: "#16a34a",
-    subLabel: "temsili örnek",
-    curve: [14, 20, 34, 44, 60, 71, 80],
-    metrics: [
-      { label: "Önce", value: "2,9x" },
-      { label: "Sonra", value: <CountUp end={8.4} decimals={1} suffix="x" />, accent: true },
-      { label: "Ciro", value: <CountUp end={98} decimals={0} prefix="₺" suffix="K" />, accent: true },
-    ],
-    note: "İlk 60 günde ROAS yaklaşık 3 katına çıktı.",
-  },
-];
 
 function formatRevenue(rev: number): React.ReactNode {
   if (rev >= 1_000_000) return <CountUp end={rev / 1_000_000} decimals={1} prefix="₺" suffix="M" />;
@@ -91,62 +20,8 @@ function formatRevenue(rev: number): React.ReactNode {
   return <CountUp end={rev} decimals={0} prefix="₺" />;
 }
 
-/** Aylık ciro serisini 0-100 aralığına normalize eder (kendi maksimumuna göre). */
-function normalizeCurve(values: number[]): number[] {
-  const max = Math.max(...values, 0);
-  if (max <= 0) return values.map(() => 8); // düz taban
-  return values.map((v) => Math.max(6, Math.round((v / max) * 100)));
-}
-
-/** Önce/Sonra anlatısı için gereken iki "harcama olan" ay ve gerçek iyileşme. */
-function beforeAfterRoas(cat: CategoryStat): { first: number; last: number } | null {
-  const spentMonths = cat.monthly.filter((m) => m.spend > 0);
-  if (spentMonths.length < 2) return null;
-
-  const first = spentMonths[0].roas;
-  const last = spentMonths[spentMonths.length - 1].roas;
-  if (first <= 0 || last <= first) return null;
-
-  return { first, last };
-}
-
-/* Tüm kartlar TEK metrik şeması kullanır: Önce / Sonra / Ciro.
-   Şema kart bazında değiştiğinde (bir kart "ROAS / Mağaza", diğeri
-   "Önce / Sonra") satır tutarsız görünüyordu. Önce/Sonra üretemeyen
-   kategori zaten vaka çalışması sayılmaz — filtrede elenir. */
-function toCard(cat: CategoryStat, index: number): CaseCard {
-  const color = cat.color || PALETTE[index % PALETTE.length];
-  const revenueCurve = cat.monthly.map((m) => m.revenue);
-
-  // Filtre garanti ettiği için burada null gelmez.
-  const roas = beforeAfterRoas(cat);
-  const first = roas?.first ?? 0;
-  const last = roas?.last ?? cat.roas;
-
-  const metrics: Metric[] = [
-    {
-      label: "Önce",
-      value: `${first.toLocaleString("tr-TR", { minimumFractionDigits: 1, maximumFractionDigits: 1 })}x`,
-    },
-    { label: "Sonra", value: <CountUp end={last} decimals={1} suffix="x" />, accent: true },
-    { label: "Ciro", value: formatRevenue(cat.revenue), accent: true },
-  ];
-
-  return {
-    key: cat.name,
-    badge: cat.name,
-    badgeColor: color,
-    color,
-    // Tek mağazalı kategoride "1 mağaza" yazmak inandırıcılığı zedeliyordu
-    // (kullanıcı kararı, 21 Eyl 2026): kart sektör verisi olarak sunulur.
-    subLabel: cat.firmCount > 1 ? `${cat.firmCount} mağaza` : "sektör verisi",
-    curve: normalizeCurve(revenueCurve),
-    metrics,
-    note:
-      cat.firmCount > 1
-        ? `${cat.firmCount} aktif mağazanın son ${cat.monthly.length} aydaki toplam Meta CPAS performansı.`
-        : `Bu sektörde yönettiğimiz hesabın son ${cat.monthly.length} aydaki Meta CPAS performansı.`,
-  };
+function formatRoas(value: number): string {
+  return `${value.toLocaleString("tr-TR", { minimumFractionDigits: 1, maximumFractionDigits: 1 })}x`;
 }
 
 function buildPath(curve: number[], width: number, height: number): string {
@@ -196,7 +71,16 @@ function CaseChart({ curve, color }: { curve: number[]; color: string }) {
         </linearGradient>
       </defs>
       {[0.25, 0.5, 0.75].map((f) => (
-        <line key={f} x1="0" x2={W} y1={H * f} y2={H * f} stroke="currentColor" strokeOpacity="0.08" strokeWidth="1" />
+        <line
+          key={f}
+          x1="0"
+          x2={W}
+          y1={H * f}
+          y2={H * f}
+          stroke="currentColor"
+          strokeOpacity="0.08"
+          strokeWidth="1"
+        />
       ))}
       {areaPath && (
         <path
@@ -219,50 +103,7 @@ function CaseChart({ curve, color }: { curve: number[]; color: string }) {
   );
 }
 
-interface ApiResponse {
-  success: boolean;
-  data?: { categories: CategoryStat[] };
-}
-
-export default function CaseStudies() {
-  const [cards, setCards] = useState<CaseCard[]>(FALLBACK);
-
-  useEffect(() => {
-    let cancelled = false;
-    fetch("/api/category-stats")
-      .then((res) => res.json())
-      .then((json: ApiResponse) => {
-        if (cancelled || !json.success || !json.data) return;
-
-        // Yalnızca gerçekten performans gösteren kategoriler; ROAS'a göre (en iyi önce).
-        // Önce/Sonra üretemeyen kategori elenir — kartların metrik şeması tek kalsın.
-        const live = json.data.categories
-          .filter(
-            (c) =>
-              c.revenue >= MIN_REVENUE &&
-              c.spend >= MIN_SPEND &&
-              c.roas >= MIN_ROAS &&
-              beforeAfterRoas(c) !== null
-          )
-          .sort((a, b) => b.roas - a.roas)
-          .slice(0, MAX_CARDS)
-          .map(toCard);
-
-        // 3'ten az gerçek kategori varsa kalanı temsili örneklerle doldur.
-        const fillers = FALLBACK.filter(
-          (f) => !live.some((l) => l.badge.toLowerCase() === f.badge.toLowerCase())
-        );
-        const filled = [...live, ...fillers].slice(0, MAX_CARDS);
-        if (filled.length > 0) setCards(filled);
-      })
-      .catch(() => {
-        // Sessizce yut — statik fallback kalır.
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
+export default function CaseStudies({ cards }: { cards: CaseCardData[] }) {
   return (
     <div className="grid gap-6 lg:grid-cols-3">
       {cards.map((c) => (
@@ -273,9 +114,9 @@ export default function CaseStudies() {
           <div className="flex items-center justify-between">
             <span
               className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold"
-              style={{ backgroundColor: `${c.badgeColor}1f`, color: c.badgeColor }}
+              style={{ backgroundColor: `${c.color}1f`, color: c.color }}
             >
-              <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: c.badgeColor }} />
+              <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: c.color }} />
               {c.badge}
             </span>
             <span className="text-xs font-medium text-ink-400">{c.subLabel}</span>
@@ -285,21 +126,34 @@ export default function CaseStudies() {
             <CaseChart curve={c.curve} color={c.color} />
           </div>
 
+          {/* Tek metrik şeması: İlk ay / En iyi ay / Ciro. Etiketler bilerek
+              "Önce/Sonra" değil — gösterilen zirve son ay olmak zorunda değil,
+              "sonra" demek olmayan bir trend ima ederdi. */}
           <div className="mt-5 grid grid-cols-3 gap-3 border-t border-white/10 pt-5">
-            {c.metrics.map((m) => (
-              <div key={m.label}>
-                <p className="text-[11px] font-semibold uppercase tracking-wider text-ink-400">
-                  {m.label}
-                </p>
-                <p
-                  className={`mt-1 font-display text-xl font-extrabold ${
-                    m.accent ? "text-white" : "text-ink-300"
-                  }`}
-                >
-                  {m.value}
-                </p>
-              </div>
-            ))}
+            <div>
+              <p className="text-[11px] font-semibold uppercase tracking-wider text-ink-400">
+                İlk ay
+              </p>
+              <p className="mt-1 font-display text-xl font-extrabold text-ink-300">
+                {formatRoas(c.firstRoas)}
+              </p>
+            </div>
+            <div>
+              <p className="text-[11px] font-semibold uppercase tracking-wider text-ink-400">
+                En iyi ay
+              </p>
+              <p className="mt-1 font-display text-xl font-extrabold text-white">
+                <CountUp end={c.bestRoas} decimals={1} suffix="x" />
+              </p>
+            </div>
+            <div>
+              <p className="text-[11px] font-semibold uppercase tracking-wider text-ink-400">
+                Ciro
+              </p>
+              <p className="mt-1 font-display text-xl font-extrabold text-white">
+                {formatRevenue(c.revenue)}
+              </p>
+            </div>
           </div>
 
           <p className="mt-4 text-sm leading-relaxed text-ink-400">{c.note}</p>

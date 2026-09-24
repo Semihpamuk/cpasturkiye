@@ -15,6 +15,8 @@ import TrustStats from "@/components/TrustStats";
 import JsonLd from "@/components/JsonLd";
 import { SITE, PRICING as DEFAULTS, formatTRY, type PricingValues } from "@/lib/site";
 import { getSettings } from "@/lib/db";
+import { getCategoryStats } from "@/lib/categoryStats";
+import { selectCaseCards } from "@/lib/caseCards";
 
 // Fiyatlar admin panelinden değişebildiği için bu sayfa her istekte yeniden
 // render ediliyordu (dinamik SSR + her istekte disk okuması; HTML no-store).
@@ -224,6 +226,9 @@ export default async function HomePage() {
   const { pricing } = await getSettings();
   const PRICING = { ...DEFAULTS, ...pricing };
   const FAQ_ITEMS = buildFaqItems(PRICING);
+  // Vaka kartları sunucuda seçilir; Jale erişilemezse bölüm hiç çizilmez
+  // (eskiden temsili örneklere düşüyordu).
+  const caseCards = selectCaseCards((await getCategoryStats())?.categories ?? []);
   return (
     <>
       <JsonLd data={buildServiceJsonLd(PRICING)} />
@@ -437,23 +442,29 @@ export default async function HomePage() {
 
           {/* ═══ VAKALAR ═══ */}
           <div className="mt-24 lg:mt-32">
-            <Reveal className="text-center">
-              <p className="text-xs font-bold uppercase tracking-widest text-brand-400">
-                Vaka çalışmaları
-              </p>
-              <h2 className="mt-3 font-display text-3xl font-extrabold tracking-tight sm:text-4xl">
-                Rakamlar bizden iyi anlatıyor
-              </h2>
-              <p className="mx-auto mt-4 max-w-2xl text-ink-400">
-                Sektör bazında, yönettiğimiz mağazaların gerçek toplam performansı —
-                marka adları gizli, rakamlar canlı panelden. Görüşmede sektörünüze
-                benzer vakaları detaylı paylaşırız.
-              </p>
-            </Reveal>
+            {/* Canlı veri yoksa başlık da çizilmez — boş bir "Vaka çalışmaları"
+                başlığı, temsili kartlardan daha kötü bir izlenim bırakırdı. */}
+            {caseCards.length > 0 && (
+              <>
+                <Reveal className="text-center">
+                  <p className="text-xs font-bold uppercase tracking-widest text-brand-400">
+                    Vaka çalışmaları
+                  </p>
+                  <h2 className="mt-3 font-display text-3xl font-extrabold tracking-tight sm:text-4xl">
+                    Rakamlar bizden iyi anlatıyor
+                  </h2>
+                  <p className="mx-auto mt-4 max-w-2xl text-ink-400">
+                    Sektör bazında, yönettiğimiz mağazaların gerçek toplam performansı —
+                    marka adları gizli, rakamlar canlı panelden. Görüşmede sektörünüze
+                    benzer vakaları detaylı paylaşırız.
+                  </p>
+                </Reveal>
 
-            <div className="mt-12">
-              <CaseStudies />
-            </div>
+                <div className="mt-12">
+                  <CaseStudies cards={caseCards} />
+                </div>
+              </>
+            )}
 
             <Reveal className="mt-12">
               <TrustStats />
