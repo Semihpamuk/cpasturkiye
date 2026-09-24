@@ -214,16 +214,21 @@ export default function ServiceScopePage() {
       {/* CPAS bilgi kutusu */}
       <section className="px-4 pb-12 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl rounded-2xl border border-ink-200 bg-white p-8 text-center shadow-sm">
+          {/* Başlık bilerek "CPAS nedir" değil: bu sayfa da rehber yazısıyla aynı
+              sorguda yarışıp gösterimleri bölüyordu (24 Eyl 2026 GSC analizi). */}
           <h2 className="font-display text-xl font-bold text-ink-900">
-            CPAS nedir, neden önemli?
+            CPAS ile ne değişiyor?
           </h2>
           <p className="mt-3 text-sm leading-relaxed text-ink-600">
             CPAS (Collaborative Ads), Meta&apos;nın pazaryeri satıcıları için
             geliştirdiği reklam çözümüdür. Pazaryeri kataloğunuz Meta&apos;ya bağlanır
             ve reklamlarınız doğrudan mağazanıza satış olarak döner — tüm dönüşümler
             gerçek sipariş verisiyle ölçülür.{" "}
-            <Link href="/sss" className="font-semibold text-brand-700 underline underline-offset-2">
-              SSS sayfasında daha fazlası →
+            <Link
+              href="/blog/cpas-nedir-trendyol-saticilari-icin-rehber"
+              className="font-semibold text-brand-700 underline underline-offset-2"
+            >
+              CPAS nedir? Ayrıntılı rehberi okuyun →
             </Link>
           </p>
         </div>

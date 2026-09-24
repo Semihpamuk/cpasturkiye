@@ -148,6 +148,7 @@ const buildFaqItems = (PRICING: PricingValues): FaqItem[] => [
     question: "CPAS (Collaborative Ads) tam olarak nedir?",
     answer:
       "CPAS, Meta'nın pazaryeri satıcıları için geliştirdiği reklam çözümüdür: pazaryerindeki ürün kataloğunuz Meta'ya bağlanır ve Facebook/Instagram'da dinamik ürün reklamları yayınlanır. En kritik farkı, kampanya sonuçlarının pazaryerindeki gerçek satış verisiyle eşleşmesidir — hangi reklamın kaç sipariş getirdiğini net görürsünüz.",
+    link: { href: "/blog/cpas-nedir-trendyol-saticilari-icin-rehber", label: "CPAS nedir? Ayrıntılı rehberi okuyun" },
   },
   {
     question: "Hangi pazaryerlerinde çalışıyorsunuz?",

@@ -6,7 +6,7 @@ const post: BlogPostSource = {
   excerpt:
     "CPAS, Meta'nın pazaryeri satıcılarını Facebook ve Instagram reklamlarıyla buluşturan ortak reklam modelidir. Nasıl çalışır, kimler kullanabilir, ne kadar bütçe ister? Trendyol satıcısı gözünden sade bir rehber.",
   date: "2026-05-12",
-  updated: "2026-08-06",
+  updated: "2026-09-24",
   category: "Rehber",
   keywords: [
     "CPAS nedir",
@@ -18,13 +18,19 @@ const post: BlogPostSource = {
     "Trendyol Facebook reklamı",
   ],
   content: [
+    // Yazı bilerek doğrudan tanımla açılıyor: "cpas nedir" sorgusunda okuyucu
+    // da Google da ilk cümlede cevabı arıyor (24 Eyl 2026 GSC analizi).
+    {
+      type: "p",
+      text: "CPAS (Collaborative Performance Advertising Solution), Meta'nın pazaryeri satıcıları için geliştirdiği ortak reklam modelidir: Trendyol'daki ürün kataloğunuz Meta'ya bağlanır, Facebook ve Instagram reklamlarınız doğrudan mağazanıza yönlenir ve satışlar pazaryerinin gerçek sipariş verisiyle ölçülür.",
+    },
     {
       type: "p",
       text: "Trendyol'da satış yapıyorsanız reklam bütçenizin neredeyse tamamı büyük ihtimalle platform içinde harcanıyor: ürün öne çıkarma, mağaza reklamı, kategori sponsorluğu. Bu kanalların hepsinin ortak bir tavanı var — yalnızca o anda Trendyol'da gezinen kullanıcıya ulaşabiliyorsunuz. CPAS, tam olarak bu tavanı kaldırmak için var.",
     },
     {
       type: "p",
-      text: "Bu rehberde CPAS'in ne olduğunu, teknik olarak nasıl çalıştığını, hangi mağazalar için mantıklı olduğunu ve sahada en sık hangi hataların bütçe yaktığını tek tek anlatıyoruz. Amacımız sözlük tanımı vermek değil; okuduktan sonra kendi mağazanız için karar verebilecek duruma gelmeniz.",
+      text: "Aşağıda modelin teknik olarak nasıl çalıştığını, hangi mağazalar için mantıklı olduğunu ve sahada en sık hangi hataların bütçe yaktığını tek tek bulacaksınız.",
     },
 
     { type: "h2", text: "CPAS nedir, açılımı ne?" },

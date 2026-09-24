@@ -31,6 +31,7 @@ const buildFaqSections = (
         question: "CPAS nedir?",
         answer:
           "CPAS (Collaborative Performance Advertising Solution / Collaborative Ads), Meta'nın pazaryeri satıcıları için geliştirdiği reklam çözümüdür. Pazaryerindeki ürün kataloğunuz Meta'ya bağlanır; Facebook ve Instagram'da verilen reklamlar doğrudan mağazanıza yönlenir ve satışlar gerçek sipariş verisiyle ölçülür. Yani 'reklamım işe yarıyor mu?' sorusunun cevabını tahminle değil, gerçek satış rakamlarıyla görürsünüz.",
+        link: { href: "/blog/cpas-nedir-trendyol-saticilari-icin-rehber", label: "CPAS nedir? Ayrıntılı rehberi okuyun" },
       },
       {
         question: "CPAS Türkiye tam olarak ne yapıyor?",

@@ -1,10 +1,20 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 
 export interface FaqItem {
   question: string;
   answer: string;
+  /**
+   * Cevabın altında gösterilen ayrıntı bağlantısı.
+   *
+   * Aynı konuyu hem ana sayfa/SSS hem de rehber yazısı anlatınca Google
+   * hangisini göstereceğine karar veremiyordu ("cpas nedir" sorgusunda
+   * gösterimler 4 sayfaya bölünüyordu). Bu bağlantı, kısa cevabı yerinde
+   * bırakıp okuyucuyu ve arama motorunu asıl kaynağa yönlendirir.
+   */
+  link?: { href: string; label: string };
 }
 
 export default function FaqAccordion({ items }: { items: FaqItem[] }) {
@@ -40,6 +50,16 @@ export default function FaqAccordion({ items }: { items: FaqItem[] }) {
             {isOpen && (
               <div className="px-6 pb-5">
                 <p className="text-sm leading-relaxed text-ink-600">{item.answer}</p>
+                {item.link && (
+                  <p className="mt-3 text-sm">
+                    <Link
+                      href={item.link.href}
+                      className="font-semibold text-brand-700 underline underline-offset-2"
+                    >
+                      {item.link.label} →
+                    </Link>
+                  </p>
+                )}
               </div>
             )}
           </div>
