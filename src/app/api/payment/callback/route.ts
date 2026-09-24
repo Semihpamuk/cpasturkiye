@@ -8,6 +8,11 @@ import {
   incrementCodeUsage,
   getCodes,
 } from "@/lib/db";
+import {
+  buildPaidOrder,
+  decideCallbackOutcome,
+  resolveConversationId,
+} from "@/lib/payment-callback";
 import { sendOrderConfirmation } from "@/lib/mailer";
 import { createJaleOnboardingInvite } from "@/lib/jaleOnboarding";
 import { gaIdentityFrom, sendGaPurchase } from "@/lib/ga-server";
@@ -32,50 +37,15 @@ async function finalizePaidOrder(
     // Yine de ödeme başarılıydı — temel bilgilerle siparişi kaydet
   }
 
-  const installmentCount = Number(result.installment ?? 1);
-  const validInstallments = ["3", "6", "9"] as const;
-  const installmentStr = String(installmentCount);
-  const installmentKey: "single" | "3" | "6" | "9" =
-    installmentCount <= 1 || !validInstallments.includes(installmentStr as "3" | "6" | "9")
-      ? "single"
-      : (installmentStr as "3" | "6" | "9");
-
-  const order = {
+  // Sipariş kaydının kurulumu saf fonksiyonda (lib/payment-callback.ts):
+  // taksit eşlemesi ve "tutar pending'den mi iyzico'dan mı" kararı testli.
+  const order = buildPaidOrder({
+    result,
+    pending: pending ?? null,
+    conversationId,
     id: generateId(),
     createdAt: new Date().toISOString(),
-    name: pending?.name ?? String(result.buyer?.name ?? ""),
-    phone: pending?.phone ?? String(result.buyer?.gsmNumber ?? ""),
-    email: pending?.email ?? String(result.buyer?.email ?? ""),
-    storeUrl: pending?.storeUrl ?? "",
-    marketplaces: pending?.marketplaces ?? [],
-    paymentMethod: "card" as const,
-    installment: installmentKey,
-    addManagement: pending?.addManagement ?? false,
-    discountCode: pending?.discountCode ?? null,
-    setupNet: pending?.setupNet ?? 0,
-    managementMonthly: pending?.managementMonthly ?? 0,
-    managementAddon: pending?.managementAddon ?? 0,
-    discountAmount: pending?.discountAmount ?? 0,
-    vatAmount: pending?.vatAmount ?? 0,
-    total: pending?.total ?? Number(result.paidPrice ?? result.price ?? 0),
-    status: "paid" as const,
-    invoiceType: (pending?.invoiceType ?? "individual") as "individual" | "company",
-    identityNo: pending?.identityNo ?? String(result.buyer?.identityNumber ?? ""),
-    companyName: pending?.companyName ?? "",
-    taxOffice: pending?.taxOffice ?? "",
-    taxNumber: pending?.taxNumber ?? "",
-    address: pending?.address ?? String(result.billingAddress?.address ?? ""),
-    city: pending?.city ?? String(result.billingAddress?.city ?? ""),
-    paymentId: String(result.paymentId ?? ""),
-    conversationId,
-    termsAcceptedAt: pending?.termsAcceptedAt,
-    gaClientId: pending?.gaClientId,
-    gaSessionId: pending?.gaSessionId,
-    fbp: pending?.fbp,
-    fbc: pending?.fbc,
-    clientIp: pending?.clientIp,
-    userAgent: pending?.userAgent,
-  };
+  });
 
   await addOrder(order);
 
@@ -183,28 +153,34 @@ export async function POST(req: Request) {
     const status = params.get("status");
     const callbackConversationId = params.get("conversationId") ?? undefined;
 
-    if (!token) {
+    const earlyOutcome = decideCallbackOutcome(token, status, null);
+    if (earlyOutcome.kind === "error") {
       return NextResponse.redirect(`${SITE.url}/satin-al?payment=error&reason=no_token`, 303);
     }
-
-    if (status === "failure") {
+    if (earlyOutcome.kind === "failure") {
       return NextResponse.redirect(`${SITE.url}/satin-al?payment=failure`, 303);
     }
 
     // Sunucu tarafında ödemeyi doğrula
-    const result = await retrieveCheckoutForm(token, callbackConversationId);
+    const result = await retrieveCheckoutForm(token!, callbackConversationId);
+    const outcome = decideCallbackOutcome(token, status, result);
 
-    if (result.status !== "success" || result.paymentStatus !== "SUCCESS") {
+    if (outcome.kind !== "paid") {
       console.error("iyzico retrieve failure:", result);
+      const reason = outcome.kind === "failure" ? (outcome.reason ?? "unknown") : "unknown";
       return NextResponse.redirect(
-        `${SITE.url}/satin-al?payment=failure&reason=${result.errorCode ?? "unknown"}`,
+        `${SITE.url}/satin-al?payment=failure&reason=${reason}`,
         303
       );
     }
 
     // Bu noktadan sonra para TAHSİL EDİLMİŞTİR.
     paymentVerified = true;
-    const conversationId = result.conversationId ?? callbackConversationId ?? token;
+    const conversationId = resolveConversationId(
+      result.conversationId,
+      callbackConversationId,
+      token!
+    );
     const redirectUrl = await finalizePaidOrder(result, conversationId);
     return NextResponse.redirect(redirectUrl, 303);
   } catch (err) {

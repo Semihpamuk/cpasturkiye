@@ -42,7 +42,13 @@ export interface Order {
   marketplaces: string[];
   /** Ödeme yöntemi: kart (iyzico) veya havale/EFT */
   paymentMethod: PaymentMethod;
-  installment: "single" | "3" | "6" | "9";
+  /**
+   * Taksit sayısı. iyzico'ya açtığımız seçeneklerle aynı olmalı
+   * (initialize rotası: enabledInstallments [1, 2, 3, 6, 9]).
+   * "2" 24 Eyl 2026'da eklendi: eksik olduğu için 2 taksitli ödemeler
+   * panelde "Tek çekim" görünüyordu.
+   */
+  installment: "single" | "2" | "3" | "6" | "9";
   /** Devam ödemesi (bir sonraki ay yönetim) eklendi mi */
   addManagement: boolean;
   discountCode: string | null;
