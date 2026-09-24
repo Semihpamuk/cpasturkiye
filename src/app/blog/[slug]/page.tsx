@@ -29,14 +29,17 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
   const post = getPostBySlug(slug);
   if (!post) return {};
 
+  // SERP başlığı H1'den ayrı: H1 tam kalır, <title> kısa sürümü kullanır.
+  const serpTitle = post.seoTitle ?? post.title;
+
   return {
-    title: post.title,
+    title: serpTitle,
     description: metaDescription(post.excerpt),
     keywords: post.keywords,
     alternates: { canonical: `/blog/${slug}` },
     openGraph: {
       type: "article",
-      title: post.title,
+      title: serpTitle,
       description: metaDescription(post.excerpt),
       url: `${SITE.url}/blog/${slug}`,
       publishedTime: post.date,
@@ -48,7 +51,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
     },
     twitter: {
       card: "summary_large_image",
-      title: post.title,
+      title: serpTitle,
       description: metaDescription(post.excerpt),
     },
   };

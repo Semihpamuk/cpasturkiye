@@ -3,8 +3,9 @@ import type { BlogPostSource } from "@/lib/blog-types";
 const post: BlogPostSource = {
   slug: "trendyol-cpas-reklam-yetkisi-nasil-alinir",
   title: "Trendyol CPAS Reklam Yetkisi Nasıl Alınır? Adım Adım 2026 Rehberi",
+  seoTitle: "Trendyol CPAS Reklam Yetkisi Nasıl Alınır?",
   excerpt:
-    "Trendyol CPAS reklam yetkisi başvurusu nasıl yapılır, hangi belgeler istenir, süreç kaç gün sürer ve başvurular en çok neden reddedilir? Satıcılar için güncel, adım adım rehber.",
+    "Trendyol CPAS reklam yetkisi başvurusu nasıl yapılır, hangi belgeler istenir, süreç kaç gün sürer? Satıcılar için adım adım güncel rehber.",
   date: "2026-06-10",
   updated: "2026-08-06",
   category: "Rehber",

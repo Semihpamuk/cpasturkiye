@@ -23,7 +23,16 @@ export interface BlogFaq {
 /** Yazarın içerik dosyasında yazdığı ham kayıt. */
 export interface BlogPostSource {
   slug: string;
+  /** Sayfadaki H1 ve blog kartlarında görünen tam başlık. */
   title: string;
+  /**
+   * Yalnızca <title> etiketinde kullanılan kısa başlık.
+   *
+   * Siteye " | CPAS Türkiye" (15 karakter) şablonu ekleniyor ve Google
+   * başlıkları ~60 karakterde kesiyor. Uzun H1'ler SERP'te tam da satan
+   * kısmından kırpılıyordu. Verilmezse `title` kullanılır.
+   */
+  seoTitle?: string;
   excerpt: string;
   /** İlk yayın tarihi (ISO). */
   date: string;

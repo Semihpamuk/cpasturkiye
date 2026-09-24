@@ -3,8 +3,9 @@ import type { BlogPostSource } from "@/lib/blog-types";
 const post: BlogPostSource = {
   slug: "trendyol-meta-reklam-entegrasyonu-nedir",
   title: "Trendyol Meta Reklam Entegrasyonu: Facebook ve Instagram'dan Satış",
+  seoTitle: "Trendyol Meta Reklam Entegrasyonu Rehberi",
   excerpt:
-    "Trendyol mağazanızı Meta'ya nasıl bağlarsınız? Entegrasyonun teknik bileşenleri, veri akışı, kurulum adımları ve Facebook/Instagram reklamlarıyla Trendyol satışlarını artırmanın yolu.",
+    "Trendyol mağazanızı Meta'ya bağlayan entegrasyonun bileşenleri, veri akışı ve kurulum adımları — Facebook ile Instagram'dan satış için tam rehber.",
   date: "2026-06-15",
   updated: "2026-08-06",
   category: "Rehber",

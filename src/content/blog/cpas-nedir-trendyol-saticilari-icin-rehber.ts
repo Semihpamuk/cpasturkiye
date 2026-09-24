@@ -3,8 +3,9 @@ import type { BlogPostSource } from "@/lib/blog-types";
 const post: BlogPostSource = {
   slug: "cpas-nedir-trendyol-saticilari-icin-rehber",
   title: "CPAS Nedir? Trendyol Satıcıları İçin Eksiksiz Rehber (2026)",
+  seoTitle: "CPAS Nedir? Trendyol Satıcıları İçin Rehber",
   excerpt:
-    "CPAS, Meta'nın pazaryeri satıcılarını Facebook ve Instagram reklamlarıyla buluşturan ortak reklam modelidir. Nasıl çalışır, kimler kullanabilir, ne kadar bütçe ister? Trendyol satıcısı gözünden sade bir rehber.",
+    "CPAS, Meta'nın pazaryeri satıcılarını Facebook ve Instagram reklamlarıyla buluşturan ortak reklam modelidir. Nasıl çalışır, kimler kullanabilir?",
   date: "2026-05-12",
   updated: "2026-09-24",
   category: "Rehber",
