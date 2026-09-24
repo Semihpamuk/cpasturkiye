@@ -3,8 +3,9 @@ import type { BlogPostSource } from "@/lib/blog-types";
 const post: BlogPostSource = {
   slug: "meta-business-manager-kurulumu-pazaryeri-saticilari",
   title: "Meta Business Manager Kurulumu: Pazaryeri Satıcıları İçin Rehber",
+  seoTitle: "Meta Business Manager Kurulumu Rehberi",
   excerpt:
-    "CPAS'e geçmeden önce Meta Business Manager hesabınızın doğru kurulmuş olması gerekir. İşletme doğrulaması, reklam hesabı, sayfa bağlantısı ve yetki yönetimi adım adım.",
+    "CPAS'e geçmeden önce Meta Business Manager hesabınız doğru kurulmalı: işletme doğrulaması, reklam hesabı, sayfa bağlantısı ve yetki yönetimi.",
   date: "2026-08-06",
   category: "Rehber",
   keywords: [

@@ -3,8 +3,9 @@ import type { BlogPostSource } from "@/lib/blog-types";
 const post: BlogPostSource = {
   slug: "cpas-ajansi-nasil-secilir",
   title: "CPAS Ajansı Nasıl Seçilir? Sormanız Gereken 10 Soru",
+  seoTitle: "CPAS Ajansı Nasıl Seçilir? 10 Soru",
   excerpt:
-    "CPAS yönetimi için ajans seçerken neye bakmalı? Fiyat modelinden veri sahipliğine, raporlamadan çıkış koşullarına kadar sormanız gereken 10 soru ve doğru cevapların nasıl göründüğü.",
+    "CPAS yönetimi için ajans seçerken fiyat modelinden veri sahipliğine, raporlamadan çıkış koşullarına kadar sormanız gereken 10 soru.",
   date: "2026-08-06",
   category: "Strateji",
   keywords: [

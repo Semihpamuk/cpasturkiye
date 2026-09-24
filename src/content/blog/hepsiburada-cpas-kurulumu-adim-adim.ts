@@ -3,8 +3,9 @@ import type { BlogPostSource } from "@/lib/blog-types";
 const post: BlogPostSource = {
   slug: "hepsiburada-cpas-kurulumu-adim-adim",
   title: "Hepsiburada CPAS Kurulumu: Adım Adım Rehber (2026)",
+  seoTitle: "Hepsiburada CPAS Kurulumu: Adım Adım",
   excerpt:
-    "Hepsiburada mağazanız için Meta CPAS kurulumunu adım adım anlatıyoruz: reklam yetkisi başvurusu, katalog bağlantısı, kampanya mimarisi ve Trendyol kurulumundan ayrışan kritik noktalar.",
+    "Hepsiburada mağazanız için Meta CPAS kurulumu: reklam yetkisi başvurusu, katalog bağlantısı, kampanya mimarisi ve Trendyol'dan ayrışan noktalar.",
   date: "2026-08-06",
   category: "Rehber",
   keywords: [

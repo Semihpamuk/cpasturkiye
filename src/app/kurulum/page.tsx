@@ -169,8 +169,16 @@ export default async function SetupPage() {
           <h2 className="text-center font-display text-3xl font-bold tracking-tight text-ink-900">
             Ortalama {PRICING.setupDays} iş günlük kurulum süreci
           </h2>
+          {/* Entegrasyon yazısına bağlam içi bağlantı: o yazı en çok gösterim
+              alan blog sayfamız ama blog dışından hiç bağlantı almıyordu. */}
           <p className="mt-3 text-center text-ink-600">
-            Adım adım ne olacağını bilin — kurulum bir kara kutu değil.
+            Adım adım ne olacağını bilin — kurulum bir kara kutu değil.{" "}
+            <Link
+              href="/blog/trendyol-meta-reklam-entegrasyonu-nedir"
+              className="font-semibold text-brand-700 underline underline-offset-2"
+            >
+              Teknik olarak ne bağlanıyor?
+            </Link>
           </p>
 
           <ol className="relative mt-12 space-y-10 border-l-2 border-brand-200 pl-8">

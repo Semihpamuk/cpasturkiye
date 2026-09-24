@@ -3,8 +3,9 @@ import type { BlogPostSource } from "@/lib/blog-types";
 const post: BlogPostSource = {
   slug: "cpas-maliyeti-ve-butce-planlamasi",
   title: "CPAS Maliyeti Ne Kadar? 2026 Bütçe Planlama Rehberi",
+  seoTitle: "CPAS Maliyeti Ne Kadar? Bütçe Rehberi",
   excerpt:
-    "CPAS'in gerçek maliyeti kaç kalemden oluşuyor? Reklam bütçesi, kurulum, yönetim ve gizli maliyetler. Mağaza büyüklüğüne göre gerçekçi bütçe tabloları ve başabaş ROAS hesabı.",
+    "CPAS'in gerçek maliyeti kaç kalemden oluşuyor? Reklam bütçesi, kurulum, yönetim ve gizli maliyetler ile başabaş ROAS hesabı.",
   date: "2026-08-06",
   category: "Fiyatlandırma",
   keywords: [

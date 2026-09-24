@@ -3,8 +3,9 @@ import type { BlogPostSource } from "@/lib/blog-types";
 const post: BlogPostSource = {
   slug: "roas-nasil-yukseltilir-cpas-kampanyalarinda-5-taktik",
   title: "ROAS Nasıl Yükseltilir? CPAS Kampanyalarında 5 Kanıtlanmış Taktik",
+  seoTitle: "ROAS Nasıl Yükseltilir? 5 CPAS Taktiği",
   excerpt:
-    "CPAS kampanyalarında reklam getirisini somut olarak artıran 5 taktik: bütçe disiplini, katalog hijyeni, kitle genişliği, yeniden pazarlama mimarisi ve anomali takibi.",
+    "CPAS kampanyalarında reklam getirisini artıran 5 taktik: bütçe disiplini, katalog hijyeni, kitle genişliği, yeniden pazarlama ve anomali takibi.",
   date: "2026-06-02",
   updated: "2026-08-06",
   category: "Optimizasyon",

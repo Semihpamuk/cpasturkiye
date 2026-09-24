@@ -3,8 +3,9 @@ import type { BlogPostSource } from "@/lib/blog-types";
 const post: BlogPostSource = {
   slug: "cpas-kampanyasi-neden-satis-getirmiyor",
   title: "CPAS Kampanyam Neden Satış Getirmiyor? 9 Neden ve Çözümü",
+  seoTitle: "CPAS Neden Satış Getirmiyor? 9 Neden",
   excerpt:
-    "Reklam yayında, bütçe harcanıyor ama sipariş yok. Bu yazıda CPAS kampanyalarında satış gelmemesinin 9 gerçek nedenini ve her birinin nasıl teşhis edilip çözüleceğini anlatıyoruz.",
+    "Reklam yayında, bütçe harcanıyor ama sipariş yok. CPAS kampanyalarında satış gelmemesinin 9 gerçek nedeni ve her birinin çözümü.",
   date: "2026-08-06",
   category: "Optimizasyon",
   keywords: [

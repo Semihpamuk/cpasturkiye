@@ -3,8 +3,9 @@ import type { BlogPostSource } from "@/lib/blog-types";
 const post: BlogPostSource = {
   slug: "cpas-ile-trendyol-ic-reklam-karsilastirma",
   title: "CPAS mi, Trendyol İç Reklam mı? Hangisi Daha Kârlı?",
+  seoTitle: "CPAS mi Trendyol İç Reklam mı? Karşılaştırma",
   excerpt:
-    "Trendyol içi reklamlar ile Meta CPAS reklamları arasındaki farkı maliyet, kitle, ölçüm ve ROAS boyutlarıyla karşılaştırıyoruz. Hangi mağaza hangisiyle başlamalı, ikisi nasıl birlikte kullanılır?",
+    "Trendyol içi reklamlar ile Meta CPAS'i maliyet, kitle, ölçüm ve ROAS boyutlarıyla karşılaştırıyoruz. Hangi mağaza hangisiyle başlamalı?",
   date: "2026-06-18",
   updated: "2026-08-06",
   category: "Strateji",

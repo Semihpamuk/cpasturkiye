@@ -3,8 +3,9 @@ import type { BlogPostSource } from "@/lib/blog-types";
 const post: BlogPostSource = {
   slug: "trendyol-saticisi-meta-reklamlarina-ne-zaman-gecmeli",
   title: "Trendyol Satıcısı Meta Reklamlarına Ne Zaman Geçmeli?",
+  seoTitle: "Trendyol Satıcısı Meta'ya Ne Zaman Geçmeli?",
   excerpt:
-    "Her mağaza CPAS'e hazır değildir. Sipariş hacmi, kâr marjı, katalog genişliği ve nakit akışı üzerinden Meta reklamlarına geçiş için doğru zamanı nasıl anlayacağınızı rakamlarla anlatıyoruz.",
+    "Her mağaza CPAS'e hazır değildir. Sipariş hacmi, kâr marjı, katalog genişliği ve nakit akışı üzerinden doğru zamanı rakamlarla anlatıyoruz.",
   date: "2026-05-26",
   updated: "2026-08-06",
   category: "Strateji",

@@ -23,15 +23,9 @@ const SERP_TITLE_MAX = 60;
  * Bu liste yalnızca KÜÇÜLMELİ. Bir yazıyı düzelttiğinizde buradan silin;
  * yeni yazı eklerken buraya eklemeyin — kurala uyarak yazın.
  */
-const PENDING_SLUGS = new Set([
-  "roas-nasil-yukseltilir-cpas-kampanyalarinda-5-taktik",
-  "meta-business-manager-kurulumu-pazaryeri-saticilari",
-  "cpas-kampanyasi-neden-satis-getirmiyor",
-  "trendyol-saticisi-meta-reklamlarina-ne-zaman-gecmeli",
-  "cpas-ajansi-nasil-secilir",
-  "cpas-ile-trendyol-ic-reklam-karsilastirma",
-  "cpas-maliyeti-ve-butce-planlamasi",
-  "hepsiburada-cpas-kurulumu-adim-adim",
+const PENDING_SLUGS = new Set<string>([
+  // 24 Eyl 2026: 11 yazının 11'i de kısaltıldı, liste boşaldı.
+  // Yeni yazı eklerken buraya ekleme — kurala uyarak yaz.
 ]);
 
 /** `generateMetadata` ile aynı kural: seoTitle varsa o, yoksa title. */
